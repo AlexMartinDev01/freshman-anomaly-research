@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# data & results (large, re-downloadable / re-computable)
+data/
+results/
+third_party/AnomalyDINO/results_MVTec/
+third_party/AnomalyDINO/results_VisA/
+
+# OS
+Thumbs.db
+.DS_Store
