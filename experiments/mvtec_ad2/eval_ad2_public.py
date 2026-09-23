@@ -102,7 +102,9 @@ def main():
                 existing = json.load(f)
         if obj in existing:
             print(f"skip {obj} {shot}-shot seed={seed}")
-            rows.extend(existing.values())
+            # cached: emit ONLY this object's row (the json holds every object
+            # of this shot/seed; extending with .values() duplicated them all)
+            rows.append(existing[obj])
             continue
         print(f"eval {obj} | {shot}-shot seed={seed}", flush=True)
         r = eval_object(obj, shot, seed)
