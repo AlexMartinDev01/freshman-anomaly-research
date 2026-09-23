@@ -58,8 +58,24 @@ from sklearn.decomposition import PCA
 
 # can/wallplugs = collapse, vial = coverage-limited, sheet_metal = saturated,
 # fabric/rice = healthy controls (baseline works there).
-OBJECTS = ["can", "wallplugs", "vial", "sheet_metal", "fabric", "rice"]
+OBJECTS = ["can", "fabric", "fruit_jelly", "rice",
+           "sheet_metal", "vial", "wallplugs", "walnuts"]   # all 8 AD2 classes
 SHOT, SEED = 1, 0
+
+# --- sanity-check knobs -----------------------------------------------------
+# quantile-robustness sweep: is the story p99-specific, or does every upper
+# quantile of the normal distribution track performance?
+QUANTILES = [90, 95, 97.5, 99, 99.5, 99.9]
+# GT->patch sensitivity: a coarse 14px patch never aligns with a pixel mask, so
+# the defect-patch definition is a judgement call. Re-derive the headline number
+# under "any overlap", ">10%", ">25%" and ">50% of patch area is defect".
+GT_LEVELS = [0.0, 0.10, 0.25, 0.50]
+PRIMARY_GT = 0.10
+# scene-level bootstrap: patches within an image, and images within a scene, are
+# both strongly correlated, so a patch-level SE would be meaningless. Resample
+# whole scenes instead.
+N_BOOT = 400
+BOOT_SEED = 0
 
 METRICS_DIR = os.path.join(RESULTS_ROOT, "metrics")
 FIG_DIR = os.path.join(RESULTS_ROOT, "figures")
@@ -91,6 +107,25 @@ def patch_stats(obj, typ, image, scene, light, group, d):
     }
 
 
+def scene_bootstrap(good_by_scene, q=99, n_boot=N_BOOT, seed=BOOT_SEED):
+    """95% CI for the normal p<q>, resampling whole SCENES with replacement.
+
+    Patches within an image -- and images within a scene -- are strongly
+    correlated, so a patch-level standard error would be wildly overconfident.
+    Scenes are the closest thing to independent units here.
+    """
+    scenes = sorted(good_by_scene)
+    if len(scenes) < 2:
+        return (np.nan, np.nan)
+    rng = np.random.default_rng(seed)
+    vals = []
+    for _ in range(n_boot):
+        pick = rng.integers(0, len(scenes), len(scenes))
+        pool = np.concatenate([d for i in pick for d in good_by_scene[scenes[i]]])
+        vals.append(np.percentile(pool, q))
+    return (float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5)))
+
+
 def patch_dists(model, index, path):
     """Per-patch 1-NN cosine distance to the memory bank."""
     feats, grid, _ = extract_patch_features(model, path)
@@ -109,6 +144,8 @@ def run_object(model, obj):
     patch_rows = []
     dist_by_group = {g: [] for g in GROUPS}
     img_scores = []          # (group, mean_top1p) for image-level reproduction
+    good_by_scene = {}       # scene -> [per-image patch-distance arrays]
+    defect_by_level = {t: [] for t in GT_LEVELS}   # GT threshold -> [dist arrays]
 
     # ---------- good images: normal variation ----------
     good_dir = os.path.join(AD2_ROOT, obj, "test_public", "good")
@@ -124,6 +161,7 @@ def run_object(model, obj):
         else:
             g = "scene_light"
         dist_by_group[g].append(d)
+        good_by_scene.setdefault(scene, []).append(d)
         img_scores.append((g, mean_top1p(d), f))
         patch_rows.append(patch_stats(obj, "good", f, scene, light, g, d))
 
@@ -140,10 +178,16 @@ def run_object(model, obj):
         if not os.path.exists(gt):
             continue
         frac = gt_to_patch_grid(gt, img.shape[:2], grid)
-        dmask, cmask = frac > 0.10, frac == 0.0
+        dmap = d.reshape(grid)          # d is flat; masks are (grid_h, grid_w)
+        # GT->patch sensitivity sweep runs before any skip: an image whose
+        # primary-threshold mask is empty can still have >0 -overlap patches.
+        for t in GT_LEVELS:
+            m = frac > t
+            if m.sum():
+                defect_by_level[t].append(dmap[m])
+        dmask, cmask = frac > PRIMARY_GT, frac == 0.0
         if dmask.sum() == 0 or cmask.sum() == 0:
             continue
-        dmap = d.reshape(grid)          # d is flat; masks are (grid_h, grid_w)
         d_def, d_clean = dmap[dmask], dmap[cmask]
         dist_by_group["defect"].append(d_def)
         dist_by_group["clean"].append(d_clean)
@@ -191,15 +235,27 @@ def run_object(model, obj):
     # detectability is the tail, not the mean. frac_defect_below_normal_pXX is
     # the fraction of REAL defect patches that a threshold at the normal pXX
     # would not fire on.
-    thr = {q: float(np.percentile(normals_all, q)) for q in (95, 99, 99.9)}
-    frac_below = {q: float((d_def_all < thr[q]).mean()) for q in thr}
+    thr = {q: float(np.percentile(normals_all, q)) for q in QUANTILES}
+    frac_below = {q: float((d_def_all < thr[q]).mean()) for q in QUANTILES}
+
+    # same statistic under each GT->patch definition (at the primary quantile)
+    gt_n, gt_frac = {}, {}
+    for t in GT_LEVELS:
+        arr = (np.concatenate(defect_by_level[t]) if defect_by_level[t]
+               else np.array([]))
+        gt_n[t] = len(arr)
+        gt_frac[t] = float((arr < thr[99]).mean()) if len(arr) else np.nan
+
+    boot_lo, boot_hi = scene_bootstrap(good_by_scene, q=99)
 
     res = {
-        "normal_p95": thr[95], "normal_p99": thr[99], "normal_p999": thr[99.9],
+        **{f"normal_p{q}": v for q, v in thr.items()},
+        **{f"frac_defect_below_p{q}": v for q, v in frac_below.items()},
+        **{f"defect_n_gt{round(t*100)}": gt_n[t] for t in GT_LEVELS},
+        **{f"frac_below_p99_gt{round(t*100)}": gt_frac[t] for t in GT_LEVELS},
+        "normal_p99_boot_lo": boot_lo, "normal_p99_boot_hi": boot_hi,
         "defect_p50": float(np.median(d_def_all)),
         "defect_p95": float(np.percentile(d_def_all, 95)),
-        "frac_defect_below_normal_p95": frac_below[95],
-        "frac_defect_below_normal_p99": frac_below[99],
         "object": obj, "shot": SHOT, "seed": SEED,
         "n_patches_defect": len(d_def_all),
         # capture-noise floor: same scene AND same lighting, different capture
@@ -337,7 +393,7 @@ def main():
         print(f"  normal tail p95={res['normal_p95']:.3f} "
               f"p99={res['normal_p99']:.3f}  vs defect p50={res['defect_p50']:.3f} "
               f"p95={res['defect_p95']:.3f}  ->  "
-              f"{100*res['frac_defect_below_normal_p99']:.0f}% of defect patches "
+              f"{100*res['frac_defect_below_p99']:.0f}% of defect patches "
               f"sit BELOW the normal p99")
     df = pd.DataFrame(rows)
     df.to_csv(os.path.join(METRICS_DIR, "feature_diagnostics.csv"), index=False)
@@ -345,10 +401,22 @@ def main():
     show = df[["object", "mean_same", "mean_defect", "mean_light", "mean_scene",
                "ratio_light_defect", "ratio_scene_defect",
                "normal_p99", "defect_p50", "defect_p95",
-               "frac_defect_below_normal_p99",
+               "frac_defect_below_p99",
+               "frac_below_p99_gt0", "frac_below_p99_gt25",
+               "frac_below_p99_gt50",
                "AUROC_defect_vs_light", "AUROC_defect_vs_scene",
                "AUROC_defect_vs_clean", "within_image_AUROC",
                "img_AUROC_bad_vs_allgood"]].round(3)
+    print("\n=== GT->patch sensitivity (frac of defect patches below normal p99) ===")
+    print(df[["object", "defect_n_gt0", "defect_n_gt10", "defect_n_gt25",
+              "defect_n_gt50", "frac_below_p99_gt0", "frac_below_p99_gt10",
+              "frac_below_p99_gt25", "frac_below_p99_gt50"]].round(3)
+          .to_string(index=False))
+    print("\n=== quantile robustness: normal p<q> vs frac of defects below it ===")
+    print(df[["object"] + [f"normal_p{q}" for q in QUANTILES]].round(3)
+          .to_string(index=False))
+    print(df[["object"] + [f"frac_defect_below_p{q}" for q in QUANTILES]].round(3)
+          .to_string(index=False))
     print("\n=== Feature-level diagnosis (1-shot, seed 0, DINOv2-S/14 @448) ===")
     print(show.to_string(index=False))
     print("\nsaved:", os.path.join(METRICS_DIR, "feature_diagnostics.csv"))
