@@ -53,6 +53,7 @@ PATCH_MIN_COVER = 0.5                # a patch counts as pseudo-defect at >=50%
 F3_TARGET_MULT = 0.6
 F3_ALPHAS = (0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0)
 F3_N_PATCHES = 4000
+LR_K = (5, 20)         # rank-k variants of the off-manifold proxy (F4)
 DIAG_BANK = 20000      # bank subsample used for the proxy-distance report
 
 
@@ -210,6 +211,28 @@ def feature_proxy(obj, rng, n_bank_for_cal=20000):
     return zp.astype(np.float16)
 
 
+def lowrank_proxy(obj, base="feature", k=5):
+    """Rank-k reconstruction of an existing pseudo-defect set.
+
+    A minimal intervention for testing the coherence hypothesis: the patches
+    keep their own mean and their top-k directions, but the set is forced to
+    span k dimensions instead of hundreds. Real defect sets need only
+    k90 = 5..40 dimensions, so if dimensionality is what matters, this should
+    recover some of the oracle's behaviour; if it does not, the missing
+    ingredient is semantic rather than geometric.
+    """
+    X = np.load(os.path.join(PROXY_DIR, f"{obj}_{base}.npy")).astype(np.float32)
+    mu = X.mean(axis=0, keepdims=True)
+    Xc = X - mu
+    U, S, Vt = np.linalg.svd(Xc, full_matrices=False)
+    V = Vt[:k]
+    Xk = (Xc @ V.T) @ V + mu
+    print(f"  {obj}/lowrank(k={k}) from '{base}': "
+          f"{len(Xk)} patches, k90 forced to <= {k}, "
+          f"mean|shift|={np.linalg.norm(Xk - X, axis=1).mean():.3f}")
+    return Xk.astype(np.float16)
+
+
 def report_distances(obj):
     """How far are the pseudo-defects from the bank, versus the normal p99?
 
@@ -232,7 +255,7 @@ def report_distances(obj):
     p99 = float(np.percentile(d_norm, 99))
     thr = p99 + 0.05
     print(f"  --- {obj}: normal p99={p99:.3f}, hinge threshold={thr:.3f} ---")
-    for kind in ("texture", "structural", "feature"):
+    for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -266,6 +289,14 @@ def main():
             print(f"  {obj}/feature: cached, skip")
         else:
             np.save(out, feature_proxy(obj, np.random.default_rng(SEED)))
+        # rank-k variants, derived from the cached off-manifold set so the ONLY
+        # thing that changes between F3 and F4 is the dimensionality
+        for k in LR_K:
+            o = os.path.join(PROXY_DIR, f"{obj}_lowrank{k}.npy")
+            if os.path.exists(o):
+                print(f"  {obj}/lowrank{k}: cached, skip")
+            else:
+                np.save(o, lowrank_proxy(obj, "feature", k))
         report_distances(obj)
 
 

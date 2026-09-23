@@ -83,8 +83,15 @@ CONFIGS = {
            "defect_sup": True, "proxy": "structural"},
     "F3": {"adapter": True, "objective": "tail", "preserve": True,
            "defect_sup": True, "proxy": "feature"},
+    # F4/F5 = F3 with the pseudo-defect set forced to span k dimensions. Only
+    # the rank changes, so they isolate "is the missing ingredient coherence?"
+    # from "is the missing ingredient semantics?".
+    "F4": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "lowrank5"},
+    "F5": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "lowrank20"},
 }
-CONFIG_ORDER = ["A", "B0", "B", "C", "D", "E", "F1", "F2", "F3"]
+CONFIG_ORDER = ["A", "B0", "B", "C", "D", "E", "F1", "F2", "F3", "F4", "F5"]
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):

@@ -32,8 +32,10 @@ COLLAPSED = ["can", "wallplugs"]
 HEALTHY = ["vial", "sheet_metal"]
 LABEL = {"A_half": "A  baseline", "D_half": "D  no defect info",
          "E": "E  ORACLE (real defects)", "F1": "F1 pseudo: texture",
-         "F2": "F2 pseudo: structural", "F3": "F3 pseudo: feature-space"}
-ORDER = ["A_half", "D_half", "E", "F1", "F2", "F3"]
+         "F2": "F2 pseudo: structural", "F3": "F3 pseudo: feature-space",
+         "F4": "F4 pseudo: feature rank-5", "F5": "F5 pseudo: feature rank-20",
+         "F3_m10": "F3 + margin 0.10 (stronger hinge)"}
+ORDER = ["A_half", "D_half", "E", "F1", "F2", "F3", "F4", "F5", "F3_m10"]
 METRICS = ["img_AUROC", "px_AUROC", "AUPRO@0.05", "normal_p99",
            "defect_mean", "frac_defect_below_p99"]
 
