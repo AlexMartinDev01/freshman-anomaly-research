@@ -54,6 +54,9 @@ F3_TARGET_MULT = 0.6
 F3_ALPHAS = (0.05, 0.1, 0.2, 0.35, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0)
 F3_N_PATCHES = 4000
 LR_K = (5, 20)         # rank-k variants of the off-manifold proxy (F4)
+RANK_K = (1, 3, 5, 10, 20, 40, 70, 120)   # Probe 1: rank scan (extended to
+                                          # reach ~0.99 explained variance)
+PROTO_K = (1, 2, 4, 8, 16, 32, 64)   # Probe 2: prototype count
 DIAG_BANK = 20000      # bank subsample used for the proxy-distance report
 
 
@@ -233,6 +236,202 @@ def lowrank_proxy(obj, base="feature", k=5):
     return Xk.astype(np.float16)
 
 
+def defect_direction(source, obj_split_seed=SEED):
+    """Mean defect direction in `source`'s feature space, unit-normalised.
+
+    Defect direction := mean(defect patches) - mean(training normals). Using a
+    direction rather than absolute donor patches is what makes the cross-object
+    test meaningful: donor patches placed verbatim sit far outside the
+    separation hinge (measured: 0% below it) so the constraint would be vacuous.
+    A text prior would also supply a direction, not a set of points.
+    """
+    tr, te = load_cache(source)
+    gt = te["gt_frac"].reshape(len(te["types"]), -1)
+    bad = np.where(te["types"] == "bad")[0]
+    perm = np.random.default_rng(obj_split_seed).permutation(len(bad))
+    sup = bad[perm[:len(bad) // 2]]
+    D = np.concatenate([te["feats"][i].astype(np.float32)[gt[i] > 0.10]
+                        for i in sup])
+    N = tr["feats"].reshape(-1, tr["feats"].shape[-1]).astype(np.float32)
+    N = N[np.random.default_rng(obj_split_seed).choice(
+        len(N), size=min(20000, len(N)), replace=False)]
+    v = D.mean(axis=0) - N.mean(axis=0)
+    print(f"    direction from '{source}': n_defect={len(D)}, "
+          f"n_normal={len(N)}, |v|={np.linalg.norm(v):.3f}")
+    return v / (np.linalg.norm(v) + 1e-8)
+
+
+def direction_proxy(obj, source, tag):
+    """Apply a real defect direction from `source` to obj's own normal patches.
+
+    Magnitude is calibrated the same way as F3 (0.6x the normal p99), so the
+    only thing that differs from F3 is *which* direction is used: a real
+    defect direction instead of a random off-manifold one.
+    """
+    v = defect_direction(source)
+    tr, _ = load_cache(obj)
+    _, tailq_idx = split_train(tr["feats"].shape[0], 0.8, SEED)
+    bank_idx, _ = split_train(tr["feats"].shape[0], 0.8, SEED)
+    norm = lambda x: x / (np.linalg.norm(x, axis=1, keepdims=True) + 1e-8)
+    bank = norm(tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32))
+    rng = np.random.default_rng(SEED)
+    b = bank[rng.choice(len(bank), size=min(20000, len(bank)), replace=False)]
+    q = norm(tr["feats"][tailq_idx].reshape(-1, 384).astype(np.float32))
+    d0 = 1.0 - (q[rng.choice(len(q), size=min(2000, len(q)), replace=False)]
+                @ b.T).max(axis=1)
+    target = F3_TARGET_MULT * float(np.percentile(d0, 99))
+    sel = rng.choice(len(q), size=min(F3_N_PATCHES, len(q)), replace=False)
+    z = q[sel]
+    best, best_a, best_d = None, None, np.inf
+    for a in F3_ALPHAS:
+        zp = norm(z + a * v)
+        d = float((1.0 - (zp @ b.T).max(axis=1)).mean())
+        if abs(d - target) < abs(best_d - target):
+            best, best_a, best_d = a * v, a, d
+    print(f"    {obj}/{tag}: target d={target:.3f}, alpha={best_a} -> "
+          f"mean d={best_d:.3f}, n={len(z)}")
+    return norm(z + best).astype(np.float16)
+
+
+def _real_defect_set(obj, seed=SEED):
+    """The same supervision-half real defect patches config E uses."""
+    tr, te = load_cache(obj)
+    gt = te["gt_frac"].reshape(len(te["types"]), -1)
+    bad = np.where(te["types"] == "bad")[0]
+    perm = np.random.default_rng(seed).permutation(len(bad))
+    sup = bad[perm[:len(bad) // 2]]
+    return np.concatenate([te["feats"][i].astype(np.float32)[gt[i] > 0.10]
+                           for i in sup])
+
+
+def rank_scan_proxy(obj, k):
+    """Real defect set compressed to rank k by PCA reconstruction.
+
+    Config E keeps the whole set; this asks how many dimensions of it are
+    actually needed. Rank-1 here is NOT the same test as G2: G2 applied a mean
+    *direction* to normal patches (a line through the normal cloud), whereas
+    this is the real defect cloud flattened onto its own top-k axes.
+    """
+    X = _real_defect_set(obj)
+    mu = X.mean(axis=0, keepdims=True)
+    Xc = X - mu
+    _, S, Vt = np.linalg.svd(Xc, full_matrices=False)
+    k = min(k, Vt.shape[0])
+    Xk = (Xc @ Vt[:k].T) @ Vt[:k] + mu
+    evr = float((S[:k] ** 2).sum() / (S ** 2).sum())
+    print(f"    {obj}/rank{k}: n={len(Xk)}, explained var={evr:.3f}, "
+          f"mean|shift|={np.linalg.norm(Xk - X, axis=1).mean():.3f}")
+    return Xk.astype(np.float16)
+
+
+def proto_scan_proxy(obj, K):
+    """Real defect set replaced by K k-means prototypes.
+
+    Each patch is replaced by its cluster centroid, so the set keeps its size
+    (and therefore its weight in the loss) but carries only K distinct
+    vectors. Separates "needs many dimensions" from "needs many modes".
+    """
+    from sklearn.cluster import KMeans
+    X = _real_defect_set(obj)
+    K = min(K, len(X))
+    if K == 1:
+        lab = np.zeros(len(X), dtype=int)
+    else:
+        lab = KMeans(n_clusters=K, n_init=4, random_state=SEED).fit_predict(X)
+    C = np.stack([X[lab == c].mean(axis=0) for c in range(K)])
+    resid = float(np.linalg.norm(X - C[lab], axis=1).mean())
+    print(f"    {obj}/proto{K}: n={len(X)}, {K} prototypes, "
+          f"mean|shift|={resid:.3f}")
+    return C[lab].astype(np.float16)
+
+
+def pooled_subspace_proxy(obj, donors, k=20):
+    """Target normals perturbed along a POOLED cross-object defect subspace.
+
+    G1 transferred a single mean direction and failed. This transfers a k-dim
+    subspace built from several donors' defect deviations, which is the
+    "multiple visual defect modes" hypothesis. Magnitude is calibrated the same
+    way as F3 so the hinge stays active (raw donor patches sit far outside it).
+    """
+    rows = []
+    for d in donors:
+        tr_d, te_d = load_cache(d)
+        gt = te_d["gt_frac"].reshape(len(te_d["types"]), -1)
+        bad = np.where(te_d["types"] == "bad")[0]
+        perm = np.random.default_rng(SEED).permutation(len(bad))
+        sup = bad[perm[:len(bad) // 2]]
+        D = np.concatenate([te_d["feats"][i].astype(np.float32)[gt[i] > 0.10]
+                            for i in sup])
+        N = tr_d["feats"].reshape(-1, tr_d["feats"].shape[-1]).astype(np.float32)
+        N = N[np.random.default_rng(SEED).choice(
+            len(N), size=min(10000, len(N)), replace=False)]
+        rows.append(D - N.mean(axis=0, keepdims=True))
+    A = np.concatenate(rows)
+    _, _, Vt = np.linalg.svd(A, full_matrices=False)
+    V = Vt[:k]                                   # pooled defect directions
+    print(f"    {obj}/pooled_k{k}: donors={donors}, "
+          f"{len(A)} deviations -> {V.shape[0]} directions")
+
+    tr, _ = load_cache(obj)
+    bank_idx, tailq_idx = split_train(tr["feats"].shape[0], 0.8, SEED)
+    norm = lambda x: x / (np.linalg.norm(x, axis=1, keepdims=True) + 1e-8)
+    bank = norm(tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32))
+    rng = np.random.default_rng(SEED)
+    b = bank[rng.choice(len(bank), size=min(20000, len(bank)), replace=False)]
+    q = norm(tr["feats"][tailq_idx].reshape(-1, 384).astype(np.float32))
+    d0 = 1.0 - (q[rng.choice(len(q), size=min(2000, len(q)), replace=False)]
+                @ b.T).max(axis=1)
+    target = F3_TARGET_MULT * float(np.percentile(d0, 99))
+    sel = rng.choice(len(q), size=min(F3_N_PATCHES, len(q)), replace=False)
+    z = q[sel]
+    # random mixtures of the pooled defect directions
+    w = rng.normal(size=(len(z), V.shape[0])).astype(np.float32)
+    v = norm(w @ V)
+    best, best_a, best_d = None, None, np.inf
+    for a in F3_ALPHAS:
+        zp = norm(z + a * v)
+        d = float((1.0 - (zp @ b.T).max(axis=1)).mean())
+        if abs(d - target) < abs(best_d - target):
+            best, best_a, best_d = a * v, a, d
+    print(f"      target d={target:.3f}, alpha={best_a} -> mean d={best_d:.3f}")
+    return norm(z + best).astype(np.float16)
+
+
+def truth_variants(obj, donor="can"):
+    """Oracle-variant defect sets, used to bound how transferable the signal is.
+
+    These DO use real test_public defect patches, so they are oracles, not
+    candidate methods. They answer the question that has to precede any
+    investment in CLIP/VLM text priors:
+
+      truth_cross  another object's real defects. A text description carries
+                   strictly less than this, so if cross-object defects do not
+                   transfer, no semantic prior will either.
+      truth_mean   rank-1 summary of THIS object's own defects (the mean
+                   direction, repeated). A text prior is also essentially one
+                   direction, so this says whether a single direction could
+                   suffice at all.
+
+    Both use the same supervision/eval split as config E.
+    """
+    PRIMARY_GT = 0.10
+    out = {}
+    for tag, source in (("truth_cross", donor), ("truth_mean", obj)):
+        tr, te = load_cache(source)
+        gt = te["gt_frac"].reshape(len(te["types"]), -1)
+        bad = np.where(te["types"] == "bad")[0]
+        perm = np.random.default_rng(SEED).permutation(len(bad))
+        sup = bad[perm[:len(bad) // 2]]
+        X = np.concatenate([te["feats"][i].astype(np.float32)[gt[i] > PRIMARY_GT]
+                            for i in sup])
+        if tag == "truth_mean":
+            X = np.repeat(X.mean(axis=0, keepdims=True), len(X), axis=0)
+        out[tag] = X.astype(np.float16)
+        print(f"  {obj}/{tag}: n={len(X)} from '{source}' "
+              f"({'rank-1 mean' if tag == 'truth_mean' else 'all patches'})")
+    return out
+
+
 def report_distances(obj):
     """How far are the pseudo-defects from the bank, versus the normal p99?
 
@@ -255,7 +454,9 @@ def report_distances(obj):
     p99 = float(np.percentile(d_norm, 99))
     thr = p99 + 0.05
     print(f"  --- {obj}: normal p99={p99:.3f}, hinge threshold={thr:.3f} ---")
-    for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20"):
+    for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20",
+                 "crossdir", "selfdir", "rank1", "rank5", "rank20",
+                 "proto1", "proto16", "pooled"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -297,6 +498,25 @@ def main():
                 print(f"  {obj}/lowrank{k}: cached, skip")
             else:
                 np.save(o, lowrank_proxy(obj, "feature", k))
+        donor = "can" if obj != "can" else "wallplugs"
+        for tag, src in (("crossdir", donor), ("selfdir", obj)):
+            o = os.path.join(PROXY_DIR, f"{obj}_{tag}.npy")
+            if not os.path.exists(o):
+                np.save(o, direction_proxy(obj, src, tag))
+        # ---- Phase 3C probes 1 & 2: how much of the real defect set is needed
+        for k in RANK_K:
+            o = os.path.join(PROXY_DIR, f"{obj}_rank{k}.npy")
+            if not os.path.exists(o):
+                np.save(o, rank_scan_proxy(obj, k))
+        for K in PROTO_K:
+            o = os.path.join(PROXY_DIR, f"{obj}_proto{K}.npy")
+            if not os.path.exists(o):
+                np.save(o, proto_scan_proxy(obj, K))
+        # ---- probe 3: pooled cross-object defect subspace
+        others = [o for o in OBJECTS if o != obj]
+        o = os.path.join(PROXY_DIR, f"{obj}_pooled.npy")
+        if not os.path.exists(o):
+            np.save(o, pooled_subspace_proxy(obj, others, k=20))
         report_distances(obj)
 
 

@@ -92,6 +92,31 @@ CONFIGS = {
            "defect_sup": True, "proxy": "lowrank20"},
 }
 CONFIG_ORDER = ["A", "B0", "B", "C", "D", "E", "F1", "F2", "F3", "F4", "F5"]
+# G1/G2 bound how TRANSFERABLE the defect signal is, which is the necessary
+# condition for any CLIP/VLM text prior to work. They use real test_public
+# defects, so they are oracles and must be evaluated on the held-out half.
+CONFIGS.update({
+    "G1": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "crossdir", "real": True},
+    "G2": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "selfdir", "real": True},
+})
+CONFIG_ORDER += ["G1", "G2"]
+# ---- Phase 3C: how much of the REAL defect set does E actually need? --------
+# Rank scan flattens the real defect cloud onto its own top-k axes; prototype
+# scan replaces each patch by one of K k-means centroids. Both keep the defect
+# count (so the loss weight is unchanged) and use the same split as E.
+for _k in (1, 3, 5, 10, 20, 40, 70, 120):
+    CONFIGS[f"R{_k}"] = {"adapter": True, "objective": "tail", "preserve": True,
+                         "defect_sup": True, "proxy": f"rank{_k}", "real": True}
+    CONFIG_ORDER.append(f"R{_k}")
+for _K in (1, 2, 4, 8, 16, 32, 64):
+    CONFIGS[f"P{_K}"] = {"adapter": True, "objective": "tail", "preserve": True,
+                         "defect_sup": True, "proxy": f"proto{_K}", "real": True}
+    CONFIG_ORDER.append(f"P{_K}")
+CONFIGS["X1"] = {"adapter": True, "objective": "tail", "preserve": True,
+                 "defect_sup": True, "proxy": "pooled", "real": True}
+CONFIG_ORDER.append("X1")
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):
@@ -145,8 +170,10 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
                   f"proxy_defects.py first -- skipping")
             return None
         defect_flat = torch.from_numpy(np.load(p).astype(np.float32)).to(device)
+        src = ("REAL test_public defect patches -- ORACLE, not a candidate"
+               if cfg.get("real") else "from train/good only")
         print(f"  proxy '{cfg['proxy']}': {defect_flat.shape[0]} pseudo-defect "
-              f"patches (from train/good only)", flush=True)
+              f"patches ({src})", flush=True)
     elif cfg.get("defect_sup"):
         parts = [te_feats[i][gt_flat[i] > PRIMARY_GT]
                  for i in defect_sup_idx]
@@ -196,7 +223,8 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
     # on 45 bad images and A/D on 90, and the deltas would be meaningless.
     # Only E consumes real defects, so only E must shrink its eval set; the
     # proxy configs never see test data at all.
-    uses_real_defects = cfg.get("defect_sup") and not cfg.get("proxy")
+    uses_real_defects = (cfg.get("defect_sup")
+                         and (not cfg.get("proxy") or cfg.get("real")))
     report_bad = (defect_eval_idx
                   if (uses_real_defects or args.eval_half) else bad_all)
     report_idx = np.sort(np.concatenate(
@@ -218,8 +246,11 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
     st["clean_mean"] = float(clean_d.mean())
 
     # ---- pixel level (official AD2 metrics, same code path as the baseline) ----
-    jobs = build_maps(obj, cfg_name, dists, te, grid, idx=report_idx)
-    m = pixel_metrics_binned(jobs, pro_limit=0.05)
+    if args.no_pixel:
+        m = {"px_AUROC": np.nan, "AUPRO": np.nan}
+    else:
+        jobs = build_maps(obj, cfg_name, dists, te, grid, idx=report_idx)
+        m = pixel_metrics_binned(jobs, pro_limit=0.05)
 
     row = {"object": obj, "config": cfg_name + args.tag,
            "img_AUROC": img_auroc * 100,
@@ -256,6 +287,9 @@ def main():
                     help="report every config on the held-out defect half, so "
                          "results are comparable with the E probe")
     ap.add_argument("--tag", default="", help="suffix appended to config names")
+    ap.add_argument("--no-pixel", action="store_true", dest="no_pixel",
+                    help="skip the pixel metrics; the scans only need the "
+                         "mechanism statistics and this cuts runtime ~3x")
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
 
