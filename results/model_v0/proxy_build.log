@@ -1,0 +1,42 @@
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 448
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+=== can ===
+  can/texture: cached, skip
+  can/structural: cached, skip
+  can/feature: normal subspace k=55/384, normal_p99=0.166, target=0.100, alpha=0.35 -> mean d=0.097, 4000 patches
+  --- can: normal p99=0.150, hinge threshold=0.200 ---
+      texture     mean_d=0.186 median=0.135 | below hinge: 64%
+      structural  mean_d=0.212 median=0.182 | below hinge: 55%
+      feature     mean_d=0.097 median=0.090 | below hinge: 99%
+=== wallplugs ===
+  wallplugs/texture: cached, skip
+  wallplugs/structural: 5122 pseudo-defect patches from 80 corrupted images
+  wallplugs/feature: normal subspace k=37/384, normal_p99=0.137, target=0.082, alpha=0.2 -> mean d=0.088, 4000 patches
+  --- wallplugs: normal p99=0.142, hinge threshold=0.192 ---
+      texture     mean_d=0.144 median=0.104 | below hinge: 80%
+      structural  mean_d=0.186 median=0.099 | below hinge: 79%
+      feature     mean_d=0.088 median=0.085 | below hinge: 100%
+=== vial ===
+  vial/texture: 3374 pseudo-defect patches from 80 corrupted images
+  vial/structural: 6704 pseudo-defect patches from 80 corrupted images
+  vial/feature: normal subspace k=40/384, normal_p99=0.191, target=0.114, alpha=0.5 -> mean d=0.137, 4000 patches
+  --- vial: normal p99=0.175, hinge threshold=0.225 ---
+      texture     mean_d=0.268 median=0.229 | below hinge: 50%
+      structural  mean_d=0.323 median=0.283 | below hinge: 39%
+      feature     mean_d=0.137 median=0.125 | below hinge: 97%
+=== sheet_metal ===
+  sheet_metal/texture: 10134 pseudo-defect patches from 80 corrupted images
+  sheet_metal/structural: 14104 pseudo-defect patches from 80 corrupted images
+  sheet_metal/feature: normal subspace k=29/384, normal_p99=0.104, target=0.063, alpha=0.2 -> mean d=0.065, 4000 patches
+  --- sheet_metal: normal p99=0.094, hinge threshold=0.144 ---
+      texture     mean_d=0.135 median=0.105 | below hinge: 61%
+      structural  mean_d=0.191 median=0.080 | below hinge: 65%
+      feature     mean_d=0.065 median=0.064 | below hinge: 100%

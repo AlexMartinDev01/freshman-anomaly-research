@@ -72,8 +72,19 @@ CONFIGS = {
     # estimating the preserve-direction without defect samples.
     "E": {"adapter": True, "objective": "tail", "preserve": True,
           "defect_sup": True},
+    # F* are Proxy-E: identical adapter, tail objective and separation
+    # objective to E -- only the SOURCE of the "defect" patches changes, from
+    # real test_public defects to pseudo-defects built from train/good alone.
+    # No test data is touched, so F is evaluated on the full bad set (or on the
+    # half under --eval-half, to line up with E).
+    "F1": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "texture"},
+    "F2": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "structural"},
+    "F3": {"adapter": True, "objective": "tail", "preserve": True,
+           "defect_sup": True, "proxy": "feature"},
 }
-CONFIG_ORDER = ["A", "B0", "B", "C", "D", "E"]
+CONFIG_ORDER = ["A", "B0", "B", "C", "D", "E", "F1", "F2", "F3"]
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):
@@ -120,7 +131,16 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
     defect_sup_idx, defect_eval_idx = bad_all[perm[:n_sup]], bad_all[perm[n_sup:]]
 
     defect_flat = None
-    if cfg.get("defect_sup"):
+    if cfg.get("proxy"):
+        p = os.path.join(RESULTS, "proxy", f"{obj}_{cfg['proxy']}.npy")
+        if not os.path.exists(p):
+            print(f"  !! proxy {cfg['proxy']} missing for {obj}, run "
+                  f"proxy_defects.py first -- skipping")
+            return None
+        defect_flat = torch.from_numpy(np.load(p).astype(np.float32)).to(device)
+        print(f"  proxy '{cfg['proxy']}': {defect_flat.shape[0]} pseudo-defect "
+              f"patches (from train/good only)", flush=True)
+    elif cfg.get("defect_sup"):
         parts = [te_feats[i][gt_flat[i] > PRIMARY_GT]
                  for i in defect_sup_idx]
         parts = [p for p in parts if len(p)]
@@ -167,8 +187,11 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
     # adapter never saw. --eval-half forces that same subset for EVERY config,
     # which is what makes E comparable to A/D: without it E would be measured
     # on 45 bad images and A/D on 90, and the deltas would be meaningless.
+    # Only E consumes real defects, so only E must shrink its eval set; the
+    # proxy configs never see test data at all.
+    uses_real_defects = cfg.get("defect_sup") and not cfg.get("proxy")
     report_bad = (defect_eval_idx
-                  if (cfg.get("defect_sup") or args.eval_half) else bad_all)
+                  if (uses_real_defects or args.eval_half) else bad_all)
     report_idx = np.sort(np.concatenate(
         [np.where(te["types"] == "good")[0], report_bad]))
     y = (te["types"][report_idx] == "bad").astype(int)
