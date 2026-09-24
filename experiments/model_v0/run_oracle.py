@@ -121,6 +121,13 @@ CONFIG_ORDER.append("X1")
 CONFIGS["Q1"] = {"adapter": True, "objective": "tail", "preserve": True,
                  "defect_sup": True, "proxy": "band2045"}
 CONFIG_ORDER.append("Q1")
+# Gate 4: external anomaly residuals transported into the target. Sources are
+# always the OTHER objects (leave-one-object-out); no target defect is used.
+for _tag, _p in (("X0", "X0raw"), ("X4", "X4white"),
+                 ("X5", "X5recol"), ("X6", "X6recol1")):
+    CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
+                     "defect_sup": True, "proxy": _p}
+    CONFIG_ORDER.append(_tag)
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):

@@ -444,6 +444,115 @@ def residual_band_proxy(obj, lo=20, hi=45):
     return norm(z + best).astype(np.float16)
 
 
+def _normal_cov(obj, n_max=40000, seed=SEED, one_shot=False):
+    """Target/source normal covariance (regularised), optionally 1-shot only."""
+    tr, _ = load_cache(obj)
+    if one_shot:
+        # the actual few-shot constraint: a single reference image
+        X = tr["feats"][0].astype(np.float32)
+    else:
+        bank_idx, _ = split_train(tr["feats"].shape[0], 0.8, seed)
+        X = tr["feats"][bank_idx].reshape(-1, tr["feats"].shape[-1]).astype(np.float32)
+    rng = np.random.default_rng(seed)
+    if len(X) > n_max:
+        X = X[rng.choice(len(X), size=n_max, replace=False)]
+    Xc = X - X.mean(axis=0, keepdims=True)
+    return (Xc.T @ Xc) / max(len(Xc) - 1, 1)
+
+
+def _sqrtm(C, inv=False, eps_rel=1e-2):
+    """Regularised C^(+-1/2). Small eigenvalues are clamped, not inverted raw."""
+    w, V = np.linalg.eigh(C)
+    w = np.maximum(w, eps_rel * max(w.mean(), 1e-12))
+    p = -0.5 if inv else 0.5
+    return (V * (w ** p)) @ V.T
+
+
+def _source_residuals(src, seed=SEED):
+    """Per-image (mean defect) - (mean clean) in the source's own space.
+
+    This is the "object-relative anomaly residual": subtracting the same
+    image's clean patches removes source scene, lighting and object identity,
+    leaving what an anomaly looks like relative to that object's own normal.
+    """
+    tr, te = load_cache(src)
+    gt = te["gt_frac"].reshape(len(te["types"]), -1)
+    bad = np.where(te["types"] == "bad")[0]
+    perm = np.random.default_rng(seed).permutation(len(bad))
+    sup = bad[perm[:len(bad) // 2]]
+    out = []
+    for i in sup:
+        X = te["feats"][i].astype(np.float32)
+        d, c = gt[i] > 0.10, gt[i] == 0.0
+        if d.sum() >= 1 and c.sum() >= 1:
+            out.append(X[d].mean(axis=0) - X[c].mean(axis=0))
+    return np.stack(out) if out else np.zeros((0, 384), np.float32)
+
+
+def transport_proxy(obj, sources, mode, one_shot_target=False):
+    """Gate 4: external anomaly residuals, transported into the target.
+
+    X0 raw          source residuals used as-is (the known failure baseline)
+    X4 whiten       each source whitened by ITS OWN normal covariance, so the
+                    source's object identity is divided out
+    X5 whiten+rec   then recoloured by the TARGET's normal covariance, i.e.
+                    re-expressed in the target's coordinate system
+    X6              as X5 but the target covariance comes from a single
+                    reference image -- the honest few-shot constraint
+
+    All four apply the result to the target's own normal patches with the same
+    magnitude calibration as F3, so the only thing that varies is the direction
+    source. No target defect patch is used at any point.
+    """
+    rs = []
+    for s in sources:
+        R = _source_residuals(s)
+        if len(R) == 0:
+            continue
+        if mode != "raw":
+            R = R @ _sqrtm(_normal_cov(s), inv=True)
+        rs.append(R)
+        print(f"      source '{s}': {len(R)} residuals")
+    if not rs:
+        return None
+    R = np.concatenate(rs)
+    if mode in ("whiten_rec", "whiten_rec_1shot"):
+        R = R @ _sqrtm(_normal_cov(obj, one_shot=one_shot_target))
+
+    tr, _ = load_cache(obj)
+    bank_idx, tailq_idx = split_train(tr["feats"].shape[0], 0.8, SEED)
+    norm = lambda x: x / (np.linalg.norm(x, axis=1, keepdims=True) + 1e-8)
+    bank = tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32)
+    rng = np.random.default_rng(SEED)
+    b = norm(bank[rng.choice(len(bank), size=min(20000, len(bank)),
+                             replace=False)])
+    q = norm(tr["feats"][tailq_idx].reshape(-1, 384).astype(np.float32))
+    cal = b[rng.choice(len(b), size=min(20000, len(b)), replace=False)]
+    d0 = 1.0 - (q[rng.choice(len(q), size=min(2000, len(q)), replace=False)]
+                @ cal.T).max(axis=1)
+    target = F3_TARGET_MULT * float(np.percentile(d0, 99))
+    sel = rng.choice(len(q), size=min(F3_N_PATCHES, len(q)), replace=False)
+    z = q[sel]
+    # only ~130 source residuals are available across all donors, so the
+    # transported directions are resampled with replacement.
+    # v MUST be unit-normalised: z is unit-norm, and raw source residuals have
+    # norm ~30, so without this even alpha=0.05 swamps z entirely -- the alpha
+    # search then cannot reach the calibration target and every pseudo-defect
+    # lands far above the hinge (measured: 0-2% below it, i.e. a silent
+    # degeneracy into config D).
+    v = R[rng.choice(len(R), size=len(z), replace=True)]
+    v = v / (np.linalg.norm(v, axis=1, keepdims=True) + 1e-8)
+    best, best_a, best_d = None, None, np.inf
+    for a in F3_ALPHAS:
+        zp = norm(z + a * v)
+        d = float((1.0 - (zp @ cal.T).max(axis=1)).mean())
+        if abs(d - target) < abs(best_d - target):
+            best, best_a, best_d = a * v, a, d
+    print(f"    {obj}/{mode}: target d={target:.3f}, alpha={best_a} -> "
+          f"mean d={best_d:.3f}, n={len(z)}")
+    return norm(z + best).astype(np.float16)
+
+
 def truth_variants(obj, donor="can"):
     """Oracle-variant defect sets, used to bound how transferable the signal is.
 
@@ -503,7 +612,8 @@ def report_distances(obj):
     print(f"  --- {obj}: normal p99={p99:.3f}, hinge threshold={thr:.3f} ---")
     for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20",
                  "crossdir", "selfdir", "rank1", "rank5", "rank20",
-                 "proto1", "proto16", "pooled", "band2045"):
+                 "proto1", "proto16", "pooled", "band2045",
+                 "X0raw", "X4white", "X5recol", "X6recol1"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -559,6 +669,20 @@ def main():
             o = os.path.join(PROXY_DIR, f"{obj}_proto{K}.npy")
             if not os.path.exists(o):
                 np.save(o, proto_scan_proxy(obj, K))
+        # ---- Gate 4: external anomaly residual transport (leave-one-out)
+        others4 = [o for o in OBJECTS if o != obj]
+        for tag, mode, osh in (("X0raw", "raw", False),
+                               ("X4white", "whiten", False),
+                               ("X5recol", "whiten_rec", False),
+                               ("X6recol1", "whiten_rec_1shot", True)):
+            o = os.path.join(PROXY_DIR, f"{obj}_{tag}.npy")
+            if os.path.exists(o):
+                print(f"  {obj}/{tag}: cached, skip")
+                continue
+            print(f"  {obj}/{tag} (sources={others4}):")
+            r = transport_proxy(obj, others4, mode, osh)
+            if r is not None:
+                np.save(o, r)
         # ---- Gate 3: normal residual band [20, 45)
         o = os.path.join(PROXY_DIR, f"{obj}_band2045.npy")
         if not os.path.exists(o):
