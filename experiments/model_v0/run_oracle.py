@@ -136,6 +136,20 @@ for _tag, _p in (("H0b", "H0b"), ("H1", "H1iso"), ("H2", "H2cov"),
                      "defect_sup": True, "proxy": _p, "real": True}
     CONFIG_ORDER.append(_tag)
 # Gate 5C: anchor swap + centroid interpolation + internal-structure variants.
+# Gate 5D: every variant trains under the SAME soft separation loss, so a
+# cloud that naturally lands far from the bank still receives gradient and its
+# null result means "this information does not help" rather than "the
+# constraint never engaged". E and R40 are re-run here too, not just the new
+# ones, or the comparison would not be like-for-like.
+CONFIGS["K0"] = {"adapter": True, "objective": "tail", "preserve": True,
+                 "defect_sup": True, "soft_sep": True}
+CONFIG_ORDER.append("K0")
+for _tag, _p in (("K1", "rank40"), ("K2", "K2centroid"), ("K3", "K3gauss"),
+                 ("K4", "K4boot"), ("K5", "K5gmm4")):
+    CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
+                     "defect_sup": True, "proxy": _p, "real": True,
+                     "soft_sep": True}
+    CONFIG_ORDER.append(_tag)
 for _tag, _p in (("J1", "J1"), ("Jl25", "Jl25"), ("Jl50", "Jl50"),
                  ("Jl75", "Jl75"), ("J5", "J5"), ("J2", "J2"), ("J3", "J3")):
     CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
@@ -226,7 +240,8 @@ def run_one(obj, cfg_name, cfg, args, tr, te, device):
                     query_patches=args.query_patches,
                     bank_patches=args.bank_patches, seed=args.seed,
                     lam_defect=args.lam_defect if cfg.get("defect_sup") else 0.0,
-                    defect_margin=args.defect_margin)
+                    defect_margin=args.defect_margin,
+                    soft_sep=cfg.get("soft_sep", False), sep_beta=args.sep_beta)
 
         def log(rec):
             print(f"    step {rec['step']:>4}  loss={rec['loss']:.4f} "
@@ -305,6 +320,8 @@ def main():
                     help="defect-separation weight (config E only)")
     ap.add_argument("--defect-margin", type=float, default=0.05,
                     dest="defect_margin")
+    ap.add_argument("--sep-beta", type=float, default=0.1, dest="sep_beta",
+                    help="softplus temperature for the soft separation loss")
     ap.add_argument("--hidden", type=int, default=128)
     ap.add_argument("--query-patches", type=int, default=6144,
                     dest="query_patches")

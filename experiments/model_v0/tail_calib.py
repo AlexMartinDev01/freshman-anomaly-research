@@ -16,7 +16,7 @@ import torch
 
 sys.path.insert(0, r"E:\work\freshman")
 from models import (ResidualAdapter, tail_loss, preserve_loss, mean_dist_loss,
-                    separation_loss)
+                    separation_loss, soft_separation_loss)
 from models.tail_adapter import l2norm, nn_distances
 
 RESULTS = r"E:\work\freshman\results\model_v0"
@@ -100,7 +100,11 @@ def train_adapter(tailq, bank, cfg, device="cuda", log=None, defect=None):
             d_idx = torch.randint(0, nd, (min(q_patches, nd),), generator=gen,
                                   device=device)
             d_def = nn_distances(adapter(defect[d_idx]), bank_new)
-            sep = separation_loss(d, d_def, cfg.get("defect_margin", 0.05))
+            if cfg.get("soft_sep"):
+                sep = soft_separation_loss(d, d_def, cfg.get("defect_margin", 0.05),
+                                           cfg.get("sep_beta", 0.1))
+            else:
+                sep = separation_loss(d, d_def, cfg.get("defect_margin", 0.05))
             loss = loss + lam_def * sep
         opt.zero_grad(set_to_none=True)
         loss.backward()

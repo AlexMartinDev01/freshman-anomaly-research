@@ -749,6 +749,64 @@ def gate5c_proxy(obj, mode):
     return Z.astype(np.float16)
 
 
+def gate5d_proxy(obj, mode):
+    """Gate 5D: how much of the real defect DISTRIBUTION has to survive?
+
+    All variants are absolute point clouds around the true defect anchor mu_d,
+    differing only in what the centred rank-40 coefficients are drawn from.
+    Nothing is resized or repositioned -- Gate 5C showed placement is the
+    variable under study, so the objective (soft separation loss) is what gets
+    relaxed instead, and every variant trains with a non-zero gradient.
+
+        centroid   mu_d, replicated            how far does the anchor alone get?
+        gauss      c ~ N(0, Sigma_c)           first + second order enough?
+        boot       c resampled from the real  is the empirical support enough,
+                   coefficients                or must each instance be kept?
+        gmm        c ~ GMM(K) on the real      is multimodality the missing
+                   coefficient space            structure?
+    """
+    D = _real_defect_set(obj)
+    n = len(D)
+    mu_d = D.mean(axis=0, keepdims=True)
+    U = top_subspace_local(D, 40)
+    C_real = (D - mu_d) @ U.T
+    rng = np.random.default_rng(SEED)
+    if mode == "centroid":
+        Z = np.repeat(mu_d, n, axis=0)
+    elif mode == "gauss":
+        Sc = np.cov(C_real.T) + 1e-6 * np.eye(C_real.shape[1])
+        try:
+            L = np.linalg.cholesky(Sc)
+        except np.linalg.LinAlgError:
+            w, V = np.linalg.eigh(Sc)
+            L = V * np.sqrt(np.maximum(w, 1e-8))
+        Z = mu_d + (rng.normal(size=(n, C_real.shape[1])).astype(np.float32)
+                    @ L.T) @ U
+    elif mode == "boot":
+        Z = mu_d + C_real[rng.choice(n, size=n, replace=True)] @ U
+    elif mode.startswith("gmm"):
+        k = int(mode[3:])
+        from sklearn.mixture import GaussianMixture
+        # can has only 27 defect patches in 40 coefficient dims, where a
+        # full-covariance GMM is hopelessly under-determined (it raises
+        # "ill-defined empirical covariance"). Components are therefore also
+        # gated on n, and the covariance is strongly regularised in float64.
+        n_comp = max(1, min(k, n // 25))
+        Cc = C_real.astype(np.float64)
+        reg = 1e-2 * float(np.mean(Cc ** 2))
+        gm = GaussianMixture(n_components=n_comp, covariance_type="full",
+                             reg_covar=reg, random_state=SEED,
+                             n_init=2).fit(Cc)
+        Z = mu_d + gm.sample(n)[0].astype(np.float32) @ U
+        print(f"      (GMM n_components={n_comp}, reg_covar={reg:.3g}; "
+              f"n_comp=1 degenerates to the Gaussian case)")
+    else:
+        raise ValueError(mode)
+    print(f"    {obj}/{mode}: n={n}, |Z|={np.linalg.norm(Z,axis=1).mean():.2f} "
+          f"(mu_d |.|={np.linalg.norm(mu_d):.2f})")
+    return Z.astype(np.float16)
+
+
 def truth_variants(obj, donor="can"):
     """Oracle-variant defect sets, used to bound how transferable the signal is.
 
@@ -811,7 +869,8 @@ def report_distances(obj):
                  "proto1", "proto16", "pooled", "band2045",
                  "X0raw", "X4white", "X5recol", "X6recol1",
                  "H1iso", "H2cov", "H3src",
-                 "J1", "J5", "J2", "J3", "rank40"):
+                 "J1", "J5", "J2", "J3", "rank40",
+                 "K2centroid", "K3gauss", "K4boot", "K5gmm4"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -867,6 +926,15 @@ def main():
             o = os.path.join(PROXY_DIR, f"{obj}_proto{K}.npy")
             if not os.path.exists(o):
                 np.save(o, proto_scan_proxy(obj, K))
+        # ---- Gate 5D: absolute defect cloud sufficiency (all run under the
+        # soft separation loss so no variant is silently untrained)
+        for tag, mode in (("K2centroid", "centroid"), ("K3gauss", "gauss"),
+                          ("K4boot", "boot"), ("K5gmm4", "gmm4")):
+            o = os.path.join(PROXY_DIR, f"{obj}_{tag}.npy")
+            if os.path.exists(o):
+                print(f"  {obj}/{tag}: cached, skip")
+                continue
+            np.save(o, gate5d_proxy(obj, mode))
         # ---- Gate 5C: anchor vs internal structure of the defect cloud
         for tag, mode in (("J1", "lam0.00"), ("Jl25", "lam0.25"),
                           ("Jl50", "lam0.50"), ("Jl75", "lam0.75"),

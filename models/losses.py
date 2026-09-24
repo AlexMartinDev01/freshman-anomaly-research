@@ -34,6 +34,27 @@ def mean_dist_loss(dists):
     return dists.mean()
 
 
+def soft_separation_loss(d_normal, d_defect, margin=0.05, beta=0.1):
+    """Smooth relaxation of separation_loss: beta -> 0 recovers the hinge.
+
+    The hard hinge has EXACTLY zero gradient once a pseudo-defect sits above
+    the threshold, so a candidate whose cloud naturally lands far from the bank
+    is never actually trained -- and the resulting null looks like "this
+    information does not help" when it really means "this constraint never
+    engaged". softplus keeps the gradient equal to -sigmoid((thr+margin-d)/beta),
+    which is strictly positive for every d.
+
+    The beta scaling keeps the loss in the same units as the hinge, so results
+    stay comparable with the earlier configs.
+
+    Note this deliberately does NOT resize or reposition any cloud. The whole
+    point of Gate 5D is that absolute placement is the variable under study, so
+    the fix has to be in the objective, not in the geometry.
+    """
+    thr = torch.quantile(d_normal.detach(), 0.99)
+    return F.softplus((thr + margin - d_defect) / beta).mean() * beta
+
+
 def separation_loss(d_normal, d_defect, margin=0.05):
     """Push every DEFECT patch above the normal tail by `margin`.
 
