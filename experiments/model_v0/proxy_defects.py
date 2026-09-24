@@ -397,6 +397,53 @@ def pooled_subspace_proxy(obj, donors, k=20):
     return norm(z + best).astype(np.float16)
 
 
+def residual_band_proxy(obj, lo=20, hi=45):
+    """Gate 3: perturb normal patches along normal-PCA dims [lo, hi).
+
+    This is the ONLY direction source whose overlap with the real defect
+    subspace beat the sham null on part of the objects (wallplugs 0.166 vs
+    0.114; can 0.091 vs 0.074; sheet_metal and vial lost). Gate 3 asks whether
+    that marginal geometric signal has any causal value once it is fed to the
+    same separation loss F1-F5 used.
+
+    METHODOLOGICAL CAVEAT, keep it attached to any result: the band [20, 45)
+    was selected by looking at real-defect overlap. So a success here licenses
+    "this normal-derived subspace has intervention value", NOT "normal data
+    alone can find it". Automatically choosing the band without defects is a
+    separate, unsolved problem.
+    """
+    tr, _ = load_cache(obj)
+    bank_idx, tailq_idx = split_train(tr["feats"].shape[0], 0.8, SEED)
+    rng = np.random.default_rng(SEED)
+    norm = lambda x: x / (np.linalg.norm(x, axis=1, keepdims=True) + 1e-8)
+    bank = tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32)
+    b = norm(bank[rng.choice(len(bank), size=min(20000, len(bank)),
+                             replace=False)])
+    Xn = bank - bank.mean(axis=0, keepdims=True)
+    C = (Xn.T @ Xn) / (len(Xn) - 1)
+    _, V = np.linalg.eigh(C)                      # ascending eigenvalues
+    V = V[:, ::-1]                                # high variance first
+    band = V[:, lo:hi]                            # (384, hi-lo)
+    q = norm(tr["feats"][tailq_idx].reshape(-1, 384).astype(np.float32))
+    cal = b[rng.choice(len(b), size=min(20000, len(b)), replace=False)]
+    d0 = 1.0 - (q[rng.choice(len(q), size=min(2000, len(q)), replace=False)]
+                @ cal.T).max(axis=1)
+    target = F3_TARGET_MULT * float(np.percentile(d0, 99))
+    sel = rng.choice(len(q), size=min(F3_N_PATCHES, len(q)), replace=False)
+    z = q[sel]
+    w = rng.normal(size=(len(z), band.shape[1])).astype(np.float32)
+    v = norm(w @ band.T)
+    best, best_a, best_d = None, None, np.inf
+    for a in F3_ALPHAS:
+        zp = norm(z + a * v)
+        d = float((1.0 - (zp @ cal.T).max(axis=1)).mean())
+        if abs(d - target) < abs(best_d - target):
+            best, best_a, best_d = a * v, a, d
+    print(f"    {obj}/band[{lo}:{hi}]: {band.shape[1]} dirs, target d="
+          f"{target:.3f}, alpha={best_a} -> mean d={best_d:.3f}, n={len(z)}")
+    return norm(z + best).astype(np.float16)
+
+
 def truth_variants(obj, donor="can"):
     """Oracle-variant defect sets, used to bound how transferable the signal is.
 
@@ -456,7 +503,7 @@ def report_distances(obj):
     print(f"  --- {obj}: normal p99={p99:.3f}, hinge threshold={thr:.3f} ---")
     for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20",
                  "crossdir", "selfdir", "rank1", "rank5", "rank20",
-                 "proto1", "proto16", "pooled"):
+                 "proto1", "proto16", "pooled", "band2045"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -512,6 +559,10 @@ def main():
             o = os.path.join(PROXY_DIR, f"{obj}_proto{K}.npy")
             if not os.path.exists(o):
                 np.save(o, proto_scan_proxy(obj, K))
+        # ---- Gate 3: normal residual band [20, 45)
+        o = os.path.join(PROXY_DIR, f"{obj}_band2045.npy")
+        if not os.path.exists(o):
+            np.save(o, residual_band_proxy(obj, 20, 45))
         # ---- probe 3: pooled cross-object defect subspace
         others = [o for o in OBJECTS if o != obj]
         o = os.path.join(PROXY_DIR, f"{obj}_pooled.npy")

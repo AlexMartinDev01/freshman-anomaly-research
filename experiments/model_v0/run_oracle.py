@@ -117,6 +117,10 @@ for _K in (1, 2, 4, 8, 16, 32, 64):
 CONFIGS["X1"] = {"adapter": True, "objective": "tail", "preserve": True,
                  "defect_sup": True, "proxy": "pooled", "real": True}
 CONFIG_ORDER.append("X1")
+# Gate 3: the last normal-only candidate, tested for CAUSAL value.
+CONFIGS["Q1"] = {"adapter": True, "objective": "tail", "preserve": True,
+                 "defect_sup": True, "proxy": "band2045"}
+CONFIG_ORDER.append("Q1")
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):
