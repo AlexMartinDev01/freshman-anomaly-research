@@ -1,0 +1,42 @@
+================================================================================================
+GATE 1 -- is the rank-40 defect subspace a stable target?
+================================================================================================
+
+object        n_patch    k     same-obj (mean+-sd)  random floor
+wallplugs         284   40           0.746 +- 0.010         0.104
+sheet_metal      1747   40           0.918 +- 0.008         0.104
+vial             2160   40           0.915 +- 0.007         0.104
+can                27   12           0.520 +- 0.030         0.031
+
+  random floor = k/d (what two unrelated rank-k subspaces score)
+
+pair (cross-object)            overlap  random floor
+wallplugs vs sheet_metal         0.300         0.104
+wallplugs vs vial                0.285         0.104
+wallplugs vs can                 0.117         0.031
+sheet_metal vs vial              0.297         0.104
+sheet_metal vs can               0.188         0.031
+vial vs can                      0.118         0.031
+
+  mean cross-object overlap = 0.218
+
+  VERDICT: same-object must clearly exceed BOTH the random floor and cross-object.
+           If it does not, there is no stable target to estimate.
+
+================================================================================================
+GATE 2 -- where does the defect subspace sit in the NORMAL eigenspectrum?
+================================================================================================
+
+  enrichment = (defect energy share in a normal-PCA window) / (window's share of dims)
+  1.0 = indifferent to normal geometry (a random subspace would score ~1.0)
+
+object          k    PCA[0:20]   PCA[20:50]  PCA[50:100] PCA[100:200] PCA[200:384]  |  max enr
+wallplugs      40         7.35         4.05         1.06         0.38         0.13        7.35
+sheet_metal    40        13.14         1.32         0.88         0.26         0.06       13.14
+vial           40         3.24         4.27         2.13         0.52         0.17        4.27
+can            12         7.32         2.70         1.64         0.42         0.18        7.32
+
+  Control: a RANDOM rank-k subspace scores ~1.0 in every window.
+  Enrichment concentrated in the low-variance tail (rightmost windows) would
+  mean normal geometry does constrain the defect direction.
+  Flat ~1.0 everywhere means normal covariance carries NO signal about it.
