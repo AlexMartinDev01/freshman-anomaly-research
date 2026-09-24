@@ -553,6 +553,202 @@ def transport_proxy(obj, sources, mode, one_shot_target=False):
     return norm(z + best).astype(np.float16)
 
 
+def gate5a_proxy(obj, mode, k=40):
+    """Gate 5A: is the defect rank-40 SUBSPACE sufficient, or do the
+    coefficients inside it matter too?
+
+    R40 (the positive control) keeps both the true subspace U40 and the true
+    coefficients c_i = U40^T (z_i - mu). So its success does NOT license
+    "predicting U_target is enough" -- that was an untested inference. This
+    builder holds U40 fixed at the target's true defect basis and varies ONLY
+    the coefficient matrix:
+
+        H1  isotropic          c ~ N(0, I), total variance matched
+        H2  covariance-matched c ~ N(0, Sigma_c) with Sigma_c the real
+                               coefficient covariance -- same subspace, same
+                               second-order shape, no real per-sample values
+        H3  source coefficients c = R_source @ U40^T, i.e. external anomaly
+                               residuals projected into the TARGET's true
+                               basis. X0 failed without the correct basis;
+                               this asks whether the basis was the whole story.
+
+    All four use the same construction as R40 (absolute points mu + c @ U40),
+    so the only thing that differs is where the coefficients come from.
+    """
+    D = _real_defect_set(obj)
+    mu = D.mean(axis=0, keepdims=True)
+    U = top_subspace_local(D, k)              # (k, 384)
+    C_real = (D - mu) @ U.T                   # (n, k)
+    n = len(D)
+    rng = np.random.default_rng(SEED)
+    if mode == "H1":
+        scale = float(np.sqrt((C_real ** 2).sum(axis=1).mean()))
+        C = rng.normal(size=(n, k)) * (scale / np.sqrt(k))
+    elif mode == "H2":
+        Sc = np.cov(C_real.T) + 1e-6 * np.eye(k)
+        try:
+            L = np.linalg.cholesky(Sc)
+        except np.linalg.LinAlgError:
+            w, V = np.linalg.eigh(Sc)
+            L = V * np.sqrt(np.maximum(w, 1e-8))
+        C = rng.normal(size=(n, k)) @ L.T
+    elif mode == "H0b":
+        C = C_real
+    elif mode == "H3":
+        others = [o for o in OBJECTS if o != obj]
+        R = np.concatenate([_source_residuals(s) for s in others])
+        C = R @ U.T
+        C = C[rng.choice(len(C), size=n, replace=True)]
+    else:
+        raise ValueError(mode)
+    # Construction: z_normal + alpha * (U40 @ c), with alpha calibrated to the
+    # same 0.6 x normal-p99 the other probes use.
+    #
+    # (z = mu + c @ U, the R40 construction, cannot be calibrated on can: its
+    #  mean defect patch mu_D already sits 0.240 from the bank while R40's
+    #  cloud averages 0.127, so shrinking about mu_D converges to 0.240 -- above
+    #  the hinge threshold -- and no scale factor reaches the target. Perturbing
+    #  normal patches is calibratable for every object because alpha -> 0 gives
+    #  the normal distance, and it also makes these rows directly comparable to
+    #  F3 / Q1 / X0, which share the construction.)
+    tr0, _ = load_cache(obj)
+    bi0, tq0 = split_train(tr0["feats"].shape[0], 0.8, SEED)
+    _nb = norm_rows(tr0["feats"][bi0].reshape(-1, 384).astype(np.float32))
+    _r = np.random.default_rng(SEED)
+    _nb = _nb[_r.choice(len(_nb), size=min(20000, len(_nb)), replace=False)]
+    _q = norm_rows(tr0["feats"][tq0].reshape(-1, 384).astype(np.float32))
+    _q = _q[_r.choice(len(_q), size=min(2000, len(_q)), replace=False)]
+    _tgt = F3_TARGET_MULT * float(
+        np.percentile(1.0 - (_q @ _nb.T).max(axis=1), 99))
+    sel = _r.choice(len(_q), size=min(F3_N_PATCHES, len(_q)), replace=False)
+    z0 = _q[sel]
+    dirs = C[_r.choice(len(C), size=len(z0), replace=True)] @ U
+    dirs = norm_rows(dirs)
+    best, best_a, best_d = None, None, np.inf
+    for a in F3_ALPHAS:
+        d = float((1.0 - (norm_rows(z0 + a * dirs) @ _nb.T).max(axis=1)).mean())
+        if abs(d - _tgt) < abs(best_d - _tgt):
+            best, best_a, best_d = a * dirs, a, d
+    dev = float(np.linalg.norm(C, axis=1).mean())
+    dev_real = float(np.linalg.norm(C_real, axis=1).mean())
+    print(f"    {obj}/{mode}: k={U.shape[0]}, n={len(z0)}, "
+          f"mean|coef|={dev:.2f} (real={dev_real:.2f}), "
+          f"alpha={best_a} -> mean_d {best_d:.3f} (target {_tgt:.3f})")
+    return norm_rows(z0 + best).astype(np.float16)
+
+
+def _unused_absolute_construction(obj, mode, mu, C, C_real, U):
+    Z = mu + C @ U
+    Z_real = mu + C_real @ U
+    # Amplitude calibration. Matching coefficient norms is NOT enough to make
+    # the hinge engage: real defect coefficients land at mean 1-NN distance
+    # ~0.134 from the bank while covariance-matched Gaussian coefficients with
+    # the SAME norm land at ~0.249 -- so a rebuild would sit above the hinge,
+    # carry zero separation gradient and silently degenerate into config D.
+    # Rescaling the deviations so both sets sit at the same mean distance keeps
+    # the comparison about coefficient SHAPE and nothing else.
+    tr, _ = load_cache(obj)
+    bank_idx, _ = split_train(tr["feats"].shape[0], 0.8, SEED)
+    b = norm_rows(tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32))
+    rng2 = np.random.default_rng(SEED)
+    b = b[rng2.choice(len(b), size=min(20000, len(b)), replace=False)]
+
+    def mean_nn_dist(X):
+        return float((1.0 - (norm_rows(X) @ b.T).max(axis=1)).mean())
+
+    # Iterative, not a single linear rescale: 1-NN cosine distance is a highly
+    # nonlinear function of the deviation magnitude, so one shot at
+    # target/current badly overshoots (measured on can: a 3.6x shrink moved the
+    # distance only 0.462 -> 0.282, leaving the hinge dead).
+    d_real = mean_nn_dist(Z_real)
+    d_syn = mean_nn_dist(Z)
+    for _ in range(12):
+        if d_syn < 1e-9 or abs(d_syn - d_real) < 1e-3 * max(d_real, 1e-6):
+            break
+        Z = mu + (Z - mu) * (d_real / d_syn)
+        d_syn = mean_nn_dist(Z)
+    dev = float(np.linalg.norm(C, axis=1).mean())
+    dev_real = float(np.linalg.norm(C_real, axis=1).mean())
+    print(f"    {obj}/{mode}: k={U.shape[0]}, n={n}, mean|coef|={dev:.2f} "
+          f"(real={dev_real:.2f}), mean_d calibrated {d_syn:.3f} "
+          f"vs real {d_real:.3f}")
+    return Z.astype(np.float16)
+
+
+def norm_rows(x):
+    return x / (np.linalg.norm(x, axis=1, keepdims=True) + 1e-8)
+
+
+def top_subspace_local(X, k):
+    Xc = X - X.mean(axis=0, keepdims=True)
+    C = (Xc.T @ Xc) / max(len(Xc) - 1, 1)
+    w, V = np.linalg.eigh(C)
+    return V[:, ::-1][:, :k].T.copy()
+
+
+def gate5c_proxy(obj, mode):
+    """Gate 5C: factorise the defect cloud into anchor + internal structure.
+
+        z_defect = mu_d + r        r = centred rank-40 residual (real coeffs)
+
+    Gate 5A was confounded: R40 (mu_d + r) succeeded while H0b -- same basis,
+    same real coefficients, but anchored on NORMAL patches -- failed, so the
+    only thing that differed was the placement of the cloud. This builder moves
+    one factor at a time.
+
+      J1 / lam0.00   mu_normal + r          anchor swapped, internal shape kept
+      lam0.25/0.50/0.75   mu(lam) + r       Euclidean centroid interpolation
+      J5             mu_defect only         centre with matched tiny jitter
+      J2             mu_defect + U40 x isotropic coeffs
+      J3             mu_defect + U40 x covariance-matched coeffs
+      (R40 = mu_defect + r is the existing lambda=1 positive control)
+
+    Every variant keeps the pseudo-point COUNT equal to the real defect set, and
+    everything is L2-normalised downstream by the detector exactly as normal
+    features are, so no variant gets a norm advantage. The interpolation is
+    Euclidean, and l2norms of the interpolated clouds are reported so a pure
+    norm artefact can be ruled out.
+    """
+    D = _real_defect_set(obj)
+    n = len(D)
+    mu_d = D.mean(axis=0, keepdims=True)
+    U = top_subspace_local(D, 40)
+    C_real = (D - mu_d) @ U.T
+    r = C_real @ U                                  # (n, 384) centred residual
+    tr, _ = load_cache(obj)
+    bank_idx, _ = split_train(tr["feats"].shape[0], 0.8, SEED)
+    mu_n = tr["feats"][bank_idx].reshape(-1, 384).astype(np.float32).mean(
+        axis=0, keepdims=True)
+    rng = np.random.default_rng(SEED)
+
+    if mode == "J5":
+        # centre alone; jitter is 1% of the real residual scale, only so the
+        # set is not a single duplicated point
+        Z = mu_d + 0.01 * float(np.linalg.norm(r, axis=1).mean()) * \
+            rng.normal(size=(n, 384)).astype(np.float32)
+    elif mode == "J2":
+        scale = float(np.sqrt((C_real ** 2).sum(axis=1).mean()))
+        C = rng.normal(size=(n, 40)).astype(np.float32) * (scale / np.sqrt(40))
+        Z = mu_d + C @ U
+    elif mode == "J3":
+        Sc = np.cov(C_real.T) + 1e-6 * np.eye(40)
+        try:
+            L = np.linalg.cholesky(Sc)
+        except np.linalg.LinAlgError:
+            w, V = np.linalg.eigh(Sc)
+            L = V * np.sqrt(np.maximum(w, 1e-8))
+        Z = mu_d + (rng.normal(size=(n, 40)).astype(np.float32) @ L.T) @ U
+    elif mode.startswith("lam"):
+        lam = float(mode[3:])
+        mu = (1.0 - lam) * mu_n + lam * mu_d
+        Z = mu + r
+    else:
+        raise ValueError(mode)
+    print(f"    {obj}/{mode}: n={n}, |Z| mean={np.linalg.norm(Z,axis=1).mean():.2f} "
+          f"(mu_d |.|={np.linalg.norm(mu_d):.2f}, mu_n |.|={np.linalg.norm(mu_n):.2f})")
+    return Z.astype(np.float16)
+
+
 def truth_variants(obj, donor="can"):
     """Oracle-variant defect sets, used to bound how transferable the signal is.
 
@@ -613,7 +809,9 @@ def report_distances(obj):
     for kind in ("texture", "structural", "feature", "lowrank5", "lowrank20",
                  "crossdir", "selfdir", "rank1", "rank5", "rank20",
                  "proto1", "proto16", "pooled", "band2045",
-                 "X0raw", "X4white", "X5recol", "X6recol1"):
+                 "X0raw", "X4white", "X5recol", "X6recol1",
+                 "H1iso", "H2cov", "H3src",
+                 "J1", "J5", "J2", "J3", "rank40"):
         p = os.path.join(PROXY_DIR, f"{obj}_{kind}.npy")
         if not os.path.exists(p):
             continue
@@ -669,6 +867,24 @@ def main():
             o = os.path.join(PROXY_DIR, f"{obj}_proto{K}.npy")
             if not os.path.exists(o):
                 np.save(o, proto_scan_proxy(obj, K))
+        # ---- Gate 5C: anchor vs internal structure of the defect cloud
+        for tag, mode in (("J1", "lam0.00"), ("Jl25", "lam0.25"),
+                          ("Jl50", "lam0.50"), ("Jl75", "lam0.75"),
+                          ("J5", "J5"), ("J2", "J2"), ("J3", "J3")):
+            o = os.path.join(PROXY_DIR, f"{obj}_{tag}.npy")
+            if os.path.exists(o):
+                print(f"  {obj}/{tag}: cached, skip")
+                continue
+            np.save(o, gate5c_proxy(obj, mode))
+        # ---- Gate 5A: is the rank-40 SUBSPACE sufficient, or do the
+        # coefficients inside it matter? R40 keeps both, so it never tested this.
+        for tag, mode in (("H0b", "H0b"), ("H1iso", "H1"),
+                              ("H2cov", "H2"), ("H3src", "H3")):
+            o = os.path.join(PROXY_DIR, f"{obj}_{tag}.npy")
+            if os.path.exists(o):
+                print(f"  {obj}/{tag}: cached, skip")
+                continue
+            np.save(o, gate5a_proxy(obj, mode))
         # ---- Gate 4: external anomaly residual transport (leave-one-out)
         others4 = [o for o in OBJECTS if o != obj]
         for tag, mode, osh in (("X0raw", "raw", False),

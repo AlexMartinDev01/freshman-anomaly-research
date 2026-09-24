@@ -128,6 +128,24 @@ for _tag, _p in (("X0", "X0raw"), ("X4", "X4white"),
     CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
                      "defect_sup": True, "proxy": _p}
     CONFIG_ORDER.append(_tag)
+# Gate 5A: hold the target's true rank-40 defect basis fixed, vary only the
+# coefficients. H0 is the existing R40 positive control (real coefficients).
+for _tag, _p in (("H0b", "H0b"), ("H1", "H1iso"), ("H2", "H2cov"),
+                 ("H3", "H3src")):
+    CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
+                     "defect_sup": True, "proxy": _p, "real": True}
+    CONFIG_ORDER.append(_tag)
+# Gate 5C: anchor swap + centroid interpolation + internal-structure variants.
+for _tag, _p in (("J1", "J1"), ("Jl25", "Jl25"), ("Jl50", "Jl50"),
+                 ("Jl75", "Jl75"), ("J5", "J5"), ("J2", "J2"), ("J3", "J3")):
+    CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
+                     "defect_sup": True, "proxy": _p, "real": True}
+    CONFIG_ORDER.append(_tag)
+for _tag, _p in (("H1", "H1iso"), ("H2", "H2cov"),
+                 ("H3", "H3src")):
+    CONFIGS[_tag] = {"adapter": True, "objective": "tail", "preserve": True,
+                     "defect_sup": True, "proxy": _p, "real": True}
+    CONFIG_ORDER.append(_tag)
 
 
 def build_maps(obj, cfg_name, dists_flat, te, grid, idx=None):
