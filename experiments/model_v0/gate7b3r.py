@@ -57,8 +57,19 @@ def make_dist(bank, device="cuda", q_chunk=1024, b_chunk=8192):
 
     nn_dist() above is fine for small banks but sheet_metal's normal bank is
     450k patches: (1024 x 384) @ (384 x 450560) materialises a 1.85 GB
-    intermediate per chunk, per test image, and the run takes tens of minutes.
-    Chunking the bank instead keeps the peak at a few tens of MB.
+    intermediate per chunk, per test image.
+
+    The chunk shapes are measured, not guessed -- on an RTX 5060, against a
+    450k-patch bank with 4096 queries, per image:
+        1024 x 8192 -> 0.24 s    256 x 2048 -> 0.24 s
+         128 x 1024 -> 0.88 s     64 x  512 -> 7.17 s
+    Smaller tiles are much WORSE, so do not "optimise" these downward. fp16 is
+    not faster here either (0.24 s at the same tile), so fp32 stays for accuracy.
+
+    Note VRAM: this holds the whole bank plus the normalised copy. One process
+    for sheet_metal peaks near 2.5 GB; two concurrent processes exceeded 8 GB and
+    the Windows driver paged VRAM to system RAM, turning a 30 s step into 20+
+    minutes with no error. Run these sweeps SERIALLY.
     """
     bn = l2norm(bank.to(device).float())
 

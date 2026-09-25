@@ -65,7 +65,8 @@ def build(obj):
 def main():
     os.makedirs(EXTERNAL, exist_ok=True)
     objs = sys.argv[1:] or sorted(
-        f[:-10] for f in os.listdir(CACHE) if f.endswith("_test.npz"))
+        f[:-len("_test.npz")] for f in os.listdir(CACHE)
+        if f.endswith("_test.npz"))
     print(f"building external pool for {len(objs)} classes -> {EXTERNAL}")
     for o in objs:
         build(o)

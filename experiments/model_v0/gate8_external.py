@@ -29,10 +29,10 @@ specific claim that RETRIEVAL does work.
 Because the pool is the other AD2 classes, a positive result licenses
 cross-CLASS transfer within one dataset, not transfer from a separate corpus.
 
-Evaluation uses ALL target test_public images (no support/eval split is possible
-or needed: no target defect is used). The frozen AnomalyDINO baseline is
-recomputed under this identical protocol below, so deltas are apples-to-apples
-rather than compared against numbers from a different split.
+Every config is scored on ONE evaluation set -- all good test images plus the
+held-out half of the defect images -- so the baseline, the R* banks and the
+ORACLE reference (the target's own defects, support half only) are directly
+comparable rather than each carrying its own protocol.
 
 Usage: python experiments/model_v0/gate8_external.py [--splits N]
 """
@@ -94,35 +94,51 @@ def class_match_ranking(target, target_normals, device="cuda"):
     return pd.DataFrame(out).sort_values("match_dist").reset_index(drop=True)
 
 
-def evaluate(obj, pools, ranking, device="cuda"):
+def evaluate(obj, pools, ranking, split, device="cuda"):
+    """Every config is scored on ONE evaluation set.
+
+    The eval set is all good test images plus the HELD-OUT half of the defect
+    images; the oracle reference draws its bank from the other half and the R*
+    configs draw from other classes only. Restricting the eval set this way costs
+    little statistical power (the R* banks never touch target defects anyway) and
+    buys a directly comparable oracle ceiling, instead of an oracle number
+    carrying a different protocol.
+    """
     tr, te = load_cache(obj)
     n_train = tr["feats"].shape[0]
-    bank_idx, _ = split_train(n_train, 1.0, 0)   # ALL train normals: nothing is
-    fbank = torch.from_numpy(tr["feats"][bank_idx].reshape(-1, 384)      # held out
+    bank_idx, _ = split_train(n_train, 1.0, 0)   # ALL train normals: nothing held out
+    fbank = torch.from_numpy(tr["feats"][bank_idx].reshape(-1, 384)
                              .astype(np.float32)).to(device)
     types = list(te["types"])
     n_img = len(types)
     gt = te["gt_frac"].reshape(n_img, -1)
+    bad = np.where(~(np.array(types) == "good"))[0]
+    perm = np.random.default_rng(1000 + split).permutation(len(bad))
+    sup_idx, ev_idx = bad[perm[:len(bad) // 2]], bad[perm[len(bad) // 2:]]
+    good = [i for i in range(n_img) if types[i] == "good"]
+    ev = good + list(ev_idx)
+    y = np.array([1 if types[i] == "bad" else 0 for i in ev])
+
     feats = [torch.from_numpy(te["feats"][i].astype(np.float32)).to(device)
              for i in range(n_img)]
-    y = np.array([1 if t == "bad" else 0 for t in types])
     dist_n = make_dist(fbank, device)
     with torch.no_grad():
         Sn = [dist_n(z) for z in feats]
 
     def run(bank, label, size):
         if bank is None:
-            sc = np.array([mean_top1p(Sn[i]) for i in range(n_img)])
-            sd = np.full(n_img, np.nan)
+            sc = np.array([mean_top1p(Sn[i]) for i in ev])
+            sd = np.full(len(ev), np.nan)
         else:
             dist_d = make_dist(torch.from_numpy(bank.astype(np.float32)), device)
-            Sd = [dist_d(z) for z in feats]
+            with torch.no_grad():
+                Sd = {i: dist_d(feats[i]) for i in ev}
             # branch diagnostic: could S_d alone rank the target's anomalies?
             sd = np.array([-np.sort(Sd[i])[:max(1, int(len(Sd[i]) * .01))].mean()
-                           for i in range(n_img)])
-            sc = np.array([mean_top1p(Sn[i] - Sd[i]) for i in range(n_img)])
+                           for i in ev])
+            sc = np.array([mean_top1p(Sn[i] - Sd[i]) for i in ev])
         return {
-            "object": obj, "config": label, "size": size,
+            "object": obj, "split": split, "config": label, "size": size,
             "n_eval_good": int((y == 0).sum()), "n_eval_bad": int((y == 1).sum()),
             "img_AUROC": roc_auc_score(y, sc) * 100,
             "Sd_alone_AUROC": (roc_auc_score(y, sd) * 100
@@ -133,8 +149,12 @@ def evaluate(obj, pools, ranking, device="cuda"):
         }
 
     rows = [run(None, "baseline_Sn", 0)]
+    # oracle reference: the target's OWN defects, from the support half only
+    od = np.concatenate([te["feats"][i].astype(np.float32)[gt[i] > 0.10]
+                         for i in sup_idx if (gt[i] > 0.10).sum()])
+    rows.append(run(od, "ORACLE_target_defects", len(od)))
     allp = np.concatenate([pools[k] for k in sorted(pools)])
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(100 + split)   # independent bank draw per split
 
     # ---- R0 random external ----
     for n in SIZES:
@@ -178,8 +198,8 @@ def main():
         print(f"\n=== {o} === external classes by normal-manifold match "
               f"(lower = closer)")
         print(r.to_string(index=False), flush=True)
-        for _ in range(args.splits):
-            rr, _, ii = evaluate(o, pools, r)
+        for sp in range(args.splits):
+            rr, _, ii = evaluate(o, pools, r, sp)
             rows.extend(rr)
             info.append({"object": o, **ii})
         pd.DataFrame(rows).to_csv(
@@ -193,18 +213,25 @@ def main():
     print("\n" + "=" * 100)
     print("PHASE 8 -- external defect banks, frozen detector, raw fusion S_n - S_d")
     print("=" * 100)
-    piv = df.pivot_table(index="config", columns="object", values="img_AUROC")
-    print(piv.round(1).to_string())
-    print("\n  baseline_Sn = frozen AnomalyDINO under this same protocol")
-    print("\n  size actually used:")
-    print(df.pivot_table(index="config", columns="object", values="size")
-          .astype(int).to_string())
-    print("\n  S_d alone (ranked as a detector, external bank vs target anomalies):")
-    print(df.pivot_table(index="config", columns="object", values="Sd_alone_AUROC")
+    ref = df[df.config.isin(["baseline_Sn", "ORACLE_target_defects"])]
+    print("  references (single row per object):")
+    print(ref.pivot_table(index="config", columns="object", values="img_AUROC")
           .round(1).to_string())
-    print("\n  S_d spread across images (0 => bank inert => fusion == baseline):")
-    print(df.pivot_table(index="config", columns="object", values="Sd_spread")
-          .round(4).to_string())
+    base = ref[ref.config == "baseline_Sn"].groupby("object").img_AUROC.mean()
+
+    # The R0/R1 configs emit ONE ROW PER SIZE under a single config label, so
+    # aggregating on config alone silently averages over sizes -- the first
+    # version of this table did exactly that and was misleading. Split on size.
+    r = df[~df.config.isin(["baseline_Sn", "ORACLE_target_defects"])].copy()
+    r["delta"] = r.apply(lambda x: x.img_AUROC - base[x.object], axis=1)
+    print("\n  delta vs baseline (img_AUROC), by config AND size:")
+    print(r.pivot_table(index=["config", "size"], columns="object",
+                        values="delta").round(1).to_string())
+    print("\n  S_d alone, ranked as a detector of the TARGET's anomalies")
+    print("  (<50 means target anomalies are FARTHER from the external bank than")
+    print("   target normals are, which is why subtracting it can only damage):")
+    print(r.pivot_table(index=["config", "size"], columns="object",
+                        values="Sd_alone_AUROC").round(1).to_string())
 
 
 if __name__ == "__main__":
