@@ -56,17 +56,21 @@ def kcenter(X, k, seed=0):
     """Greedy farthest-point sampling; deterministic apart from the first pick."""
     rng = np.random.default_rng(seed)
     idx = [int(rng.integers(len(X)))]
-    d = 1.0 - l2norm(X) @ l2norm(X[idx[0]]).T
-    d = d.ravel()
+    d = (1.0 - l2norm(X) @ l2norm(X[idx[0]]).unsqueeze(0).T).ravel()
     for _ in range(min(k, len(X)) - 1):
         i = int(torch.argmax(d))
         idx.append(i)
-        nd = 1.0 - l2norm(X) @ l2norm(X[i]).T
+        nd = 1.0 - l2norm(X) @ l2norm(X[i]).unsqueeze(0).T
         d = torch.minimum(d, nd.ravel())
     return np.array(idx[:k])
 
 
-def run(obj, split, device="cuda"):
+def prepare(obj, device="cuda"):
+    """Load once per object; the split loop then reuses it.
+
+    Previously each split called load_cache, re-reading a 250-400 MB npz three
+    times per object for nothing.
+    """
     tr, te = load_cache(obj)
     bank_idx, _ = split_train(tr["feats"].shape[0], 0.8, 0)
     fbank = torch.from_numpy(tr["feats"][bank_idx].reshape(-1, 384)
@@ -74,68 +78,84 @@ def run(obj, split, device="cuda"):
     types = list(te["types"])
     gt = te["gt_frac"].reshape(len(types), -1)
     bad = np.where(~(np.array(types) == "good"))[0]
+    good = [i for i in range(len(types)) if types[i] == "good"]
+    feats = [torch.from_numpy(te["feats"][i].astype(np.float32)).to(device)
+             for i in range(len(types))]
+    with torch.no_grad():
+        Sn = [nn_dist(z, fbank).cpu().numpy() for z in feats]
+    return te, gt, feats, Sn, bad, good
+
+
+def run(obj, split, ctx, device="cuda"):
+    te, gt, feats, Sn, bad, good = ctx
     perm = np.random.default_rng(1000 + split).permutation(len(bad))
     sup_idx = bad[perm[:len(bad) // 2]]
     ev_idx = bad[perm[len(bad) // 2:]]
-    good = [i for i in range(len(types)) if types[i] == "good"]
     ev = good + list(ev_idx)
-    y = np.array([0 if types[i] == "good" else 1 for i in ev])
-    feats = [torch.from_numpy(te["feats"][i].astype(np.float32)).to(device)
-             for i in range(len(types))]
+    y = np.array([0 if te["types"][i] == "good" else 1 for i in ev])
 
     def patches_of(imgs):
-        return torch.from_numpy(np.concatenate(
-            [te["feats"][i].astype(np.float32)[gt[i] > 0.10] for i in imgs]))
+        parts = [te["feats"][i].astype(np.float32)[gt[i] > 0.10] for i in imgs]
+        parts = [p for p in parts if len(p)]
+        return (torch.from_numpy(np.concatenate(parts)) if parts
+                else torch.zeros((0, 384), dtype=torch.float32))
 
-    with torch.no_grad():
-        Sn = [nn_dist(z, fbank).cpu().numpy() for z in feats]
-    rows = []
-    rng = np.random.default_rng(7 + split)
-
-    # ---- curve 1: by defect IMAGE count ----
-    for n_img in IMG_COUNTS:
-        imgs = sup_idx if n_img == -1 else rng.choice(
-            sup_idx, size=min(n_img, len(sup_idx)), replace=False)
-        dsupp = patches_of(imgs).to(device)
+    def fused(dsupp):
+        # patches_of returns CPU tensors while the budget branch indexes a
+        # CUDA tensor; normalise the device here so both paths agree
+        dsupp = dsupp.to(device)
         with torch.no_grad():
             Sd = [nn_dist(feats[i], dsupp).cpu().numpy() for i in ev]
         sc = np.array([mean_top1p(Sn[i] - Sd[k]) for k, i in enumerate(ev)])
+        return roc_auc_score(y, sc) * 100
+
+    rows = []
+    rng = np.random.default_rng(7 + split)
+    # only images that actually carry a defect patch may serve as support:
+    # can's defects are so small that a random image can contribute none
+    usable = [i for i in sup_idx if (gt[i] > 0.10).sum() > 0]
+
+    for n_img in IMG_COUNTS:
+        imgs = usable if n_img == -1 else rng.choice(
+            usable, size=min(n_img, len(usable)), replace=False)
+        dsupp = patches_of(imgs)
+        if len(dsupp) == 0:
+            continue
         rows.append({"object": obj, "split": split, "axis": "image_count",
-                     "n": len(imgs), "n_patches": len(dsupp),
-                     "method": "all", "img_AUROC": roc_auc_score(y, sc) * 100})
+                     "n": len(imgs), "n_patches": len(dsupp), "method": "all",
+                     "img_AUROC": fused(dsupp)})
 
-    # ---- curve 2: matched budget, random vs k-center ----
-    full = patches_of(sup_idx).to(device)
-    for bud in BUDGETS:
-        if bud > len(full):
-            continue
-        for method in ("random", "kcenter"):
-            sel = (rng.choice(len(full), size=bud, replace=False)
-                   if method == "random" else kcenter(full, bud, seed=7 + split))
-            dsupp = full[torch.from_numpy(sel).to(device)]
-            with torch.no_grad():
-                Sd = [nn_dist(feats[i], dsupp).cpu().numpy() for i in ev]
-            sc = np.array([mean_top1p(Sn[i] - Sd[k]) for k, i in enumerate(ev)])
-            rows.append({"object": obj, "split": split, "axis": "budget",
-                         "n": bud, "n_patches": bud, "method": method,
-                         "img_AUROC": roc_auc_score(y, sc) * 100})
+    # single device transfer: patches_of builds on CPU, everything
+    # downstream (fused, kcenter, coverage) assumes the device
+    full = patches_of(usable).to(device)
+    if len(full):
+        for bud in BUDGETS:
+            if bud > len(full):
+                continue
+            for method in ("random", "kcenter"):
+                sel = (rng.choice(len(full), size=bud, replace=False)
+                       if method == "random"
+                       else kcenter(full, bud, seed=7 + split))
+                rows.append({"object": obj, "split": split, "axis": "budget",
+                             "n": bud, "n_patches": bud, "method": method,
+                             "img_AUROC": fused(full[torch.from_numpy(sel)])})
 
-    # ---- coverage analysis ----
-    dsupp = full
     cov = []
-    for k, i in enumerate(ev):
-        if types[i] == "good":
-            continue
-        with torch.no_grad():
-            d = nn_dist(feats[i], dsupp).cpu().numpy()
-        m = gt[i] > 0.10
-        if m.sum() == 0:
-            continue
-        cov.append({"object": obj, "split": split, "image": str(te["names"][i]),
-                    "cov_mean": float(d[m].mean()),
-                    "cov_min": float(d[m].min()),
-                    "score": float(mean_top1p(Sn[i] - d)),
-                    "n_def_patches": int(m.sum())})
+    if len(full):
+        for i in ev:
+            if te["types"][i] == "good":
+                continue
+            m = gt[i] > 0.10
+            if m.sum() == 0:
+                continue
+            with torch.no_grad():
+                d = nn_dist(feats[i], full).cpu().numpy()
+            cov.append({"object": obj, "split": split,
+                        "image": str(te["names"][i]),
+                        "cov_mean": float(d[m].mean()),
+                        "cov_min": float(d[m].min()),
+                        "score": float(mean_top1p(Sn[i] - d)),
+                        "n_def_patches": int(m.sum())})
     return rows, cov
 
 
@@ -145,16 +165,20 @@ def main():
     args = ap.parse_args()
     os.makedirs(METRICS, exist_ok=True)
     rows, covs = [], []
+    cpath = os.path.join(METRICS, "gate7b3r_curve.csv")
     for o in OBJECTS:
-        for s in range(args.splits):
-            r, c = run(o, s)
+        ctx = prepare(o)
+        for sp in range(args.splits):
+            r, c = run(o, sp, ctx)
             rows.extend(r)
             covs.extend(c)
-            print(f"  {o} split {s} done", flush=True)
+            # persist after EVERY split: a crash on the last object used to
+            # discard the whole run
+            pd.DataFrame(rows).to_csv(cpath, index=False)
+            pd.DataFrame(covs).to_csv(
+                os.path.join(METRICS, "gate7b3r_coverage.csv"), index=False)
+            print(f"  {o} split {sp} done", flush=True)
     df = pd.DataFrame(rows)
-    df.to_csv(os.path.join(METRICS, "gate7b3r_curve.csv"), index=False)
-    pd.DataFrame(covs).to_csv(os.path.join(METRICS, "gate7b3r_coverage.csv"),
-                              index=False)
 
     print("\n" + "=" * 100)
     print("7B-3R (1) CURVE BY DEFECT IMAGE COUNT -- raw fusion, no MAD")
