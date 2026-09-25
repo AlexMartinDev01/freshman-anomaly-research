@@ -52,6 +52,29 @@ def nn_dist(query, bank, chunk=1024):
     return torch.cat(out)
 
 
+def make_dist(bank, device="cuda", q_chunk=1024, b_chunk=8192):
+    """1-NN cosine distance to a bank, normalised once and chunked on BOTH sides.
+
+    nn_dist() above is fine for small banks but sheet_metal's normal bank is
+    450k patches: (1024 x 384) @ (384 x 450560) materialises a 1.85 GB
+    intermediate per chunk, per test image, and the run takes tens of minutes.
+    Chunking the bank instead keeps the peak at a few tens of MB.
+    """
+    bn = l2norm(bank.to(device).float())
+
+    def dist(z):
+        q = l2norm(z.float())
+        out = []
+        for i in range(0, len(q), q_chunk):
+            qc = q[i:i + q_chunk]
+            best = torch.full((len(qc),), -1.0, device=qc.device)
+            for j in range(0, len(bn), b_chunk):
+                best = torch.maximum(best, (qc @ bn[j:j + b_chunk].T).max(dim=1).values)
+            out.append(1.0 - best)
+        return torch.cat(out).cpu().numpy()
+    return dist
+
+
 def kcenter(X, k, seed=0):
     """Greedy farthest-point sampling; deterministic apart from the first pick."""
     rng = np.random.default_rng(seed)

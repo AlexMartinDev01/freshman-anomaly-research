@@ -25,9 +25,22 @@ PATCH = 14
 
 
 # --------------------------------------------------------------------------- data
+def materialize(npz):
+    """Decompress every array in an NpzFile into an ordinary dict, once.
+
+    np.load() on an .npz is LAZY: each `npz[key]` access re-reads and
+    re-decompresses that whole array. Callers index `te["feats"][i]` once per
+    image, so sheet_metal (114 images x 4096 x 384 fp16) was decompressing ~41 GB
+    and the run appeared hung at 5% GPU. Materialising turns it into one read.
+    """
+    return {k: np.asarray(npz[k]) for k in npz.files}
+
+
 def load_cache(obj):
-    tr = np.load(os.path.join(CACHE, f"{obj}_train.npz"), allow_pickle=True)
-    te = np.load(os.path.join(CACHE, f"{obj}_test.npz"), allow_pickle=True)
+    tr = materialize(np.load(os.path.join(CACHE, f"{obj}_train.npz"),
+                             allow_pickle=True))
+    te = materialize(np.load(os.path.join(CACHE, f"{obj}_test.npz"),
+                             allow_pickle=True))
     return tr, te
 
 
