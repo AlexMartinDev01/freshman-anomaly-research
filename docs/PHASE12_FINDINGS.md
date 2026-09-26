@@ -34,19 +34,28 @@
 
 ## 2. Gate 12 主结果
 
-| config | 说明 | mean Recall@1 | vs D0 | better | recovery |
-|---|---|---|---|---|---|
-| D0 | raw DINO | 84.7 | — | — | — |
-| **D1.5** | **target-normal whitening（无训练）** | **87.1** | **+2.4** | **11/15** | **+69.5%** |
-| D2 | 条件对角 metric | 84.3 | −0.4 | 3/15 | −23.3% |
-| D3 | 条件 low-rank adapter | 84.7 | −0.0 | 2/15 | +2.6% |
-| D3-shuf | 错误 object 的 context | 84.7 | −0.0 | 2/15 | +2.6% |
-| D3-const | 平均 context | 84.6 | −0.1 | 0/15 | −1.0% |
-| D4 | target-supervised oracle | 92.5 | +7.8 | — | 100% |
+| config | 说明 | mean Recall@1 | vs D0 | better | recovery | 判定 |
+|---|---|---|---|---|---|---|
+| D0 | raw DINO | 84.7 | — | — | — | — |
+| **D1.5** | **target-normal whitening（无训练）** | **87.1** | **+2.4** | **11/15** | **+69.5%** | ✅ **VALID PASS** |
+| D2 | 条件对角 metric | 84.3 | −0.4 | 3/15 | −23.3% | 假设类受限，不下结论 |
+| D3 | 条件 low-rank adapter | 84.7 | −0.0 | 2/15 | +2.6% | ❌ **INVALID（零梯度）** |
+| D3-shuf | 错误 object 的 context | 84.7 | −0.0 | 2/15 | +2.6% | 随 D3 一并作废 |
+| D3-const | 平均 context | 84.6 | −0.1 | 0/15 | −1.0% | 随 D3 一并作废 |
+| D4 | target-supervised oracle | 92.5 | +7.8 | — | 100% | — |
 
-**D3 与 D3-shuf 逐位相同 → 学到的网络完全没有使用 context。**
+### ⚠️ D3 必须记为 INVALID，不是 FAIL
 
-预注册 Basic PASS（D3 > D0 于 ≥11/15）：**2/15，FAIL。**
+D3 与 D3-shuf 逐位相同，**看起来**像是「没用 context」。
+但实测最后一层权重**恒等于 0.0**——$z'=z+UV^\top z$ 中 U、V 同时零初始化，
+$\partial o/\partial U\propto V=0$、$\partial o/\partial V\propto U=0$，
+**参数从未更新**。
+
+所以 D3 只能证明「训练实现无效」，**不能**证明「context 没用」。
+**这条区分是方法纪律，必须保住。**
+
+预注册 Basic PASS（D3 > D0 于 ≥11/15）：**2/15，FAIL** ——
+但由于 D3 是无效运行，该 FAIL 同样不构成对假设的证据。
 
 ## 3. D1.5 的 shuffled-context 对照（关键）
 
