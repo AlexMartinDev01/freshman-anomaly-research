@@ -30,8 +30,12 @@ $M_t(\gamma)=(\Sigma_t+\epsilon I)^{-\gamma}$，γ=0 为 raw，γ=1 为 full whi
 | 0.75 | 87.1 | 89.7 | +2.36 | −0.13 | 77.0 | 11/15 |
 | 1.00 | 87.1 | 90.8 | +2.36 | +1.02 | 78.8 | 11/15 |
 
-**γ=0.5 是唯一的 Pareto 点**：baseline 与 oracle 同时上升，
-且 baseline 的 object 一致性最好（12/15）。
+**γ=0.5 是 balanced operating point**（Pareto knee），
+不是「唯一 Pareto 点」——严格按双目标 Pareto 定义，γ=0.5 与 γ=1
+**互不支配**（前者 oracle 高，后者 baseline 高），两者都在 frontier 上。
+
+选 γ=0.5 的理由是它同时满足：baseline +1.96、oracle +2.00、
+object 一致性最好（12/15）、且比 full whitening 留下更多 oracle headroom。
 
 eff_rank 随 γ 单调上升（40→79），说明协方差校正是在**展开**表示，
 而不是压缩。
