@@ -1,0 +1,9 @@
+target,loo_pick,loo_global,random,oracle,baseline
+can,fabric,47.07,44.03,48.77,43.63
+fabric,can,50.8,52.42,65.14,53.92
+fruit_jelly,can,64.22,69.81,77.99,83.19
+rice,can,71.17,67.0,74.45,79.26
+sheet_metal,can,81.4,80.41,84.23,83.72
+vial,can,78.22,70.79,83.8,83.11
+wallplugs,can,42.83,42.39,55.27,40.1
+walnuts,fabric,66.7,69.65,87.53,77.23
