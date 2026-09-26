@@ -78,7 +78,7 @@ class Index:
 
     def __init__(self, classes, max_normal_per_obj=4000, seed=0):
         rng = np.random.default_rng(seed)
-        Z, OBJ, TY, IMG, POS = [], [], [], [], []
+        Z, OBJ, TY, IMG, POS, TNM = [], [], [], [], [], []
         self.classes, self.grids, self.te, self.tr = classes, {}, {}, {}
         type_of = {"normal": 0}
         obj_of = {c: i for i, c in enumerate(classes)}
@@ -107,6 +107,7 @@ class Index:
                 Z.append(te["feats"][i].astype(np.float32)[m])
                 OBJ += [obj_of[c]] * k
                 TY += [type_of[tname]] * k
+                TNM += [tname] * k
                 IMG += [img_of.setdefault(f"{c}/{i}", len(img_of))] * k
                 POS.append(grid[m])
             # normals of the same object, with their true grid positions
@@ -117,11 +118,13 @@ class Index:
             Z.append(nm)
             OBJ += [obj_of[c]] * k
             TY += [0] * k
+            TNM += ["normal"] * k
             IMG += [img_of.setdefault(f"{c}/normal", len(img_of))] * k
             POS.append(np.tile(grid, (int(np.ceil(k / len(grid))), 1))[:k])
         self.Z = torch.from_numpy(np.concatenate(Z))
         self.OBJ = np.array(OBJ)
         self.TYPE = np.array(TY)
+        self.TNAME = np.array(TNM)   # name per patch, for morphology remapping
         self.IMG = np.array(IMG)
         self.POS = torch.from_numpy(np.concatenate(POS))
         self.n_type = len(type_of) - 1
