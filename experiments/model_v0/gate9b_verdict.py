@@ -31,13 +31,19 @@ sys.path.insert(0, r"E:\work\freshman\experiments\model_v0")
 from tail_calib import RESULTS  # noqa: E402
 
 METRICS = os.path.join(RESULTS, "metrics")
+import argparse
 VARIANTS = ["identity", "bank_only", "target_only", "interaction"]
 NAME = {"identity": "G0 identity", "bank_only": "G1 bank_only",
         "target_only": "G2 target_only", "interaction": "G3 interaction"}
 
 
 def main():
-    raw = pd.read_csv(os.path.join(METRICS, "gate9b_eval.csv"))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--tag", default="gate9b")
+    ap.add_argument("--n-min", type=int, default=10,
+                    help="categories that must be better for the G3>G1 test")
+    args = ap.parse_args()   # not `a`: the pair loop below rebinds `a`
+    raw = pd.read_csv(os.path.join(METRICS, f"{args.tag}_eval.csv"))
     # Each row carries only its OWN variant's column, so pairwise differences
     # need the four variants pivoted onto a shared (heldout, shot, rep) index.
     parts = []
@@ -69,14 +75,14 @@ def main():
     print("=" * 100)
     print(f"  {'comparison':<24}{'mean':>8}{'se':>7}{'t':>7}{'cats better':>14}")
     stats = {}
-    for a, b in [("interaction", "bank_only"), ("interaction", "identity"),
+    for va, vb in [("interaction", "bank_only"), ("interaction", "identity"),
                  ("interaction", "target_only"), ("interaction", None),
                  ("target_only", "bank_only"), ("bank_only", "identity")]:
-        diff = d[a] - (d["baseline"] if b is None else d[b])
+        diff = d[va] - (d["baseline"] if vb is None else d[vb])
         pc = diff.groupby(d.heldout).mean()
         se = pc.std() / np.sqrt(len(pc))
         t = pc.mean() / se if se > 0 else np.nan
-        lbl = f"{a[:4]} - " + ("baseline" if b is None else b[:4])
+        lbl = f"{va[:4]} - " + ("baseline" if vb is None else vb[:4])
         print(f"  {lbl:<24}{pc.mean():>+8.2f}{se:>7.2f}{t:>7.2f}"
               f"{int((pc > 0).sum()):>10}/{len(pc)}")
         stats[lbl] = (pc, t)
@@ -103,9 +109,9 @@ def main():
     c3 = clos["interaction"]
     ok = {
         "G3 > G1 bank_only (mean>0, t>1.5, >=2/3 cats)":
-            pc31.mean() > 0 and t31 > 1.5 and int((pc31 > 0).sum()) >= 10,
+            pc31.mean() > 0 and t31 > 1.5 and int((pc31 > 0).sum()) >= args.n_min,
         "G3 > raw external G0 (mean>0, >=2/3 cats)":
-            pc30.mean() > 0 and int((pc30 > 0).sum()) >= 10,
+            pc30.mean() > 0 and int((pc30 > 0).sum()) >= args.n_min,
         "G3 > baseline on majority of categories": int((pc3b > 0).sum()) > len(pc3b) / 2,
         "closure > 0 on >=2/3 eligible": int((c3 > 0).sum()) >= len(c3) * 2 / 3,
     }

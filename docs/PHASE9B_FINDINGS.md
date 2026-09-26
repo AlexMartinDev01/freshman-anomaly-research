@@ -1,152 +1,149 @@
-# Gate 9B-v0 结果总账：Target-Conditioned Defect Feature Generator
+# Gate 9B-v0 结果总账（冻结）：Target-Conditioned Defect Feature Generator
 
-> 状态：**预注册判据未通过；但测试台 range 不足，该负结果不具诊断力。**
-> 结论待定（见 §5）。**尚未运行 AD2 主实验。**
+> 冻结于 tag `gate9b_generator_closed`。
+> **判决：生成器路线在 AD2 上判失败 —— 且这次不是 range 不足。**
+> v1 的失败先被判定为测试无效（headroom +0.49），重跑 AD2 后依然失败。
 
 ---
 
-## 1. 实验设置（按预注册执行）
+## 最终结论（严谨表述）
 
-```text
-z_hat = normalize( z_ext + G(z_ext, h_source_normal, h_target_normal, eps) )
-```
+> **在 AD2 的全部 8 个类别上，真实目标缺陷 support 相对 normal-only baseline 平均值
+> +18.4 AUROC（合计 +147.4）；而条件生成器 G3 净获得 −1.0（合计 −8.3）。**
+> **生成器既没有超过「只用 source context」的 G1（−1.10, t=−1.77），
+> 也没有超过「完全不接触外部异常」的 G2（−0.82, 3/8）。**
+> **跨类别异常知识中，没有可学的条件变换结构可以仅凭 target normal 推断出
+> target-specific defect support。**
 
-- Set encoder：mean + std pooling + 2 层 MLP（刻意不用 attention）。
-- Generator：`Linear(d_in, 512) → ReLU → Linear(512, 384)`，residual 形式。
-- Loss：`L_rank`（softplus 版，beta=0.05）+ `λ·L_SWD`（λ=0.1）+ `γ·L_resid`（γ=1e-3）。
-- Episodic LOCO：MVTec AD v1 15 类留一，每 episode 随机 1/2/4-shot target normals，
-  source 取另一类，query 用 target 的 held-out normal + defect。
-- 300 steps × 3 episodes，AdamW lr=1e-3。
-- **AD2 全程未参与训练，也未参与评估。**
+---
 
-### 一个必须记录的实现修正
+## 1. 为什么跑了两次
 
-`rank_loss` 最初用 `relu(margin - d)`。冒烟测试显示 bottle 在第 0 步 loss 就是 0.0014
-——**铰链已经饱和，梯度恒为 0，生成器拿不到任何学习信号**。改为
-`softplus(-d/beta)*beta`（beta=0.05，匹配 fused score 的量级差 ~0.1），
-这也是本项目 `soft_separation_loss` 用过的同一手法。
+预注册规则：「G3 连 source-LOCO 都过不了 → 不跑 AD2」。
 
-另修正：评估里的 oracle bank 最初直接取 defect image 的**全部 patch**，
-而缺陷图大部分区域是**正常**区域，等于造了一个「几乎是正常 bank」的东西。
-必须先过 `gt_frac > 0.10`。修正前 13/15 类的 oracle **低于** baseline。
-
-## 2. v1 LOCO 结果
-
-per held-out category（14 sources × 3 shots × 3 reps 平均）：
-
-| heldout | baseline | G0 identity | G1 bank_only | G2 target_only | **G3 interaction** | oracle |
-|---|---|---|---|---|---|---|
-| bottle | 99.3 | 98.6 | 99.7 | 99.8 | 99.7 | 99.8 |
-| cable | 91.4 | 80.9 | 91.3 | 93.4 | 91.8 | 93.8 |
-| capsule | 88.6 | 87.6 | 93.2 | 91.8 | 93.6 | 92.5 |
-| carpet | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 |
-| grid | 99.7 | 99.8 | 99.7 | 99.9 | 99.8 | 100.0 |
-| hazelnut | 98.4 | 93.9 | 99.7 | 99.6 | 99.8 | 100.0 |
-| leather | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 |
-| metal_nut | 99.7 | 99.7 | 99.7 | 99.9 | 100.0 | 98.8 |
-| pill | 93.5 | 90.8 | 96.0 | 95.8 | 95.1 | 93.0 |
-| screw | 71.1 | 74.8 | 76.8 | 78.2 | 76.3 | 75.3 |
-| tile | 100.0 | 99.3 | 100.0 | 100.0 | 99.9 | 100.0 |
-| toothbrush | 99.3 | 94.3 | 97.7 | 99.1 | 96.7 | 98.0 |
-| transistor | 91.4 | 79.4 | 89.2 | 91.8 | 90.1 | 95.5 |
-| wood | 97.4 | 93.9 | 99.5 | 99.0 | 99.3 | 99.8 |
-| zipper | 97.9 | 89.5 | 98.4 | 99.1 | 98.6 | 98.5 |
-
-## 3. 预注册判据的判决
-
-| 判据 | 结果 |
-|---|---|
-| **G3 > G1 bank_only** | ❌ **FAIL**（−0.02，t=−0.17，仅 9/15 更好） |
-| G3 > raw external G0 | ✅ PASS（+3.87，t=3.80，12/15） |
-| G3 > baseline 多数类 | ✅ PASS（+0.86，t=1.63，10/15） |
-| closure > 0 于 ≥2/3 eligible | ✅ PASS（+68.5%，8/9） |
-
-**决定性判据 G3 > G1 失败。** 按预注册规则：不跑 AD2，Gate 9B 判失败。
-
-### 最重要的诊断：G3 − G2 = −0.44
-
-| 对比 | mean | t | 更好类数 |
-|---|---|---|---|
-| G3 − G1 | −0.02 | −0.17 | 9/15 |
-| G3 − G0 | +3.87 | 3.80 | 12/15 |
-| **G3 − G2** | **−0.44** | **−1.61** | **4/15** |
-| G3 − baseline | +0.86 | 1.63 | 10/15 |
-
-**G2 完全不接触任何外部异常**（纯噪声 + target normal），却比完整的 G3 还好。
-
-按 closure 排序同样如此：
-
-```
-G2 target_only   closure +93.3%   (9/9 positive)   ← 最好，且不用外部数据
-G3 interaction   closure +68.5%   (8/9)
-G1 bank_only     closure +59.0%   (6/9)
-G0 identity      closure -292.5%  (2/9)
-```
-
-**可以确定的结论**：raw external 是有害的（G1 − G0 = +3.89，t=4.02），
-所有训练过的生成器都能**把这份伤害抵消回 baseline 附近**，但**没有一个能超过 baseline**。
-而「抵消伤害」这件事 G2 就能做到——**外部异常内容没有贡献任何东西。**
-
-## 4. 但这个测试台 range 不足 —— 负结果不具诊断力
-
-同一份 oracle 构造代码原样搬到 AD2：
-
-| object | shot | baseline | oracle | headroom |
-|---|---|---|---|---|
-| wallplugs | 4 | 45.1 | 80.3 | **+35.2** |
-| vial | 4 | 75.1 | 98.8 | **+23.7** |
-| can | 4 | 33.1 | 48.7 | **+15.6** |
-| sheet_metal | 4 | 85.2 | 93.1 | **+7.9** |
-
-而在 v1 上：
+v1 上判据确实失败，但事后证据表明 **v1 的检验本身无效**：
 
 | 指标 | v1 | AD2 |
 |---|---|---|
-| oracle headroom 中位数 | **+0.49** | +7.9 ~ +35.2 |
-| headroom > 2 的类数 | **5/15** | 4/4 |
-| G3 超过 oracle 的格子 | **32/135** | — |
+| oracle headroom 中位数 | **+0.49** | +18.4 |
+| headroom > 2 的类数 | **5/15** | **8/8** |
+| G3 超过 oracle 的格子 | **32/135** | 0/288 |
 
-**在 v1 上，连「用真实目标缺陷」都只能换来 ~+1 AUROC，且生成器在 135 个格子里有 32 个
-直接超过了 oracle——oracle 在这里根本不是上界。**
+同一份 oracle 构造代码原样搬到 AD2 立刻给出 +35.2 / +23.7 / +15.6 / +7.9。
+即 v1 上连「用真实目标缺陷」都只值 ~+1 AUROC，oracle 在那里根本不是上界。
 
-原因是 v1 的 few-shot baseline 已经在 71–100 的天花板区，
-而 AD2 的 baseline 是 33–85，正是本项目全部证据（Phase 8 的 +4~+35）所在的地方。
+**判定 v1 测试无效，理由记录在案，在 AD2 上重跑同一套协议。** 下面是 AD2 的结果。
 
-> 这正对应本项目继承的方法纪律第 2 条：
-> **「不能从 range 不足的 sweep 下结论。」**
-> 所以 Gate 9B-v0 的失败**不能**被写成
-> 「跨类别异常知识中不存在可学的条件变换结构」。
+## 2. AD2 LOCO 结果（leave-one-object-out，8 类）
 
-## 5. 待决问题
+per held-out object（7 sources × 3 shots × 3 reps 平均）：
 
-预注册规则写的是「G3 连 source-LOCO 都过不了 → 不跑 AD2」。
-但该规则的前提是**source-LOCO 是一次有效检验**，而事后证据表明它 range 不足
-（连 oracle 都只有 +0.49）。
+| heldout | baseline | G0 identity | G1 bank_only | G2 target_only | **G3 interaction** | oracle |
+|---|---|---|---|---|---|---|
+| can | 47.4 | 48.5 | 48.1 | 47.3 | 47.8 | 50.8 |
+| fabric | 55.0 | 62.2 | 63.1 | 61.2 | **64.8** | 87.1 |
+| fruit_jelly | 81.2 | 72.6 | 79.2 | 77.5 | 76.3 | 93.9 |
+| rice | 82.3 | 71.2 | 75.8 | 76.8 | 73.0 | 97.8 |
+| sheet_metal | 82.7 | 78.7 | 84.7 | 84.5 | **85.0** | 88.9 |
+| vial | 75.9 | 64.2 | 74.7 | 75.4 | 74.8 | 97.8 |
+| wallplugs | 39.7 | 42.4 | 40.8 | 39.1 | 38.0 | 73.2 |
+| walnuts | 76.0 | 70.0 | 74.3 | 76.6 | 72.3 | 98.2 |
 
-**因此需要决定：**
+## 3. 预注册判据
 
-1. **把 v1 的结果判定为「测试无效」并在 AD2 上重跑同一套 Gate 9B-v0**
-   （LOCO over AD2 的 8 个对象；headroom +8~+35；约 40 分钟）。
-   代价：偏离预注册流程，需明确记录理由。
-2. **接受判据失败，就此收束生成器路线**，把「外部异常知识无法转化为
-   target-specific defect support」作为强负结果写入（并附上 range 不足的限定）。
-3. 其他。
+| 判据 | 结果 |
+|---|---|
+| **G3 > G1 bank_only** | ❌ **FAIL**（−1.10, t=−1.77, 3/8） |
+| **G3 > baseline 多数类** | ❌ **FAIL**（−1.04, t=−0.52, 3/8） |
+| **closure > 0 于 ≥2/3 eligible** | ❌ **FAIL**（−5.8%, 3/8；eligible = 8/8） |
+| G3 > raw external G0 | ✅ PASS（+2.75, t=1.75, 6/8） |
+
+### 核心数字：可获得的 vs 实际拿到的
+
+| | 合计 |
+|---|---|
+| oracle 相对 baseline 的可获得 headroom | **+147.4 AUROC** |
+| G3 实际获得 | **−8.3** |
+
+逐类：
+
+| heldout | headroom | G3 获得 | 捕获率 |
+|---|---|---|---|
+| fabric | +32.1 | +9.8 | 31% |
+| wallplugs | +33.5 | −1.7 | −5% |
+| walnuts | +22.2 | −3.7 | −17% |
+| vial | +21.8 | −1.1 | −5% |
+| rice | +15.5 | −9.2 | −60% |
+| fruit_jelly | +12.7 | −5.0 | −39% |
+| sheet_metal | +6.2 | +2.2 | 36% |
+| can | +3.4 | +0.4 | 12% |
+
+**fabric 与 sheet_metal 上有正捕获（31% / 36%），但剩下的类净为负，合计为负。**
+
+## 4. 反复出现的模式：G2 又赢了
+
+| 对比 | mean | t | 更好类数 |
+|---|---|---|---|
+| G3 − G1 | −1.10 | −1.77 | 3/8 |
+| **G3 − G2** | **−0.82** | −0.92 | **3/8** |
+| G3 − baseline | −1.04 | −0.52 | 3/8 |
+| G1 − G0 | **+3.85** | **2.71** | 6/8 |
+
+- **G2（纯噪声 + target normal，完全不接触外部异常）再次不劣于 G3。**
+- G1 − G0 = +3.85 (t=2.71)：**raw external 有害，这一点稳定成立**；
+  任何训练过的变换都能把这份伤害抵消掉。
+- 但**抵消伤害不需要外部异常内容** —— G2 就能做到。
+
+closure：`G1 +1.2% | G2 −2.5% | G3 −5.8% | G0 −27.8%`。全部 ≈ 0 或负。
+
+**这与 Gate 9A 的结论完全一致**：能学的只有 donor identity 那一层，
+target conditioning 那一层学不到。
+
+## 5. 判决
+
+```
+G3 < G1        预注册判据失败
+G3 ≈ G2        外部异常内容零贡献
+closure −5.8%  在 +147.4 的 headroom 上净获得为负
+```
+
+**Gate 9B 失败。不进入 Gate 9B-v1。**
+
+### 限制（必须一起声明）
+
+- **8 个类别**是硬上限。paired t 在错误方向且 |t| < 2，
+  严格说「未证明有效」而非「证明无效」；但 closure 为负 + G2 不劣于 G3 是同一个方向的两条独立证据。
+- 生成器是**小型 MLP，300 步**。更强的生成器（diffusion / flow / 大规模预训练先验）
+  未在本实验中排除；结论只覆盖「小型条件 MLP 从 ~10^2 量级的类别级关系里学习」这一设定。
+- 结论**只针对 feature-space defect support 生成**，不排除 VLM / 大模型外部先验的路线。
 
 ## 6. 资产
 
 | 类型 | 内容 |
 |---|---|
-| 脚本 | `gate9b_generator.py`、`gate9b_verdict.py` |
-| 结果 | `metrics/gate9b_eval.csv`（540 行）、`metrics/gate9b_<fold>_<variant>.csv` |
-| 权重 | `results/model_v0/checkpoints_g9b/`（15 folds × 3 trained variants） |
+| 脚本 | `gate9b_generator.py`（v1 + ad2 两模式）、`gate9b_verdict.py` |
+| 结果 | `metrics/gate9b_eval.csv`（v1, 540 行）、`metrics/gate9b_ad2_eval.csv`（288 行） |
+| 权重 | `results/model_v0/checkpoints_g9b/{v1,ad2}_<fold>_<variant>.pt` |
 
-## 7. 本次踩的坑
+## 7. 本次踩的坑（都是「看起来在工作、实际没有」型）
 
-1. **`relu` 铰链在容易类上第 0 步就饱和**，梯度恒 0，生成器完全没学到东西。
-   换 softplus 后才有信号。**这是「看起来在训练、实际没梯度」的典型陷阱。**
-2. **oracle bank 忘了过 `gt_frac` 阈值**，把缺陷图的正常区域也收了进去，
-   导致 oracle 低于 baseline。修正后 12/15 类恢复为 oracle ≥ baseline。
-3. `make_dist` 结尾是 `.cpu().numpy()`，**会静默切断计算图**。
-   需要反传时必须用 `make_dist_t`（本文件内实现）。
-4. 评估 CSV 每行只带自己 variant 的列，做配对比较前必须先 pivot，
-   否则得到全 NaN。
+1. **`relu` 铰链在容易类上第 0 步就饱和**（loss 0.0014），梯度恒为 0，
+   生成器完全没学到东西却显示在训练。改 `softplus(-d/beta)*beta` 后才有信号。
+2. **oracle bank 忘了过 `gt_frac` 阈值**，把缺陷图的正常区域也收进 bank，
+   导致 13/15 类的 oracle 低于 baseline。修正后恢复正常。
+3. **`gate7b3r.make_dist` 结尾是 `.cpu().numpy()`，静默切断计算图。**
+   需要反传必须用本文件内的 `make_dist_t`。
+4. **评估 CSV 每行只带自己 variant 的列**，配对比较前必须先 pivot，否则全 NaN。
+5. `for a, b in ...` 覆盖了 argparse 的 `args` 变量名。
+
+---
+
+## 继承到下一阶段的强制方法纪律
+
+1. **测试台的 headroom 必须先验证，再解读结果。** 本次靠「把 oracle 构造搬到 AD2」
+   这一步才发现 v1 的检验无效。**任何 AUROC 类实验，先报告 oracle 的 headroom。**
+2. **必须包含「不能条件化的退化版」与「不用外部数据的退化版」**
+   （G1 / G2）。否则会把「抵消伤害」误读成「学到条件变换」——本次 G2 两次拆穿了它。
+3. **报告可获得总量与实际获得量**（+147.4 vs −8.3），而不是只看平均 AUROC 的微小差异。
+4. **预注册标准不得事后修改**；但如果**检验前提本身失效**，应显式记录理由后重跑，
+   而不是拿无效检验的结果当结论。

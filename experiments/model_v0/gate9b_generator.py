@@ -61,6 +61,7 @@ from tail_calib import RESULTS, materialize, mean_top1p  # noqa: E402
 V1 = os.path.join(RESULTS, "cache_v1")
 METRICS = os.path.join(RESULTS, "metrics")
 CKPT = os.path.join(RESULTS, "checkpoints_g9b")
+AD2 = os.path.join(RESULTS, "cache")
 DEV = "cuda"
 VARIANTS = ["identity", "bank_only", "target_only", "interaction"]
 EPS_DIM = 64
@@ -144,13 +145,14 @@ def rank_loss(scores_n, scores_d, beta=0.05):
 class Bank:
     """Holds the v1 caches once; episodes slice out what they need."""
 
-    def __init__(self, classes):
+    def __init__(self, classes, root):
         self.classes = classes
+        self.root = root
         self.tr, self.te = {}, {}
         for c in classes:
-            self.tr[c] = materialize(np.load(os.path.join(V1, f"{c}_train.npz"),
+            self.tr[c] = materialize(np.load(os.path.join(root, f"{c}_train.npz"),
                                              allow_pickle=True))
-            self.te[c] = materialize(np.load(os.path.join(V1, f"{c}_test.npz"),
+            self.te[c] = materialize(np.load(os.path.join(root, f"{c}_test.npz"),
                                              allow_pickle=True))
         self.defect = {}
         self.good_idx = {}
@@ -404,20 +406,29 @@ def main():
     ap.add_argument("--n-query", type=int, default=16)
     ap.add_argument("--variants", default="all")
     ap.add_argument("--eval-only", action="store_true")
+    ap.add_argument("--dataset", default="v1", choices=["v1", "ad2"],
+                    help="ad2 = leave-one-object-out over the 8 AD2 classes. "
+                         "Same protocol as v1; run because v1 has almost no "
+                         "oracle headroom (median +0.49 AUROC) while AD2 has "
+                         "+7.9..+35.2, so only AD2 can actually test the claim.")
+    ap.add_argument("--out", default=None)
     a = ap.parse_args()
+    ds = a.dataset
+    root = V1 if ds == "v1" else AD2
+    tag = a.out or f"gate9b_{ds}"
 
     os.makedirs(CKPT, exist_ok=True)
-    classes = sorted(f[:-len("_train.npz")] for f in os.listdir(V1)
+    classes = sorted(f[:-len("_train.npz")] for f in os.listdir(root)
                      if f.endswith("_train.npz"))
-    bank = Bank(classes)
+    bank = Bank(classes, root)
     folds = classes if a.folds == "all" else a.folds.split(",")
     variants = VARIANTS if a.variants == "all" else a.variants.split(",")
 
     out_rows = []
-    cpath = os.path.join(METRICS, "gate9b_eval.csv")
+    cpath = os.path.join(METRICS, f"{tag}_eval.csv")
     for heldout in folds:
         for variant in variants:
-            ck = os.path.join(CKPT, f"{heldout}_{variant}.pt")
+            ck = os.path.join(CKPT, f"{ds}_{heldout}_{variant}.pt")
             if a.eval_only and os.path.exists(ck):
                 sd = torch.load(ck, map_location=DEV)
                 gen, enc_s, enc_t = Gen(variant).to(DEV), SetEncoder().to(DEV), \
@@ -444,7 +455,7 @@ def main():
             df = evaluate(bank, heldout, gen, enc_s, enc_t, n_gen=a.n_gen)
             df["variant"] = variant
             out_rows.append(df)
-            df.to_csv(os.path.join(METRICS, f"gate9b_{heldout}_{variant}.csv"),
+            df.to_csv(os.path.join(METRICS, f"{tag}_{heldout}_{variant}.csv"),
                       index=False)
     out = pd.concat(out_rows, ignore_index=True)
     out.to_csv(cpath, index=False)
