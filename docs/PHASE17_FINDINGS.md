@@ -3,6 +3,13 @@
 > 冻结于 tag `gate17a_stop`。
 > **判决：STOP。covariance 对下游异常检测没有任何可利用的增量信息。**
 > **这是本分支的最后一刀，不再有 Gate 17B / 18。**
+>
+> ⚠️ **本文档的 pixel 两列已在 `PHASE_R_BASELINE_AUDIT.md` 中修正。**
+> 初版报出的 `px_AUROC 81.47 / AUPRO 14.39` 来自本脚本的一个 reshape bug
+> （把已展平的 `gt` 的 `shape[1:]` 当网格用 → 存成一维 map →
+> `cv2.resize` 把它当列向量处理 → 空间结构被打乱）。
+> **修正后为 `px_AUROC 96.27 / AUPRO 73.45`，oracle gain 分别只有 +0.05 / +0.02。**
+> **image 级数字与 STOP 判决不受影响**（`mean_top1p` 只依赖取值分布，与 shape 无关）。
 
 ---
 
@@ -10,8 +17,8 @@
 
 > **用 target label 做 oracle 融合（$S_\alpha=(1-\alpha)z(S_{raw})+\alpha z(S_{cov})$，
 > 逐 object 取最优 α），image AUROC 平均只提升 **+0.19**（预注册门槛是 +1.0）；
-> `AUPRO` 提升 **恰好 +0.00**，**60/60 个格子的最优 α 都是 0.0**；
-> image 层面 **131/180** 个格子的最优 α 为 0。**
+> pixel AUROC **+0.05**、AUPRO **+0.02**（修正后；见文首说明）；
+> image 层面 **131/180**、pixel 层面 24/30、AUPRO 27/30 个格子的最优 α 为 0。**
 > **即使允许用真实异常标签选择融合权重，covariance 也没有带来可用信息。**
 
 ---
@@ -23,8 +30,8 @@
 | metric | mean raw | mean best-α | gain | 最优 α = 0 的格子 |
 |---|---|---|---|---|
 | **img_AUROC** | 95.65 | 95.84 | **+0.19** | **131/180** |
-| px_AUROC | 81.47 | 81.75 | +0.29 | 49/60 |
-| **AUPRO** | 14.39 | 14.39 | **+0.00** | **60/60** |
+| px_AUROC（已修正） | **96.27** | 96.32 | +0.05 | 24/30 |
+| AUPRO（已修正） | **73.45** | 73.47 | **+0.02** | 27/30 |
 
 逐 object 的 image AUROC 增益：
 
@@ -37,7 +44,8 @@ tile +0.0  toothbrush +0.0  transistor +1.3  wood +0.2  zipper +0.0
 **9/15 个 object 的增益四舍五入后是 0.0**，最大也只有 transistor 的 +1.3。
 （toothbrush 只有单一缺陷类型，那些 +3.2 之类的像素增益是退化的。）
 
-**AUPRO 全部 60 个格子最优 α = 0.0** —— 加入任何 covariance 成分都不会改善定位。
+**修正后的 pixel 指标**：oracle 融合只值 +0.05 px_AUROC / +0.02 AUPRO，
+27/30 个格子的最优 α 仍是 0.0 —— 加入任何 covariance 成分都不改善定位。
 
 ## 2. 预注册判决
 
@@ -66,7 +74,7 @@ GO    若 ≥ +1.0 且 ≥ 10/15 objects
 | 问题 | 答案 |
 |---|---|
 | covariance 替代 raw score？ | ❌ −6.45 AUROC / −31 AUPRO |
-| covariance 作为 **补充** 信息？ | ❌ oracle 也没用（+0.19 / +0.00） |
+| covariance 作为 **补充** 信息？ | ❌ oracle 也没用（img +0.19 / px +0.05 / AUPRO +0.02） |
 | covariance 编码了 defect subtype 几何？ | ✅ retrieval +1.9，shuffled 对照有效 |
 
 **合起来是一个完整而罕见的结论：**

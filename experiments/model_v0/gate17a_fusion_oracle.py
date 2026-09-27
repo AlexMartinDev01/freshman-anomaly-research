@@ -96,7 +96,12 @@ def main():
         te = np.load(os.path.join(ML, f"{obj}_test.npz"), allow_pickle=True)
         te = {k: np.asarray(te[k]) for k in te.files}
         y = np.array([1 if t == "bad" else 0 for t in te["types"]])
-        gt = te["gt_frac"].reshape(len(y), -1)
+        # keep the 2-D grid: `gt.shape[1:]` below is used to reshape the fused
+        # map before saving, and a flattened gt gives (1024,) -- a 1-D "map" that
+        # cv2.resize treats as a COLUMN, scrambling the spatial layout entirely.
+        # That produced px_AUROC 81.5 / AUPRO 14.4 against the correct 96.3 / 73.9.
+        G = te["gt_frac"].reshape(len(y), *te["gt_frac"].shape[1:])
+        gt = G.reshape(len(y), -1)
         for shot in shots:
             for split in range(a.splits):
                 R = load_set("raw", obj, shot, split, te)
@@ -116,7 +121,7 @@ def main():
                         jobs = []
                         for i in range(len(y)):
                             p = os.path.join(d, fname(te["names"][i]))
-                            np.save(p, F[i].reshape(gt.shape[1:]))
+                            np.save(p, F[i].reshape(G.shape[1:]))
                             g = gt_path(obj, te["names"][i]) if y[i] else None
                             jobs.append((p, g, tuple(int(v) for v in
                                                      te["img_hw"][i])))
