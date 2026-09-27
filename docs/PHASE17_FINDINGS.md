@@ -17,8 +17,8 @@
 
 > **用 target label 做 oracle 融合（$S_\alpha=(1-\alpha)z(S_{raw})+\alpha z(S_{cov})$，
 > 逐 object 取最优 α），image AUROC 平均只提升 **+0.19**（预注册门槛是 +1.0）；
-> pixel AUROC **+0.05**、AUPRO **+0.02**（修正后；见文首说明）；
-> image 层面 **131/180**、pixel 层面 24/30、AUPRO 27/30 个格子的最优 α 为 0。**
+> pixel AUROC **+0.03**、AUPRO **+0.04**（修正后，全量扫描；见文首说明）；
+> image 层面 **131/180**、pixel 层面 52/60、AUPRO 55/60 个格子的最优 α 为 0。**
 > **即使允许用真实异常标签选择融合权重，covariance 也没有带来可用信息。**
 
 ---
@@ -30,8 +30,8 @@
 | metric | mean raw | mean best-α | gain | 最优 α = 0 的格子 |
 |---|---|---|---|---|
 | **img_AUROC** | 95.65 | 95.84 | **+0.19** | **131/180** |
-| px_AUROC（已修正） | **96.27** | 96.32 | +0.05 | 24/30 |
-| AUPRO（已修正） | **73.45** | 73.47 | **+0.02** | 27/30 |
+| px_AUROC（已修正） | **96.14** | 96.17 | **+0.03** | 52/60 |
+| AUPRO（已修正） | **73.27** | 73.32 | **+0.04** | 55/60 |
 
 逐 object 的 image AUROC 增益：
 
@@ -44,8 +44,8 @@ tile +0.0  toothbrush +0.0  transistor +1.3  wood +0.2  zipper +0.0
 **9/15 个 object 的增益四舍五入后是 0.0**，最大也只有 transistor 的 +1.3。
 （toothbrush 只有单一缺陷类型，那些 +3.2 之类的像素增益是退化的。）
 
-**修正后的 pixel 指标**：oracle 融合只值 +0.05 px_AUROC / +0.02 AUPRO，
-27/30 个格子的最优 α 仍是 0.0 —— 加入任何 covariance 成分都不改善定位。
+**修正后的 pixel 指标**（全量）：oracle 融合只值 **+0.03 px_AUROC / +0.04 AUPRO**，
+52/60 与 55/60 个格子的最优 α 仍是 0.0 —— 加入任何 covariance 成分都不改善定位。
 
 ## 2. 预注册判决
 
@@ -74,7 +74,7 @@ GO    若 ≥ +1.0 且 ≥ 10/15 objects
 | 问题 | 答案 |
 |---|---|
 | covariance 替代 raw score？ | ❌ −6.45 AUROC / −31 AUPRO |
-| covariance 作为 **补充** 信息？ | ❌ oracle 也没用（img +0.19 / px +0.05 / AUPRO +0.02） |
+| covariance 作为 **补充** 信息？ | ❌ oracle 也没用（img +0.19 / px +0.03 / AUPRO +0.04） |
 | covariance 编码了 defect subtype 几何？ | ✅ retrieval +1.9，shuffled 对照有效 |
 
 **合起来是一个完整而罕见的结论：**
