@@ -8,7 +8,8 @@
 > 初版报出的 `px_AUROC 81.47 / AUPRO 14.39` 来自本脚本的一个 reshape bug
 > （把已展平的 `gt` 的 `shape[1:]` 当网格用 → 存成一维 map →
 > `cv2.resize` 把它当列向量处理 → 空间结构被打乱）。
-> **修正后为 `px_AUROC 96.27 / AUPRO 73.45`，oracle gain 分别只有 +0.05 / +0.02。**
+> **修正后（全量扫描）为 `px_AUROC 96.14 / AUPRO 73.27`，
+> oracle gain 分别只有 +0.03 / +0.04。**
 > **image 级数字与 STOP 判决不受影响**（`mean_top1p` 只依赖取值分布，与 shape 无关）。
 
 ---
