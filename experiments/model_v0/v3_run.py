@@ -255,13 +255,17 @@ def main():
                     m0 = arms["a3"][idx_]
                     assert x.get("identical") and m0.get("identical"), \
                         f"{k}: an m=0 image is not bit-identical to A0"
-        ndiff = sum(1 for i in range(len(integ))
+        # Iterate over the INDICES of the refined images, not over
+        # range(len(integ)): refined images are scattered through the record
+        # list, so the latter compares the first N images whatever their m2 --
+        # a bug that reported 30/53 where the true value was 53/53.
+        ref_idx = [i for i, x in enumerate(arms["a3"]) if x["m2"] > 0]
+        ndiff = sum(1 for i in ref_idx
                     if not np.array_equal(np.sort(arms["a3"][i]["pos"]),
                                           np.sort(arms["a4s0"][i]["pos"])))
         print(f"    G3 diagnostic: A3 positions differ from A4(seed 0) on "
-              f"{ndiff}/{len(integ)} refined images (A3==A4 is expected "
-              f"sometimes, but\n      high agreement everywhere would mean the "
-              f"random arm is not random)")
+              f"{ndiff}/{len(ref_idx)} refined images (sampled across ALL "
+              f"images, not the first N)")
         print(f"    util (T/B): mean {float((Ts / Bs).mean()):.4f}  "
               f"max {float((Ts / Bs).max()):.4f}")
     print("\n  A3/A4/A5 ORCHESTRATION OK")

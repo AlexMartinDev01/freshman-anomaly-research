@@ -52,6 +52,21 @@ import v3_check_scale as cs  # noqa: E402
 ARMS = ["a3", "a5"] + [f"a4s{j}" for j in range(mf.N_SEEDS)]
 
 
+def _plain(v):
+    """numpy -> plain python, so json.dump writes data rather than a repr.
+
+    `default=str` turns a numpy array into the STRING "[878]" -- it round-trips
+    as text, not as an array, so `pos` became unreadable. That silently
+    degrades the diagnostics file: every scalar survived, only the arrays did
+    not, which is exactly the shape of a bug that survives a casual look.
+    """
+    if isinstance(v, np.ndarray):
+        return v.tolist()
+    if isinstance(v, (np.integer, np.floating, np.bool_)):
+        return v.item()
+    return v
+
+
 def sha256_file(p, chunk=1 << 20):
     h = hashlib.sha256()
     with open(p, "rb") as f:
@@ -229,7 +244,7 @@ def run_cell(cell, output_root, model_bundle=None):
                                for k, v in arms.items()})
         np.save(os.path.join(tmp, "a0.npy"), np.stack(a0))
         np.save(os.path.join(tmp, "a2.npy"), np.stack(a2))
-        diag = {k: [{kk: vv for kk, vv in r.items() if kk != "map"}
+        diag = {k: [{kk: _plain(vv) for kk, vv in r.items() if kk != "map"}
                     for r in v] for k, v in arms.items()}
         with open(os.path.join(tmp, "diagnostics.json"), "w",
                   encoding="utf-8") as f:
