@@ -58,9 +58,21 @@ def pool_crop_to_448(crop, r0, c0, gh448, gw448, gh672, gw672):
     return out
 
 
-def run_a3(obj, shot, split, model, resize, totensor, norm,
-           c448, c672, te448, tau_hot, tau_gap, a_, b_, diag_on=True):
-    """A0 -> trigger -> budget -> crops -> 672 score -> affine -> writeback."""
+def run_arm(obj, shot, split, mode, model, resize, totensor, norm,
+            c448, c672, te448, tau_hot, tau_gap, a_, b_, seed_i=0, gt=None):
+    """A0 -> trigger -> budget -> crops -> 672 score -> affine -> writeback.
+
+    `mode` in {a3, a4, a5} changes ONLY where the refined positions come from:
+
+        a3  the selector, from the fully-triggered (hot AND low-gap) set
+        a4  uniformly random from the LARGER hot-only pool   (frozen A1.3)
+        a5  GT oracle, ranked within that same hot pool
+
+    crop size, budget, 672 bank, scoring, affine and writeback are literally
+    the same code for all three, so a later difference between arms cannot be
+    a geometry artefact.  `gt` is the per-448-patch GT fraction, used by a5
+    ONLY -- it never enters the a3/a4 path.
+    """
     idx = draw_images(c448[rf.LAYERS[0]]["offsets"], shot, split, obj)
     tro = c448[rf.LAYERS[0]]["offsets"]
     banks = {}
@@ -90,8 +102,21 @@ def run_a3(obj, shot, split, model, resize, totensor, norm,
         m2, n = sel.allocate(m, B)
         pool = np.where((h >= tau_hot).ravel())[0]
         cand = np.where(fire.ravel())[0]
-        pos = rf.choose("a3", cand, m2, h.ravel(), g.ravel(),
-                        rows.ravel(), cols.ravel(), obj)
+        # runtime guard: the selector's set is always a subset of the hot pool
+        assert np.isin(cand, pool).all(), "selector set escaped the hot pool"
+        # a5 oracle signal: mean GT fraction over the window's patches
+        gtwin = None
+        if mode == "a5":
+            gf = gt[i].reshape(gh4, gw4)
+            gtwin = np.array([[gf[r:r + 3, c:c + 3].mean()
+                               for c in range(g.shape[1])]
+                              for r in range(g.shape[0])]).ravel()
+        use = cand if mode == "a3" else pool
+        pos = rf.choose(mode, use, m2, h.ravel(), g.ravel(),
+                        rows.ravel(), cols.ravel(), obj, seed_i=seed_i,
+                        gt=gtwin)
+        # a4/a5 draw from the hot pool, so they always have enough candidates
+        assert len(pos) == m2
         assert m2 * n * n <= B, f"budget violated {m2}*{n}^2 > {B}"
 
         # ---- m = 0: A3 must be BIT-IDENTICAL to A0, not merely close ----
@@ -99,7 +124,8 @@ def run_a3(obj, shot, split, model, resize, totensor, norm,
             A3 = M0.copy()
             recs.append(dict(image=names[i], m=m, m2=0, n=0, T=0, B=B,
                              cap_hit=int(m > int(B // 25)), a=a_, b=b_,
-                             shape=A3.shape, identical=bool(np.array_equal(A3, M0))))
+                             shape=A3.shape, pos=pos,
+                             identical=bool(np.array_equal(A3, M0))))
             continue
 
         src = os.path.join(root, obj, "test", *names[i].split("/"))
@@ -123,7 +149,8 @@ def run_a3(obj, shot, split, model, resize, totensor, norm,
         assert np.isfinite(A3).all(), "non-finite final map"
         recs.append(dict(image=names[i], m=m, m2=m2, n=n, T=m2 * n * n, B=B,
                          cap_hit=int(m > int(B // 25)), a=a_, b=b_,
-                         shape=A3.shape, integrated=len(pos)))
+                         shape=A3.shape, pos=pos, integrated=len(pos),
+                         map=A3))
     return recs
 
 
@@ -133,8 +160,10 @@ def main():
     ap.add_argument("--shot", type=int, default=1)
     ap.add_argument("--split", type=int, default=0)
     a = ap.parse_args()
-    print("A3 end-to-end -- engineering verification, NO detection metric read")
+    print("A3/A4/A5 orchestration -- engineering verification, NO detection "
+          "metric read")
     model, resize, totensor, norm = cs.build()
+    N_SEEDS = rf.N_SEEDS
     for obj in a.objects.split(","):
         t0 = time.time()
         _, c448 = sel.load_split(obj, "train")
@@ -143,34 +172,67 @@ def main():
         tau_hot, tau_gap, _ = sel.calibrate(obj, a.shot, a.split, c448)
         r = aff.run_case(obj, a.shot)
         a_, b_ = r["fit"]["a"], r["fit"]["b"]
-        recs = run_a3(obj, a.shot, a.split, model, resize, totensor, norm,
-                      c448, c672, te448, tau_hot, tau_gap, a_, b_)
-        nzero = sum(1 for x in recs if x["m2"] == 0)
-        ident = sum(1 for x in recs if x.get("identical"))
-        integ = [x for x in recs if x["m2"] > 0]
-        Ts = np.array([x["T"] for x in recs])
-        Bs = np.array([x["B"] for x in recs])
+
+        # per-448-patch GT fraction (a5 ONLY; never touches a3/a4)
+        o = te448[rf.LAYERS[0]]["offsets"]
+        gtf = te448[rf.LAYERS[0]]["gt_frac"]
+        gr = te448[rf.LAYERS[0]]["grids"]
+        gt = [np.asarray(gtf[o[i]:o[i + 1]]).reshape(int(gr[i][0]),
+                                                     int(gr[i][1]))
+              for i in range(len(gr))]
+
+        arms = {"a3": run_arm(obj, a.shot, a.split, "a3", model, resize,
+                              totensor, norm, c448, c672, te448, tau_hot,
+                              tau_gap, a_, b_)}
+        for s in range(N_SEEDS):
+            arms[f"a4s{s}"] = run_arm(obj, a.shot, a.split, "a4", model,
+                                      resize, totensor, norm, c448, c672,
+                                      te448, tau_hot, tau_gap, a_, b_, seed_i=s)
+        arms["a5"] = run_arm(obj, a.shot, a.split, "a5", model, resize,
+                             totensor, norm, c448, c672, te448, tau_hot,
+                             tau_gap, a_, b_, gt=gt)
+
+        n = len(arms["a3"])
+        nzero = sum(1 for x in arms["a3"] if x["m2"] == 0)
+        ident = sum(1 for x in arms["a3"] if x.get("identical"))
+        integ = [x for x in arms["a3"] if x["m2"] > 0]
+        Ts = np.array([[x["T"] for x in arms[k]] for k in arms])
+        Bs = np.array([x["B"] for x in arms["a3"]])
         print(f"\n  {obj} k={a.shot} s{a.split}  ({time.time() - t0:.0f}s)")
-        print(f"    images {len(recs)}   m=0 and bit-identical to A0: {ident}"
-              f"/{len(recs)}   refined: {len(integ)}")
+        print(f"    images {n}   m=0 and bit-identical to A0: {ident}/{n}"
+              f"   refined: {len(integ)}")
         print(f"    tau_hot {tau_hot:+.4f}  tau_gap {tau_gap:+.4f}  "
-              f"affine a={a_:.5f} b={b_:.5f}")
+              f"affine a={a_:.5f} b={b_:.5f}   arms {len(arms)}")
         if integ:
-            print(f"    refined images: m "
-                  f"{min(x['m'] for x in integ)}..{max(x['m'] for x in integ)},"
-                  f" m' {min(x['m2'] for x in integ)}.."
-                  f"{max(x['m2'] for x in integ)}, n "
-                  f"{sorted(set(x['n'] for x in integ))}, "
-                  f"cap_hit {sum(x['cap_hit'] for x in integ)}"
+            nn = sorted(set(x["n"] for x in integ))
+            print(f"    refined: m {min(x['m'] for x in integ)}.."
+                  f"{max(x['m'] for x in integ)}, m' "
+                  f"{min(x['m2'] for x in integ)}..{max(x['m2'] for x in integ)}"
+                  f", n {nn}, cap_hit {sum(x['cap_hit'] for x in integ)}"
                   f"/{len(integ)}")
-        print(f"    budget: max T {int(Ts.max())} <= min B {int(Bs.min())}  "
-              f"-> {'OK' if (Ts <= Bs).all() else 'VIOLATION'}")
+        # ---- orchestration-level section 10-F: budget equality per image ----
+        same = (Ts == Ts[0:1]).all()
+        print(f"    BUDGET EQUALITY (m', n, T) across A3 + {N_SEEDS} A4 seeds "
+              f"+ A5: {'OK' if same else 'VIOLATION'}")
+        assert same, "budget differs across arms at orchestration level"
+        assert (Ts <= Bs).all(), "budget exceeded"
+        # m=0 must be bit-identical in EVERY arm
+        for k, rec in arms.items():
+            for idx_, x in enumerate(rec):
+                if x["m2"] == 0:
+                    m0 = arms["a3"][idx_]
+                    assert x.get("identical") and m0.get("identical"), \
+                        f"{k}: an m=0 image is not bit-identical to A0"
+        ndiff = sum(1 for i in range(len(integ))
+                    if not np.array_equal(np.sort(arms["a3"][i]["pos"]),
+                                          np.sort(arms["a4s0"][i]["pos"])))
+        print(f"    G3 diagnostic: A3 positions differ from A4(seed 0) on "
+              f"{ndiff}/{len(integ)} refined images (A3==A4 is expected "
+              f"sometimes, but\n      high agreement everywhere would mean the "
+              f"random arm is not random)")
         print(f"    util (T/B): mean {float((Ts / Bs).mean()):.4f}  "
               f"max {float((Ts / Bs).max()):.4f}")
-        assert (Ts <= Bs).all(), "budget assertion failed"
-        assert ident == nzero, "an m=0 image was NOT bit-identical to A0"
-        print(f"    map shape preserved on all {len(recs)} images; all finite")
-    print("\n  A3 ENGINEERING PATH OK")
+    print("\n  A3/A4/A5 ORCHESTRATION OK")
 
 
 if __name__ == "__main__":
