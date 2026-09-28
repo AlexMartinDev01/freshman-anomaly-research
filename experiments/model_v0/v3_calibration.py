@@ -108,6 +108,79 @@ def pool_672_to_448(s672, gh448, gw448, gh672, gw672):
     return out
 
 
+# -------------------------------------------------------------- bank lookup
+def containing_448(u, v):
+    """448 patch index holding 672 token (u, v).  Exact integer form of
+    floor(k / 1.5): a 448 patch i spans 672 tokens [1.5i, 1.5(i+1))."""
+    return (2 * u) // 3, (2 * v) // 3
+
+
+def excl_for_672(u, v, gh672, gw672):
+    """The exclusion to use when the LOOKUP grid is the 672 grid.
+
+    A 672 query token belongs to the 448 patch that contains it, and inherits
+    that patch's 3x3 physical exclusion -- so the ban is decided in 448 space
+    and mapped back.  This is the entry point the 672 calibration calls.
+    """
+    i, j = containing_448(u, v)
+    return excl_672(i, j, gh672, gw672)
+
+
+def allowed_mask(gh, gw, base, kb, exclude):
+    """Boolean (n_lookup, n_bank) mask: True = usable as a nearest neighbour.
+
+    `exclude(i, j, gh, gw)` returns the (rows, cols) of the lookup grid to ban.
+    Only columns inside THIS image's own bank block (`base`) are banned, so
+    patches from other support images are never affected by a same-image
+    exclusion.
+    """
+    n = gh * gw
+    allowed = np.ones((n, kb), dtype=bool)
+    rr_all, cc_all = np.arange(n) // gw, np.arange(n) % gw
+    cols_all = np.arange(kb)
+    for p in range(n):
+        er, ec = exclude(int(rr_all[p]), int(cc_all[p]), gh, gw)
+        if er.size == 0 or ec.size == 0:
+            continue
+        ban = base + (np.asarray(er)[:, None] * gw + np.asarray(ec)[None, :])
+        ban = ban.ravel()
+        ban = ban[(ban >= base) & (ban < base + n)]
+        allowed[p, ban] = False
+    return allowed
+
+
+def cal_scores_from_D(D, gh, gw, base, exclude, label=""):
+    """Guard nearest-neighbour distance per lookup patch, exclusion applied.
+
+    Fail-fast when a lookup patch has no legal candidate at all -- the rule is
+    never silently relaxed (addendum 2 / 3).
+    """
+    allowed = allowed_mask(gh, gw, base, D.shape[1], exclude)
+    dead = ~allowed.any(axis=1)
+    if dead.any():
+        bad = np.where(dead)[0][:5]
+        raise SystemExit(
+            f"FAIL-FAST{(' ' + label) if label else ''}: no legal candidate for "
+            f"lookup patch index {list(map(int, bad))} "
+            f"(grid {gh}x{gw}). The exclusion is never relaxed automatically.")
+    return np.where(allowed, D, np.inf).min(axis=1).reshape(gh, gw)
+
+
+def guard_from_feats(feats, offs, which, gh, gw, exclude, label=""):
+    """Same, from features: 1-NN distance of support image `which`'s patches to
+    the k-image bank, with the same-image exclusion applied."""
+    import torch
+    n = gh * gw
+    o0, o1 = int(offs[which]), int(offs[which + 1])
+    assert o1 - o0 == n, f"grid {gh}x{gw} != {o1 - o0} patches"
+    Q = torch.from_numpy(feats[o0:o1].astype(np.float32))
+    B = torch.from_numpy(feats.astype(np.float32))
+    Q = Q / (Q.norm(dim=1, keepdim=True) + 1e-12)
+    B = B / (B.norm(dim=1, keepdim=True) + 1e-12)
+    D = (1.0 - Q @ B.T).numpy()
+    return cal_scores_from_D(D, gh, gw, o0, exclude, label)
+
+
 # ------------------------------------------------------------------- affine
 def fit_affine(x_448, y_672, a_min=0.0, a_max=100.0):
     """Fit  s448 ~= a * s672 + b  (addendum 2 / pre-registration section 2.4
@@ -285,14 +358,129 @@ def selftest():
     print("\n  ALL CALIBRATION PRIMITIVES PASS")
 
 
+def selftest_bank():
+    """Bank-level nearest-neighbour tests with hand-computed answers.
+
+    4x4 lookup grid, so patch (r, c) has index r*4 + c and its 3x3 block is
+    easy to enumerate by hand.  All distances are set explicitly, so the
+    expected nearest LEGAL neighbour is known before the code runs.
+    """
+    print("\n" + "=" * 78)
+    print("bank-level NN exclusion (hand-computed)")
+    print("=" * 78)
+    BIG = 9.0
+
+    # ---- 1. the nearest patch is excluded -> the next legal one wins ----
+    D = np.full((16, 32), BIG)
+    D[:, 15] = 5.0                       # a legal fallback everywhere
+    D[5, 5] = 0.0                        # query (1,1): itself, must be banned
+    D[5, 7] = 0.1                        # (1,3): outside the 3x3 -> legal
+    r = cal_scores_from_D(D, 4, 4, 0, excl_448, "t1")
+    assert r[1, 1] == 0.1, r[1, 1]
+    print(f"  1. nearest is itself (0.0, banned) -> returns {r[1, 1]}  OK")
+
+    # ---- 2. two nearest banned -> the third is returned ----
+    D = np.full((16, 32), BIG)
+    D[:, 15] = 5.0
+    D[10, 10] = 0.0                      # (2,2): itself
+    D[10, 14] = 0.1                      # (3,2): inside the 3x3 -> banned
+    D[10, 3] = 0.2                       # (0,3): legal
+    r = cal_scores_from_D(D, 4, 4, 0, excl_448, "t2")
+    assert r[2, 2] == 0.2, r[2, 2]
+    print(f"  2. two nearest banned (0.0, 0.1) -> returns {r[2, 2]}     OK")
+
+    # ---- 3. k = 1: a far patch of the SAME image is selectable ----
+    D = np.full((16, 16), BIG)
+    D[5, 5] = 0.0                        # banned
+    D[5, 15] = 0.3                       # (3,3), far corner -> legal
+    r = cal_scores_from_D(D, 4, 4, 0, excl_448, "t3")
+    assert r[1, 1] == 0.3, r[1, 1]
+    print(f"  3. k=1, far same-image patch usable -> {r[1, 1]}         OK")
+
+    # ---- 4. k > 1: another support image is NOT affected ----
+    D = np.full((16, 32), BIG)
+    D[5, 5] = 0.0                        # own patch, banned
+    D[5, 16 + 5] = 0.05                  # image 1's patch 5 -> other block
+    r = cal_scores_from_D(D, 4, 4, 0, excl_448, "t4")
+    assert r[1, 1] == 0.05, r[1, 1]
+    # and prove it really was reachable only via the other block
+    m = allowed_mask(4, 4, 0, 32, excl_448)
+    assert m[5, 16 + 5] and not m[5, 5]
+    print(f"  4. k=2, other image unaffected by same-image ban -> "
+          f"{r[1, 1]}   OK")
+
+    # ---- 5. border clipping: corner query bans 2x2, not 3x3 ----
+    m = allowed_mask(4, 4, 0, 32, excl_448)
+    banned = np.where(~m[0, :16])[0]
+    assert list(banned) == [0, 1, 4, 5], banned
+    D = np.full((16, 32), BIG)
+    D[:, 15] = 5.0
+    D[0, 0] = 0.0
+    D[0, 1] = 0.0
+    D[0, 4] = 0.0
+    D[0, 5] = 0.0
+    D[0, 2] = 0.4                        # (0,2) -> legal
+    r = cal_scores_from_D(D, 4, 4, 0, excl_448, "t5")
+    assert r[0, 0] == 0.4, r[0, 0]
+    print(f"  5. corner query bans exactly {list(banned)} (clipped), "
+          f"returns {r[0, 0]}  OK")
+
+    # ---- 6. all candidates banned -> fail-fast, never relaxed ----
+    D = np.full((9, 9), BIG)
+    for p in range(9):
+        D[p, p] = 0.0
+    try:
+        cal_scores_from_D(D, 3, 3, 0, excl_448, "t6")
+        raise AssertionError("expected a fail-fast: centre of a 3x3 grid has "
+                             "every candidate excluded")
+    except SystemExit as e:
+        assert "FAIL-FAST" in str(e) and "never relaxed" in str(e)
+    print("  6. a patch with every candidate banned fails fast   OK")
+
+    # ---- 7. determinism under ties ----
+    D = np.full((16, 32), BIG)
+    D[5, 5] = 0.0
+    D[5, 3] = 0.5
+    D[5, 15] = 0.5
+    a1 = cal_scores_from_D(D, 4, 4, 0, excl_448, "t7")
+    a2 = cal_scores_from_D(D.copy(), 4, 4, 0, excl_448, "t7")
+    assert np.array_equal(a1, a2), "ties are not reproducible"
+    assert np.allclose(a1, np.where(np.isfinite(a1), a1, 0)) and a1[1, 1] == 0.5
+    print(f"  7. tie returns the same value every run ({a1[1, 1]}), and any "
+          f"downstream\n     index selection uses lowest-index argmin "
+          f"semantics            OK")
+
+    # ---- 8. 672 query -> the 448 patch that contains it ----
+    assert [containing_448(u, v) for u, v in
+            [(0, 0), (1, 1), (2, 2), (3, 3), (5, 5), (47, 47)]] == \
+        [(0, 0), (0, 0), (1, 1), (2, 2), (3, 3), (31, 31)]
+    # a 672 query's exclusion is the one belonging to its containing 448 patch
+    rr, cc = excl_672(1, 1, 6, 6)
+    assert rr.size == 5 and cc.size == 5
+    # two 672 tokens inside the same 448 patch inherit the SAME ban
+    a = excl_for_672(3, 3, 6, 6)
+    b = excl_for_672(4, 4, 6, 6)
+    assert containing_448(3, 3) == containing_448(4, 4) == (2, 2)
+    assert np.array_equal(a[0], b[0]) and np.array_equal(a[1], b[1])
+    # a token in the NEXT 448 patch gets a different (shifted) ban
+    c = excl_for_672(5, 5, 6, 6)
+    assert containing_448(5, 5) == (3, 3) and not np.array_equal(a[0], c[0])
+    print(f"  8. containing_448 + excl_for_672: tokens in one coarse patch "
+          f"share its ban,\n     the next patch gets a shifted one      OK")
+    print("\n  ALL BANK-LEVEL TESTS PASS")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--selftest-bank", action="store_true")
     a = ap.parse_args()
-    if a.selftest:
+    if a.selftest_bank:
+        selftest_bank()
+    elif a.selftest:
         selftest()
     else:
-        raise SystemExit("use --selftest")
+        raise SystemExit("use --selftest or --selftest-bank")
 
 
 if __name__ == "__main__":
