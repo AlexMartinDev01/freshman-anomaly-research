@@ -86,6 +86,34 @@ argmax，它同时验证了整条计算链。（本检查初次编写时把窗�
 
 **在项目负责人确认之前，不跑 smoke test，不跑主实验。**
 
+## I8. 更正：transistor 的 A3-vs-A4 反事实比例是 53/53，不是 29/53
+
+**此前报告的 29/53 与 30/53 作废。**
+
+`v3_run.main` 里那段诊断写成：
+
+```python
+ndiff = sum(1 for i in range(len(integ))          # 按 refined 的"个数"迭代
+            if not np.array_equal(np.sort(arms["a3"][i]["pos"]),
+                                  np.sort(arms["a4s0"][i]["pos"])))
+```
+
+它按 `len(integ)`（refined 图的个数）迭代，却用该下标去索引**完整的 100 张图**列表。
+refined 的 53 张**散布**在 100 张里，所以它实际比的是**前 53 张**——
+与真正被细化的那 53 张基本不重合，53 次比较全是错配的图像对。
+
+正确写法（`v3_verify_runner.py` 用的）：
+
+```python
+ref_idx = [i for i, x in enumerate(arms["a3"]) if x["m2"] > 0]
+```
+
+**更正后：transistor k=1 s0，A3 与 A4(seed 0) 的位置在 `53/53` 张被细化的图上不同。**
+
+该更正**不改变任何 A3/A4 的 map**（只改一处打印语句），因此不推翻模型实现，
+也不作废任何已保存 cell。它改变的是 G3 的解释：A4 的反事实空间比此前报告的
+更大，而不是只有约六成的图有区别。
+
 ## I7. A4 随机 seed 的派生（确定性实现）
 
 补充 1 A1.3 只说"A4 使用 10 个预先固定的随机种子"，**没有规定 seed 如何派生**。
