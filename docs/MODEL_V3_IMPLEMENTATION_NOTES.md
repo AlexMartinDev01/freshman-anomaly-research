@@ -86,6 +86,42 @@ argmax，它同时验证了整条计算链。（本检查初次编写时把窗�
 
 **在项目负责人确认之前，不跑 smoke test，不跑主实验。**
 
+## I7. A4 随机 seed 的派生（确定性实现）
+
+补充 1 A1.3 只说"A4 使用 10 个预先固定的随机种子"，**没有规定 seed 如何派生**。
+实现冻结如下（属实现层，不新增预注册 addendum——方法与随机对照的定义未变）：
+
+```
+seed(dataset, object, shot, split, seed_id, arm) =
+    int.from_bytes(SHA256(f"{dataset}|{object}|{shot}|{split}|{seed_id}|{arm}")
+                   .digest()[:8], "big")
+
+A4: arm = "A4",  seed_id = 0..9
+```
+
+**为何把全部标识写进 key**：
+
+- **`dataset`**：MVTec 与 VisA 未来可能出现同名 category；
+- **`shot` / `split`**：最初的实现只用了 `(object, seed_id)`，导致**同一对象在各
+  shot/split 上的 A4 随机画完全重复**。每个 cell 的反事实本身仍合法（预算相等
+  断言照样通过），但 cell 之间的随机位置被人为耦合，Monte Carlo 覆盖不自然。
+  这不是统计单元的问题——统计单元已冻结为 27 个 category，不是 cell——而是
+  随机结构的问题，在任何性能结果出现之前修掉。
+- **`arm` namespace**：防止未来第二个随机臂与 A4 碰撞。
+
+**不用 `hash()`**（进程间随机化），**不用位置索引**（依赖有多少个对象排在前）。
+
+**验证**（`v3_refine.py --selftest-seed`）：
+
+```
+✓ 同一 key 跨进程、跨运行得到完全相同的 seed
+✓ dataset / object / shot / split / seed_id 任一改变都改变 seed
+✓ namespace 改变 seed
+✓ 单 cell 的 10 个 seed 互异
+✓ 跨 27x4x3x10 规模的扫描无碰撞
+锚点 seed("mvtec","bottle",1,0,3) = 2959745414427513892（两次独立进程一致）
+```
+
 ## I6. 预运行发现：support-only 校准的触发率**不迁移**（2026-09-28）
 
 `v3_selector.py` 按 §2.2 冻结的设计实现了 support-only 校准，并在

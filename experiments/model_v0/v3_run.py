@@ -112,8 +112,13 @@ def run_arm(obj, shot, split, mode, model, resize, totensor, norm,
                                for c in range(g.shape[1])]
                               for r in range(g.shape[0])]).ravel()
         use = cand if mode == "a3" else pool
+        seed_key = None
+        if mode == "a4":
+            dataset = "visa" if not os.path.isdir(
+                os.path.join(rf.V1, obj)) else "mvtec"
+            seed_key = (dataset, obj, shot, split, seed_i)
         pos = rf.choose(mode, use, m2, h.ravel(), g.ravel(),
-                        rows.ravel(), cols.ravel(), obj, seed_i=seed_i,
+                        rows.ravel(), cols.ravel(), seed_key=seed_key,
                         gt=gtwin)
         # a4/a5 draw from the hot pool, so they always have enough candidates
         assert len(pos) == m2

@@ -266,15 +266,27 @@ def load_split_448(obj, which):
 N_SEEDS = 10
 
 
-def seed_of(obj, i):
-    """Stable per-(object, seed index) seed. Not hash() -- randomised per
-    process -- and not a positional index, so the draw does not depend on how
-    many objects happened to precede this one."""
+def seed_of(dataset, obj, shot, split, seed_id, arm="A4"):
+    """Deterministic A4 seed.
+
+        seed = SHA256("dataset|object|shot|split|seed_id|arm")[:8] as an int
+
+    Everything that identifies the draw goes in, so two workers computing the
+    same cell derive the identical draw whatever order they run in, and no two
+    cells share a draw by accident.  Consciously NOT `hash()` (randomised per
+    process) and NOT a positional index (depends on how many objects happened
+    to precede this one).
+
+    `dataset` and the `arm` namespace are in the key because MVTec and VisA can
+    both grow a category of the same name, and because a future second random
+    arm must not collide with A4's.
+    """
     import hashlib
-    return int.from_bytes(hashlib.sha256(f"{obj}:{i}".encode()).digest()[:4], "big")
+    key = f"{dataset}|{obj}|{shot}|{split}|{seed_id}|{arm}"
+    return int.from_bytes(hashlib.sha256(key.encode()).digest()[:8], "big")
 
 
-def choose(mode, pool, m2, hot, gap, rows, cols, obj, seed_i=0, gt=None):
+def choose(mode, pool, m2, hot, gap, rows, cols, seed_key=None, gt=None):
     """POSITION-ONLY selection, `pool` = this arm's candidate set.
 
     `m2` is produced by the single frozen allocate() call and handed in, so
@@ -299,7 +311,8 @@ def choose(mode, pool, m2, hot, gap, rows, cols, obj, seed_i=0, gt=None):
                               len(pool))
         return pool[order][:m2]
     if mode == "a4":
-        rng = np.random.default_rng(seed_of(obj, seed_i))
+        assert seed_key is not None, "a4 needs a seed key"
+        rng = np.random.default_rng(seed_of(*seed_key))
         return rng.choice(pool, size=m2, replace=False)
     if mode == "a5":
         score = np.zeros(len(pool)) if gt is None else np.asarray(gt)[pool]
@@ -344,7 +357,10 @@ def check_budget_equality(objects, shot=1, splits=1):
                     p = choose("a3" if mode == "a3" else
                                ("a4" if mode.startswith("a4") else "a5"),
                                use, m2, h.ravel(), g.ravel(),
-                               rows.ravel(), cols.ravel(), obj, seed_i=si)
+                               rows.ravel(), cols.ravel(),
+                               seed_key=("mvtec" if
+                                         os.path.isdir(os.path.join(V1, obj))
+                                         else "visa", obj, shot, sp, si))
                     if mode == "a3":
                         pos_a3 = p
                     assert len(p) == m2, f"{mode}: {len(p)} != m2={m2}"
@@ -360,7 +376,10 @@ def check_budget_equality(objects, shot=1, splits=1):
                 ms.append(m)
                 if m2 > 0 and not np.array_equal(np.sort(pos_a3), np.sort(
                         choose("a4", pool, m2, h.ravel(), g.ravel(),
-                               rows.ravel(), cols.ravel(), obj, seed_i=0))):
+                               rows.ravel(), cols.ravel(),
+                               seed_key=("mvtec" if
+                                         os.path.isdir(os.path.join(V1, obj))
+                                         else "visa", obj, shot, sp, 0)))):
                     n_diff += 1
             ms = np.asarray(ms)
             print(f"  F {obj:<12} {shot}-shot s{sp}: {n_chk} images, "
@@ -373,12 +392,47 @@ def check_budget_equality(objects, shot=1, splits=1):
                   f"p90 {np.percentile(ms, 90):.0f}, max {ms.max()}", flush=True)
 
 
+def selftest_seed():
+    """A4 seed derivation: same cell -> same draw, any component -> new draw."""
+    base = seed_of("mvtec", "bottle", 1, 0, 3)
+    assert base == seed_of("mvtec", "bottle", 1, 0, 3), "not deterministic"
+    variants = [("visa", "bottle", 1, 0, 3),      # dataset
+                ("mvtec", "screw", 1, 0, 3),      # object
+                ("mvtec", "bottle", 2, 0, 3),     # shot
+                ("mvtec", "bottle", 1, 1, 3),     # split
+                ("mvtec", "bottle", 1, 0, 4)]     # seed_id
+    for v in variants:
+        assert seed_of(*v) != base, f"component ignored: {v}"
+    assert seed_of("mvtec", "bottle", 1, 0, 3, "A5") != base, "namespace ignored"
+    # the 10 seeds of one cell are all distinct
+    assert len({seed_of("mvtec", "bottle", 1, 0, j) for j in range(10)}) == 10
+    # and no two cells collide across a full 27 x 4 x 3 x 10 sweep
+    seen = set()
+    for ds, objs in (("mvtec", ["bottle", "screw"]), ("visa", ["pcb2"])):
+        for o in objs:
+            for k in (1, 2, 4, 8):
+                for sp in range(3):
+                    for j in range(10):
+                        s = seed_of(ds, o, k, sp, j)
+                        assert s not in seen, f"seed collision at {ds}/{o}"
+                        seen.add(s)
+    print(f"  seed selftest OK.  anchor seed_of('mvtec','bottle',1,0,3) = "
+          f"{base}")
+    print(f"  (run this twice: the anchor must print the same value, proving "
+          f"cross-process determinism)")
+    return base
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--check-budget", action="store_true")
+    ap.add_argument("--selftest-seed", action="store_true")
     ap.add_argument("--objects", default="bottle")
     a = ap.parse_args()
+    if a.selftest_seed:
+        selftest_seed()
+        return
     if a.check_budget:
         print("V3 section 10-F -- per-image budget equality")
         check_budget_equality(a.objects.split(","))
