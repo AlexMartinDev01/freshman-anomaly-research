@@ -45,7 +45,11 @@ import v3_refine as rf  # noqa: E402
 import v3_check_affine_real as aff  # noqa: E402
 import v3_check_scale as cs  # noqa: E402
 
-ARMS = ["a0", "a2", "a3", "a5"] + [f"a4s{j}" for j in range(mf.N_SEEDS)]
+# The REFINING arms, all on the 448 grid, so they stack into one array.  a0
+# and a2 are reference maps saved separately: a0 is 448-grid but refines
+# nothing, and a2 is on the 672 grid, so neither belongs in this stack nor in
+# the budget-equality check.
+ARMS = ["a3", "a5"] + [f"a4s{j}" for j in range(mf.N_SEEDS)]
 
 
 def sha256_file(p, chunk=1 << 20):
@@ -94,6 +98,9 @@ def is_complete(outdir, require_files=True):
         return False, f"status={j.get('status')}"
     if j.get("arms_present") != len(ARMS):
         return False, f"arms_present={j.get('arms_present')} != {len(ARMS)}"
+    for req in ("a0.npy", "a2.npy"):
+        if req not in (j.get("files") or {}):
+            return False, f"reference map {req} was never recorded"
     if len(j.get("a4_seed_ids", [])) != mf.N_SEEDS:
         return False, "a4_seed_ids incomplete"
     if not all(j.get(k) for k in ("all_finite", "budget_equal",
@@ -182,7 +189,26 @@ def run_cell(cell, output_root, model_bundle=None):
                                 totensor, norm, c448, c672, te448, tau_hot,
                                 tau_gap, a_, b_, gt=gt)
 
+        # ---- reference maps: A0 (448) and A2 (global 672), no refinement ----
+        # A2 reuses the cached 672 test features, so it costs no forward pass.
+        S0 = sel.test_maps(obj, c448, te448, shot, split)
+        g4 = te448[rf.LAYERS[0]]["grids"]
+        a0 = [np.asarray(m).reshape(int(g4[i][0]), int(g4[i][1]))
+              for i, m in enumerate(S0)]
+        A2, _, g6 = _a2_map(obj, shot, split, c672, te672)
+        a2 = [np.asarray(m).reshape(int(g6[i][0]), int(g6[i][1]))
+              for i, m in enumerate(A2)]
+        # A3/A4/A5 all replace a0-values only where they refine, so the
+        # no-refinement arms (m2 == 0) must equal A0 exactly.  Verified here
+        # rather than assumed, since it is what makes A3 comparable to A0.
+        for k, v in arms.items():
+            for i, r in enumerate(v):
+                if r["m2"] == 0:
+                    assert np.array_equal(r["map"], a0[i]), \
+                        f"{k} image {i}: m=0 but differs from A0"
+
         # ---- integrity checks, before anything is finalized ----
+        # budget equality is only meaningful among the REFINING arms
         T = {k: np.array([r["T"] for r in v]) for k, v in arms.items()}
         budget_equal = all((T[k] == T["a3"]).all() for k in arms)
         all_finite = all(np.isfinite(r["map"]).all()
@@ -201,6 +227,8 @@ def run_cell(cell, output_root, model_bundle=None):
         np.savez_compressed(os.path.join(tmp, "arms.npz"),
                             **{k: np.stack([r["map"] for r in v])
                                for k, v in arms.items()})
+        np.save(os.path.join(tmp, "a0.npy"), np.stack(a0))
+        np.save(os.path.join(tmp, "a2.npy"), np.stack(a2))
         diag = {k: [{kk: vv for kk, vv in r.items() if kk != "map"}
                     for r in v] for k, v in arms.items()}
         with open(os.path.join(tmp, "diagnostics.json"), "w",
@@ -268,9 +296,11 @@ def selftest_resume():
 
     # 3. valid DONE + intact files
     payload = b"x" * 128
-    open(os.path.join(d, "arms.npz"), "wb").write(payload)
-    files = {"arms.npz": dict(size=len(payload),
-                              sha256=sha256_file(os.path.join(d, "arms.npz")))}
+    files = {}
+    for n in ("arms.npz", "a0.npy", "a2.npy"):
+        open(os.path.join(d, n), "wb").write(payload)
+        files[n] = dict(size=len(payload),
+                        sha256=sha256_file(os.path.join(d, n)))
     done = dict(status="complete", cell_id="mvtec/transistor/k1/s0",
                 arms_present=len(ARMS), a4_seed_ids=list(range(mf.N_SEEDS)),
                 all_finite=True, budget_equal=True, support_only_ok=True,
@@ -310,6 +340,17 @@ def selftest_resume():
     ok, why = is_complete(d)
     assert not ok and "unparseable" in why, why
     print(f"  7. corrupted DONE.json            -> INCOMPLETE ({why})")
+
+    # 8. reference maps missing from the record -> not complete
+    done["status"] = "complete"
+    for n in ("a0.npy", "a2.npy"):
+        os.remove(os.path.join(d, n))
+        del done["files"][n]
+    with open(os.path.join(d, "DONE.json"), "w") as f:
+        json.dump(done, f)
+    ok, why = is_complete(d)
+    assert not ok and "reference map" in why, why
+    print(f"  8. reference maps absent          -> INCOMPLETE ({why})")
     shutil.rmtree(root, ignore_errors=True)
     print("\n  RESUME SELFTEST PASS")
 

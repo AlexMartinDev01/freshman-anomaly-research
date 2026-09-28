@@ -127,9 +127,13 @@ def run_arm(obj, shot, split, mode, model, resize, totensor, norm,
         # ---- m = 0: A3 must be BIT-IDENTICAL to A0, not merely close ----
         if m2 == 0:
             A3 = M0.copy()
+            # `map` MUST be recorded here too: the runner packs every arm's
+            # maps into arms.npz and reads r["map"] unconditionally.  Omitting
+            # it on the m = 0 path made the first real run_cell die with
+            # KeyError on transistor's 47 zero-trigger images.
             recs.append(dict(image=names[i], m=m, m2=0, n=0, T=0, B=B,
                              cap_hit=int(m > int(B // 25)), a=a_, b=b_,
-                             shape=A3.shape, pos=pos,
+                             shape=A3.shape, pos=pos, map=A3,
                              identical=bool(np.array_equal(A3, M0))))
             continue
 
