@@ -1,0 +1,107 @@
+diff --git a/main.py b/main.py
+index f92c5d2..dc4c60f 100644
+--- a/main.py
++++ b/main.py
+@@ -185,7 +185,10 @@ def compute_aupro(
+         fprs_s = np.concatenate([fprs_s, [fpr_limit]])
+         pros_s = np.concatenate([pros_s, [pros_s[-1]]])
+ 
+-    aupro = np.trapz(pros_s, fprs_s) / fpr_limit
++    # np.trapz was removed in NumPy 2.0; np.trapezoid is the same function under
++    # its new name. (Their own AU-PRO is only a cross-check here -- maps are
++    # re-scored with our evaluator -- but the crash aborted the whole run.)
++    aupro = np.trapezoid(pros_s, fprs_s) / fpr_limit
+     return float(aupro)
+ 
+ 
+@@ -1008,6 +1011,27 @@ def main():
+                 )
+                 anomaly_maps = scores.reshape(b, h_p, w_p)
+ 
++                # DUMP (local addition, inert unless the env var is set): save the
++                # raw patch-grid map BEFORE post_process_map resizes/blurs it to
++                # image_res. An external evaluator needs the grid, not the
++                # 448x448 resample -- feeding it the resampled map would apply a
++                # second interpolation on top of the evaluator's own.
++                # The CATEGORY must be in the name: this directory is shared by
++                # all 15 categories and defect-type names repeat across them
++                # ("color" in 5, "crack" in 3, "good" in all 15), so keying on
++                # "<defect_type>_<stem>" silently overwrote ~half the maps
++                # (908 dumped instead of 1725).
++                _dump = os.environ.get("SUBSPACEAD_DUMP_DIR")
++                if _dump:
++                    os.makedirs(_dump, exist_ok=True)
++                    for _j in range(b):
++                        _p = Path(path_batch[_j])
++                        np.save(os.path.join(
++                            _dump,
++                            f"{_p.parent.parent.parent.name}_{_p.parent.name}_"
++                            f"{_p.stem}.npy"),
++                            anomaly_maps[_j].astype(np.float32))
++
+                 # Step 3: Masking Strategy
+                 mask_for_viz = None
+                 background_mask = np.zeros_like(anomaly_maps, dtype=bool)
+diff --git a/src/subspacead/core/extractor.py b/src/subspacead/core/extractor.py
+index 3f02dcc..f16af12 100644
+--- a/src/subspacead/core/extractor.py
++++ b/src/subspacead/core/extractor.py
+@@ -1,4 +1,5 @@
+ import logging
++import os
+ import torch
+ from transformers import AutoImageProcessor, AutoModel
+ import cv2
+@@ -176,13 +177,19 @@ class FeatureExtractor:
+         ).to(DEVICE)
+ 
+         # 2. Model Inference
++        # [HARDWARE PATCH - documented]: when SUBSPACEAD_NO_SALIENCY=1, run
++        # without output_attentions. Storing all 40 layers' attention maps of
++        # ViT-giant at 672px needs ~14 GB per image (fine on H100, OOM on 8 GB
++        # cards). Saliency is only used by --bg_mask_method dino_saliency and
++        # by visualization; with the default pipeline it is safe to skip.
++        want_attn = os.environ.get("SUBSPACEAD_NO_SALIENCY", "0") != "1"
+         outputs = self.model(
+-            **inputs, output_hidden_states=True, output_attentions=True
++            **inputs, output_hidden_states=True, output_attentions=want_attn
+         )
+         hidden_states = outputs.hidden_states
+-        attentions = outputs.attentions
++        attentions = outputs.attentions if want_attn else None
+ 
+-        if attentions is None:
++        if want_attn and attentions is None:
+             raise ValueError(
+                 "Attention weights are None. Model may be using Flash Attention. "
+                 "Check transformers version or model compatibility."
+@@ -198,16 +205,19 @@ class FeatureExtractor:
+         batch_size = inputs.pixel_values.shape[0]
+ 
+         # 4. Saliency Mask Extraction
+-        saliency_mask = self._get_saliency_mask(
+-            attentions,
+-            dino_saliency_layer,
+-            num_reg,
+-            drop_front,
+-            n_expected,
+-            batch_size,
+-            h_p,
+-            w_p,
+-        )
++        if attentions is None:
++            saliency_mask = None
++        else:
++            saliency_mask = self._get_saliency_mask(
++                attentions,
++                dino_saliency_layer,
++                num_reg,
++                drop_front,
++                n_expected,
++                batch_size,
++                h_p,
++                w_p,
++            )
+ 
+         # 5. Feature Aggregation
+         fused_tokens = self._aggregate_layers(

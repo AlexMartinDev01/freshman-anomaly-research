@@ -12,3 +12,11 @@ third_party/AnomalyDINO/results_VisA/
 # OS
 Thumbs.db
 .DS_Store
+
+# Vendored third-party checkouts. AnomalyDINO alone is ~13 GB, so the trees are
+# NOT versioned; third_party_patches/ records each upstream URL, the pinned
+# commit and the exact local modifications instead. These directories must
+# still exist on disk -- AnomalyDINO is a RUNTIME dependency of the V3 pipeline.
+third_party/AnomalyDINO/
+third_party/MVTecAD2_code_utils/
+third_party/SubspaceAD/
