@@ -159,7 +159,30 @@ def main():
     ap.add_argument("--objects", default="bottle,transistor")
     ap.add_argument("--shot", type=int, default=1)
     ap.add_argument("--split", type=int, default=0)
+    ap.add_argument("--engineering-only", action="store_true",
+                    help="smoke mode: refuse to even import an evaluator")
     a = ap.parse_args()
+    if a.engineering_only:
+        # The evaluator is imported transitively (phase_m1_rescue pulls it in),
+        # so "not in sys.modules" is the wrong guard.  Instead BOOBY-TRAP the
+        # metric functions: any stray call raises immediately.  That makes a
+        # casual "let me just peek at the metric" impossible rather than
+        # merely discouraged.
+        def _boom(*a_, **k_):
+            raise AssertionError(
+                "ENGINEERING-ONLY mode: a detection metric was called. The "
+                "smoke pass criterion is engineering assertions only -- never "
+                "'the numbers look good'.")
+        import pixel_metrics_binned as _pmb
+        _pmb.pixel_metrics_binned = _boom
+        _pmb.pixel_f1_at_threshold = _boom
+        try:
+            import sklearn.metrics as _skm
+            _skm.roc_auc_score = _boom
+        except ImportError:
+            pass
+        print("ENGINEERING-ONLY: metric functions booby-trapped; pass "
+              "criterion is assertions + no NaN/Inf + no crash")
     print("A3/A4/A5 orchestration -- engineering verification, NO detection "
           "metric read")
     model, resize, totensor, norm = cs.build()
