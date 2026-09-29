@@ -1,0 +1,9 @@
+check,detail
+PC1_positive_control,"12/12 PASS (cos>0.999999, maxdiff<=1e-5)"
+PC2_pooling_weights,"PC2: local_weights == cal.pool_weights, 40 random patches, index and weight exact"
+PC3_bank_exclusion,"PC3: 1000 random (object, layer, held-out image) checks -- held-out contribution is 0 rows everywhere"
+PC4_attention_sums,"checked per batch, |sum a - 1| < 1e-6"
+PC5_finite,checked after aggregation
+PC6_norms,checked after aggregation
+PC7_rows,expected 157464
+PC8_cell_size,"expected 648 per (category,n,layer)"

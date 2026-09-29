@@ -1,0 +1,115 @@
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+manifest: E:\work\freshman\results\model_v0\v3_1_f0_resolution_increment\f0_probe_distances.csv
+  rows 157464
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+=== correctness gates ===
+  cache audit PASS (2 objects; support names compared by name)
+  PC1 mvtec/bottle   448 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   448 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   448 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1: 12/12 PASS
+  P0B_ONLY -> 15 objects: ['mvtec/bottle', 'mvtec/cable', 'mvtec/capsule', 'mvtec/carpet', 'mvtec/grid', 'mvtec/hazelnut', 'mvtec/leather', 'mvtec/metal_nut', 'mvtec/pill', 'mvtec/screw', 'mvtec/tile', 'mvtec/toothbrush', 'mvtec/transistor', 'mvtec/wood', 'mvtec/zipper']
+  mvtec/bottle: DONE, skip
+  mvtec/cable done: 5832 rows
+  mvtec/capsule done: 5832 rows
+  mvtec/carpet done: 5832 rows
+  mvtec/grid done: 5832 rows
+  mvtec/hazelnut done: 5832 rows
+  mvtec/leather done: 5832 rows
+  mvtec/metal_nut done: 5832 rows
+  mvtec/pill done: 5832 rows
+  mvtec/screw done: 5832 rows
+  mvtec/tile done: 5832 rows
+  mvtec/toothbrush done: 5832 rows
+  mvtec/transistor done: 5832 rows
+  mvtec/wood done: 5832 rows
+  mvtec/zipper done: 5832 rows
+
+aggregating 145800 rows from 25 DONE categories
+PC7 FAILED: 145800 rows, expected 157464. Do not analyse.
+PY_EXIT=1
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+manifest: E:\work\freshman\results\model_v0\v3_1_f0_resolution_increment\f0_probe_distances.csv
+  rows 157464
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+=== correctness gates ===
+  cache audit PASS (2 objects; support names compared by name)
+  PC1 mvtec/bottle   448 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   448 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   448 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 mvtec/bottle   672 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     448 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 mid      cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 midlate  cos=1.000000 maxdiff=0.00e+00 OK
+  PC1 visa/pcb2     672 final    cos=1.000000 maxdiff=0.00e+00 OK
+  PC1: 12/12 PASS
+  P0B_ONLY -> 12 objects: ['visa/candle', 'visa/capsules', 'visa/cashew', 'visa/chewinggum', 'visa/fryum', 'visa/macaroni1', 'visa/macaroni2', 'visa/pcb1', 'visa/pcb2', 'visa/pcb3', 'visa/pcb4', 'visa/pipe_fryum']
+  visa/candle done: 5832 rows
+  visa/capsules done: 5832 rows
+  visa/cashew done: 5832 rows
+  visa/chewinggum done: 5832 rows
+  visa/fryum done: 5832 rows
+  visa/macaroni1 done: 5832 rows
+  visa/macaroni2 done: 5832 rows
+  visa/pcb1 done: 5832 rows
+  visa/pcb2: DONE, skip
+  visa/pcb3 done: 5832 rows
+  visa/pcb4 done: 5832 rows
+  visa/pipe_fryum done: 5832 rows
+
+aggregating 157464 rows from 27 DONE categories
+  PC7 rows=157464 OK | PC8 every (category,n,layer)=648 OK
+  PC5 all finite OK | PC6 norms: Q 1.000000 H 1.000000 T 1.000000 | PC4 attn_sum max dev 8.88e-16
+
+=== P0-B frozen gate ===
+ n  n_categories    dH_B   dH_Q  dH_shuf  mvtec_dH_B  visa_dH_B   R_feat    G1    G2   G3    G4   G5    GO
+ 9            27 -0.7023 0.0061   0.0066     -0.6632    -0.7168 -12.4534 False False True False True False
+13            27 -0.7300 0.0045   0.0197     -0.6858    -0.7670 -10.9264 False False True False True False
+15            27 -0.7331 0.0125   0.0187     -0.7147    -0.7392 -10.9013 False False True False True False
+
+  NO-GO for every n -> Transformer branch CLOSED
+
+=== bootstrap 95% CI (uncertainty only; the gate is not modified) ===
+ n  statistic  estimate    ci_lo    ci_hi  ci_excludes_zero
+ 9    delta_B   -0.7023  -0.7201  -0.6345              True
+ 9    delta_Q    0.0061  -0.0042   0.0275             False
+ 9 delta_shuf    0.0066  -0.0007   0.0310             False
+ 9     R_feat  -12.4534 -13.8718 -11.8138              True
+13    delta_B   -0.7300  -0.7855  -0.6762              True
+13    delta_Q    0.0045  -0.0132   0.0318             False
+13 delta_shuf    0.0197   0.0033   0.0393              True
+13     R_feat  -10.9264 -12.4419 -10.2684              True
+15    delta_B   -0.7331  -0.7658  -0.6522              True
+15    delta_Q    0.0125  -0.0147   0.0537             False
+15 delta_shuf    0.0187   0.0001   0.0428              True
+15     R_feat  -10.9013 -12.3862 -10.1372              True
+PY_EXIT=0

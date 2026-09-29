@@ -1,0 +1,43 @@
+{
+  "experiment": "P0-B feature-level parameter-free Global->Local retrieval audit",
+  "protocol": "docs/p0b/P0B_PROTOCOL.md",
+  "protocol_commit": "5f86b1dd0871fe55cc09353d567b60cb41fbab32",
+  "freeze_record": "P0B_FREEZE.txt",
+  "geometry_manifest": "results/model_v0/v3_1_f0_resolution_increment/f0_probe_distances.csv (reused verbatim)",
+  "shot": 8,
+  "split": 0,
+  "scales": [
+    9,
+    13,
+    15
+  ],
+  "layers": [
+    "mid",
+    "midlate",
+    "final"
+  ],
+  "categories": 27,
+  "rows": 157464,
+  "samples_per_category_scale_layer": 648,
+  "arms": [
+    "B",
+    "Q",
+    "C",
+    "H",
+    "Hshuf"
+  ],
+  "target": "T (Full672)",
+  "go_gate": {
+    "G1": "median_27(delta_H_B) >= 0.03",
+    "G2": "MVTec and VisA medians of delta_H_B both > 0",
+    "G3": "median_27(delta_H_Q) > 0",
+    "G4": "median_27(R_feat) >= 0.10",
+    "G5": "median_27(delta_H_shuf) > 0"
+  },
+  "median_rho": {
+    "n9": 0.0987821303480398,
+    "rho_B": 0.8152634118196785
+  },
+  "verdict": "NO-GO for every n; Transformer branch CLOSED",
+  "device": "cuda (DINOv2 ViT-S/14, frozen)"
+}

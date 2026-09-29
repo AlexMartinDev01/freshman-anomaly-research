@@ -1,0 +1,3 @@
+dataset,object,n_support,support_names_identical,all_dims_384,support_names_448
+mvtec,bottle,8,True,True,000.png;104.png;127.png;141.png;148.png;169.png;185.png;198.png
+visa,pcb2,8,True,True,0002.JPG;0210.JPG;0270.JPG;0309.JPG;0556.JPG;0593.JPG;0632.JPG;0836.JPG

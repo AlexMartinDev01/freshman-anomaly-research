@@ -1,0 +1,13 @@
+dataset,object,domain,layer,cos_mean,max_abs_diff,pass_
+mvtec,bottle,448,mid,1.0,0.0,True
+mvtec,bottle,448,midlate,1.0,0.0,True
+mvtec,bottle,448,final,1.0,0.0,True
+mvtec,bottle,672,mid,1.0,0.0,True
+mvtec,bottle,672,midlate,1.0,0.0,True
+mvtec,bottle,672,final,1.0,0.0,True
+visa,pcb2,448,mid,1.0,0.0,True
+visa,pcb2,448,midlate,1.0,0.0,True
+visa,pcb2,448,final,1.0,0.0,True
+visa,pcb2,672,mid,1.0,0.0,True
+visa,pcb2,672,midlate,1.0,0.0,True
+visa,pcb2,672,final,1.0,0.0,True
