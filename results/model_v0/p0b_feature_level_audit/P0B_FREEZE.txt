@@ -1,0 +1,36 @@
+P0-B PROTOCOL FREEZE
+====================
+
+Protocol commit : 5f86b1dd0871fe55cc09353d567b60cb41fbab32
+Commit subject  : experiment(p0b): freeze feature-level conditional retrieval protocol
+Branch          : p0b-feature-audit   (forked from v3-rootcause-closed = ee56257)
+
+Protocol files committed at that SHA:
+  docs/p0b/P0B_PROTOCOL.md
+  experiments/p0b_feature_level_audit/P0B_PROTOCOL.md   (identical copy)
+
+Freeze rule (protocol section 0 / 18):
+  After this point the protocol MUST NOT be revised to follow results.
+  A genuine implementation bug is handled by: keep the old results ->
+  mark INVALIDATED -> write an addendum -> fix -> re-run in full.
+  Silent overwrite is forbidden.
+
+Gates fixed at this SHA:
+  GO = G1 and G2 and G3 and G4 and G5
+    G1 median_27( rho_H - rho_B )    >= 0.03
+    G2 median_MVTec( rho_H - rho_B ) > 0  AND  median_VisA( rho_H - rho_B ) > 0
+    G3 median_27( rho_H - rho_Q )    > 0
+    G4 median_27( R_feat )           >= 0.10
+    G5 median_27( rho_H - rho_shuf ) > 0
+  Tie-break: if several n pass, take the SMALLEST n.
+
+  PC1 12/12 positive control (cos~1, maxdiff<=1e-5)
+  PC2 40 random probes: local pooling weights == cal.pool_weights
+  PC3 1000 random queries: held-out image appears 0 times in the bank
+  PC4 |sum_j a_j - 1| < 1e-6
+  PC5 all features finite
+  PC6 normalized feature norms ~ 1
+  PC7 raw rows == 157464
+  PC8 each (category, n, layer) == 648 rows
+
+Written at 2026-09-29T18:43:13+08:00
