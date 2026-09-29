@@ -1,0 +1,5 @@
+dataset,object,grid,n_tokens,cos_mean,max_abs_diff,pass_
+mvtec,bottle,48x48,2304,1.0,0.0,True
+mvtec,capsule,48x48,2304,1.0,0.0,True
+visa,pcb2,48x62,2976,1.0,0.0,True
+visa,macaroni1,48x72,3456,1.0,0.0,True

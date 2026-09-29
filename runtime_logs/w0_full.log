@@ -1,0 +1,1228 @@
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k1/s0: done (ok)  34s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k1/s1: done (ok)  41s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k1/s2: done (ok)  24s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k2/s0: done (ok)  25s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k2/s1: done (ok)  36s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k2/s2: done (ok)  71s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k4/s0: done (ok)  44s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k4/s1: done (ok)  42s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k4/s2: done (ok)  111s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k8/s0: done (ok)  63s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k8/s1: done (ok)  40s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle/k8/s2: done (ok)  40s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k1/s0: done (ok)  400s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k1/s1: done (ok)  273s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k1/s2: done (ok)  487s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k2/s0: done (ok)  85s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k2/s1: done (ok)  92s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k2/s2: done (ok)  68s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k4/s0: done (ok)  82s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k4/s1: done (ok)  93s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k4/s2: done (ok)  267s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k8/s0: done (ok)  206s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k8/s1: done (ok)  241s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/capsule/k8/s2: done (ok)  193s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k1/s0: done (ok)  27s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k1/s1: done (ok)  32s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k1/s2: done (ok)  26s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k2/s0: done (ok)  108s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k2/s1: done (ok)  60s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k2/s2: done (ok)  125s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k4/s0: done (ok)  60s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k4/s1: done (ok)  42s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k4/s2: done (ok)  47s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k8/s0: done (ok)  97s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k8/s1: done (ok)  76s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/grid/k8/s2: done (ok)  68s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k1/s0: done (ok)  146s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k1/s1: done (ok)  117s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k1/s2: done (ok)  224s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k2/s0: done (ok)  52s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k2/s1: done (ok)  101s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k2/s2: done (ok)  245s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k4/s0: done (ok)  144s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k4/s1: done (ok)  117s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k4/s2: done (ok)  117s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k8/s0: done (ok)  119s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k8/s1: done (ok)  128s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/leather/k8/s2: done (ok)  195s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k1/s0: done (ok)  435s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k1/s1: done (ok)  353s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k1/s2: done (ok)  343s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k2/s0: done (ok)  144s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k2/s1: done (ok)  290s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k2/s2: done (ok)  424s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k4/s0: done (ok)  333s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k4/s1: done (ok)  248s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k4/s2: done (ok)  258s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k8/s0: done (ok)  293s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k8/s1: done (ok)  221s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/pill/k8/s2: done (ok)  233s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k1/s0: done (ok)  314s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k1/s1: done (ok)  218s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k1/s2: done (ok)  183s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k2/s0: done (ok)  252s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k2/s1: done (ok)  267s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k2/s2: done (ok)  178s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k4/s0: done (ok)  76s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k4/s1: done (ok)  193s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k4/s2: done (ok)  277s
+  mvtec/tile/k8/s0: skipped (ok)  0s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k8/s1: done (ok)  191s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/tile/k8/s2: done (ok)  331s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k1/s0: done (ok)  165s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k1/s1: done (ok)  113s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k1/s2: done (ok)  253s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k2/s0: done (ok)  206s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k2/s1: done (ok)  105s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k2/s2: done (ok)  246s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k4/s0: done (ok)  138s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k4/s1: done (ok)  131s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k4/s2: done (ok)  117s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k8/s0: done (ok)  142s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k8/s1: done (ok)  156s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/transistor/k8/s2: done (ok)  116s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k1/s0: done (ok)  248s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k1/s1: done (ok)  98s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k1/s2: done (ok)  132s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k2/s0: done (ok)  85s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k2/s1: done (ok)  174s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k2/s2: done (ok)  100s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k4/s0: done (ok)  196s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k4/s1: done (ok)  170s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k4/s2: done (ok)  144s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k8/s0: done (ok)  234s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k8/s1: done (ok)  148s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/zipper/k8/s2: done (ok)  136s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k1/s0: done (ok)  498s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k1/s1: done (ok)  520s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k1/s2: done (ok)  697s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k2/s0: done (ok)  204s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k2/s1: done (ok)  380s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  visa/candle/k2/s2: done (ok)  310s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+  mvtec/bottle/k1/s0: skipped (ok)  0s
+  mvtec/bottle/k1/s1: skipped (ok)  0s
+  mvtec/bottle/k1/s2: skipped (ok)  0s
+  mvtec/bottle/k2/s0: skipped (ok)  0s
+  mvtec/bottle/k2/s1: skipped (ok)  0s
+  mvtec/bottle/k2/s2: skipped (ok)  0s
+  mvtec/bottle/k4/s0: skipped (ok)  0s
+  mvtec/bottle/k4/s1: skipped (ok)  0s
+  mvtec/bottle/k4/s2: skipped (ok)  0s
+  mvtec/bottle/k8/s0: skipped (ok)  0s
+  mvtec/bottle/k8/s1: skipped (ok)  0s
+  mvtec/bottle/k8/s2: skipped (ok)  0s
+  mvtec/capsule/k1/s0: skipped (ok)  0s
+  mvtec/capsule/k1/s1: skipped (ok)  0s
+  mvtec/capsule/k1/s2: skipped (ok)  0s
+  mvtec/capsule/k2/s0: skipped (ok)  0s
+  mvtec/capsule/k2/s1: skipped (ok)  0s
+  mvtec/capsule/k2/s2: skipped (ok)  0s
+  mvtec/capsule/k4/s0: skipped (ok)  0s
+  mvtec/capsule/k4/s1: skipped (ok)  0s
+  mvtec/capsule/k4/s2: skipped (ok)  0s
+  mvtec/capsule/k8/s0: skipped (ok)  0s
+  mvtec/capsule/k8/s1: skipped (ok)  0s
+  mvtec/capsule/k8/s2: skipped (ok)  0s
+  mvtec/grid/k1/s0: skipped (ok)  0s
+  mvtec/grid/k1/s1: skipped (ok)  0s
+  mvtec/grid/k1/s2: skipped (ok)  0s
+  mvtec/grid/k2/s0: skipped (ok)  0s
+  mvtec/grid/k2/s1: skipped (ok)  0s
+  mvtec/grid/k2/s2: skipped (ok)  0s
+  mvtec/grid/k4/s0: skipped (ok)  0s
+  mvtec/grid/k4/s1: skipped (ok)  0s
+  mvtec/grid/k4/s2: skipped (ok)  0s
+  mvtec/grid/k8/s0: skipped (ok)  0s
+  mvtec/grid/k8/s1: skipped (ok)  0s
+  mvtec/grid/k8/s2: skipped (ok)  0s
+  mvtec/leather/k1/s0: skipped (ok)  0s
+  mvtec/leather/k1/s1: skipped (ok)  0s
+  mvtec/leather/k1/s2: skipped (ok)  0s
+  mvtec/leather/k2/s0: skipped (ok)  0s
+  mvtec/leather/k2/s1: skipped (ok)  0s
+  mvtec/leather/k2/s2: skipped (ok)  0s
+  mvtec/leather/k4/s0: skipped (ok)  0s
+  mvtec/leather/k4/s1: skipped (ok)  0s
+  mvtec/leather/k4/s2: skipped (ok)  0s
+  mvtec/leather/k8/s0: skipped (ok)  0s
+  mvtec/leather/k8/s1: skipped (ok)  0s
+  mvtec/leather/k8/s2: skipped (ok)  0s
+  mvtec/pill/k1/s0: skipped (ok)  0s
+  mvtec/pill/k1/s1: skipped (ok)  0s
+  mvtec/pill/k1/s2: skipped (ok)  0s
+  mvtec/pill/k2/s0: skipped (ok)  0s
+  mvtec/pill/k2/s1: skipped (ok)  0s
+  mvtec/pill/k2/s2: skipped (ok)  0s
+  mvtec/pill/k4/s0: skipped (ok)  0s
+  mvtec/pill/k4/s1: skipped (ok)  0s
+  mvtec/pill/k4/s2: skipped (ok)  0s
+  mvtec/pill/k8/s0: skipped (ok)  0s
+  mvtec/pill/k8/s1: skipped (ok)  0s
+  mvtec/pill/k8/s2: skipped (ok)  0s
+  mvtec/tile/k1/s0: skipped (ok)  0s
+  mvtec/tile/k1/s1: skipped (ok)  0s
+  mvtec/tile/k1/s2: skipped (ok)  0s
+  mvtec/tile/k2/s0: skipped (ok)  0s
+  mvtec/tile/k2/s1: skipped (ok)  0s
+  mvtec/tile/k2/s2: skipped (ok)  0s
+  mvtec/tile/k4/s0: skipped (ok)  0s
+  mvtec/tile/k4/s1: skipped (ok)  0s
+  mvtec/tile/k4/s2: skipped (ok)  0s
+  mvtec/tile/k8/s0: skipped (ok)  0s
+  mvtec/tile/k8/s1: skipped (ok)  0s
+  mvtec/tile/k8/s2: skipped (ok)  0s
+  mvtec/transistor/k1/s0: skipped (ok)  0s
+  mvtec/transistor/k1/s1: skipped (ok)  0s
+  mvtec/transistor/k1/s2: skipped (ok)  0s
+  mvtec/transistor/k2/s0: skipped (ok)  0s
+  mvtec/transistor/k2/s1: skipped (ok)  0s
+  mvtec/transistor/k2/s2: skipped (ok)  0s
+  mvtec/transistor/k4/s0: skipped (ok)  0s
+  mvtec/transistor/k4/s1: skipped (ok)  0s
+  mvtec/transistor/k4/s2: skipped (ok)  0s
+  mvtec/transistor/k8/s0: skipped (ok)  0s
+  mvtec/transistor/k8/s1: skipped (ok)  0s
+  mvtec/transistor/k8/s2: skipped (ok)  0s
+  mvtec/zipper/k1/s0: skipped (ok)  0s
+  mvtec/zipper/k1/s1: skipped (ok)  0s
+  mvtec/zipper/k1/s2: skipped (ok)  0s
+  mvtec/zipper/k2/s0: skipped (ok)  0s
+  mvtec/zipper/k2/s1: skipped (ok)  0s
+  mvtec/zipper/k2/s2: skipped (ok)  0s
+  mvtec/zipper/k4/s0: skipped (ok)  0s
+  mvtec/zipper/k4/s1: skipped (ok)  0s
+  mvtec/zipper/k4/s2: skipped (ok)  0s
+  mvtec/zipper/k8/s0: skipped (ok)  0s
+  mvtec/zipper/k8/s1: skipped (ok)  0s
+  mvtec/zipper/k8/s2: skipped (ok)  0s
+  visa/candle/k1/s0: skipped (ok)  0s
+  visa/candle/k1/s1: skipped (ok)  0s
+  visa/candle/k1/s2: skipped (ok)  0s
+  visa/candle/k2/s0: skipped (ok)  0s
+  visa/candle/k2/s1: skipped (ok)  0s
+  visa/candle/k2/s2: skipped (ok)  0s
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")

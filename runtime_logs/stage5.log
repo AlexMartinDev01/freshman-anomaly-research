@@ -1,0 +1,35 @@
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+  mvtec/bottle k=8: support [0, 104, 127, 141, 148, 169, 185, 198]  grid 48x48  B=1152
+  mvtec/capsule k=8: support [35, 94, 99, 153, 176, 185, 208, 214]  grid 48x48  B=1152
+  visa/pcb2 k=1: support [325]  grid 48x62  B=1488
+  visa/macaroni1 k=1: support [502]  grid 48x72  B=1728
+
+  === context fidelity vs n_ctx (median over samples) ===
+       cos_median  cos_p10  nn_spearman
+n_ctx                                  
+5          0.4320   0.2915      -0.0046
+7          0.5679   0.4073      -0.0103
+9          0.6131   0.4260       0.0013
+11         0.6729   0.4794      -0.0057
+13         0.7011   0.5103       0.0028
+15         0.7101   0.5287      -0.0018
+17         0.7148   0.5331       0.0000
+19         0.7141   0.5306      -0.0064
+21         0.7158   0.5422      -0.0037
+23         0.7278   0.5576      -0.0115
+25         0.7341   0.5766      -0.0116
+27         0.7394   0.5999      -0.0174
+29         0.7506   0.6170      -0.0020
+31         0.7747   0.6402       0.0107
+33         0.7968   0.6540       0.0053
+
+  wrote 05_context_fidelity_support.csv (2430) 05_context_budget_feasibility.csv (60) V3_TRIGGER_PROFILE.csv (60)

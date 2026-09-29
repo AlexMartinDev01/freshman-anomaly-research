@@ -1,0 +1,40 @@
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+  RC_NO_AFFINE=1 -> affine disabled (a=1, b=0), raw domain
+cell mvtec/capsule/k1/s0   affine a=1.00000 b=0.00000
+  support ids = [137]  (S_k)
+  A2-consistent global stats (pooled per-layer 672 distances) ...
+    mu/sd per layer: {'mid': (0.039, 0.031), 'midlate': (0.046, 0.042), 'final': (0.044, 0.046)}
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+    refined images done: 10
+    refined images done: 20
+    refined images done: 30
+    refined images done: 40
+    refined images done: 50
+    refined images done: 60
+    refined images done: 70
+    refined images done: 80
+    refined images done: 90
+    refined images done: 100
+    refined images done: 110
+  refined images: 115
+
+  === Stage 4: fixed-position 2x2 ===
+    C00  img   61.95  px   82.08  AUPRO   26.17
+    C10  img   59.55  px   80.96  AUPRO   54.80
+    C01  img   87.91  px   96.18  AUPRO   61.26
+    C11  img   82.13  px   98.31  AUPRO   87.16
+
+    A0 reference AUPRO (from 01_metric_recheck.csv): see below
+    context (C10-C00)    +28.62
+    norm    (C01-C00)    +35.08
+    both    (C11-C00)    +60.98
+
+  wrote E:\work\freshman\results\model_v0\v3_root_cause_diagnosis\04_stage4_2x2.csv

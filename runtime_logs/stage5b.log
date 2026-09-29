@@ -1,0 +1,52 @@
+Using cache found in C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\msi/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+Loading model: dinov2_vits14
+Device: cuda
+Smaller edge size: 672
+=== positive control: full re-forward vs cache ===
+  mvtec/bottle: cos=1.000000 maxdiff=0.00000 OK
+  mvtec/capsule: cos=1.000000 maxdiff=0.00000 OK
+  visa/pcb2: cos=1.000000 maxdiff=0.00000 OK
+  visa/macaroni1: cos=1.000000 maxdiff=0.00000 OK
+  mvtec/bottle done (grid 48x48, k=8)
+  mvtec/cable done (grid 48x48, k=8)
+  mvtec/capsule done (grid 48x48, k=8)
+  mvtec/carpet done (grid 48x48, k=8)
+  mvtec/grid done (grid 48x48, k=8)
+  mvtec/hazelnut done (grid 48x48, k=8)
+  mvtec/leather done (grid 48x48, k=8)
+  mvtec/metal_nut done (grid 48x48, k=8)
+  mvtec/pill done (grid 48x48, k=8)
+  mvtec/screw done (grid 48x48, k=8)
+  mvtec/tile done (grid 48x48, k=8)
+  mvtec/toothbrush done (grid 48x48, k=8)
+  mvtec/transistor done (grid 48x48, k=8)
+  mvtec/wood done (grid 48x48, k=8)
+  mvtec/zipper done (grid 48x48, k=8)
+  visa/candle done (grid 48x52, k=8)
+  visa/capsules done (grid 48x72, k=8)
+  visa/cashew done (grid 48x52, k=8)
+  visa/chewinggum done (grid 48x57, k=8)
+  visa/fryum done (grid 48x72, k=8)
+  visa/macaroni1 done (grid 48x72, k=8)
+  visa/macaroni2 done (grid 48x72, k=8)
+  visa/pcb1 done (grid 48x62, k=8)
+  visa/pcb2 done (grid 48x62, k=8)
+  visa/pcb3 done (grid 48x78, k=8)
+  visa/pcb4 done (grid 48x59, k=8)
+  visa/pipe_fryum done (grid 48x54, k=8)
+  wrote 05b_budget_all324.csv (4860 rows)
+Traceback (most recent call last):
+  File "E:\work\freshman\experiments\model_v0\v3_stage5b_context.py", line 334, in <module>
+    main()
+    ~~~~^^
+  File "E:\work\freshman\experiments\model_v0\v3_stage5b_context.py", line 330, in main
+    print(f"\n  wrote 05b_* ({len(df)} fidelity rows)")
+                                  ^^
+NameError: name 'df' is not defined. Did you mean: 'Df'?
+PY_EXIT=1
