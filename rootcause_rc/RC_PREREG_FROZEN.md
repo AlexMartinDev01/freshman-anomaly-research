@@ -218,3 +218,65 @@ If either GEO1 or SUFF1 fails, do not run RC-DIR as confirmation of this hypothe
 - Previously inspected AD2 shot curves are exploratory prior only and cannot be presented as new confirmatory evidence.
 - Previously established A1C/A1F findings can motivate object choice but cannot substitute for the new gate statistics.
 - No thresholds, primary objects, endpoints, or p-value directions may be changed after result generation.
+
+
+---
+
+# PRE-RUN DESIGN AMENDMENT A1 — RC-SUFF1 matching replaces stacked meta-classifier
+
+**Timestamp/order:** committed before any RC-GEO1/RC-SUFF1/RC-COV1 analysis code was executed and before any target RC result was generated.
+
+Reason: after freezing the first draft, an audit identified a second-level cross-fitting issue. The existing OOF probe score for an image is safe for that image, but probe scores on the four meta-training folds were produced by models that can include the future meta-heldout fold in their own training sets. A stacked outer logistic model would therefore not be a clean nested estimate.
+
+To remove that ambiguity, the original stacked-model SUFF1 is **not executed**. It is replaced, before results, by a purely held-out conditional matching test that never trains a second-stage classifier.
+
+## Revised RC-SUFF1 — 1NN-matched image pairs
+
+For each object and probe family separately:
+
+1. Work within each of the 5 already-frozen R6-A folds.
+2. Standardize `score_1nn` within the object using a single pooled SD only for expressing the caliper; matching itself uses the raw score.
+3. In each fold, form a one-to-one optimal bipartite matching between bad and good images minimizing absolute `score_1nn` difference (Hungarian assignment).
+4. Discard matched pairs whose absolute 1NN difference exceeds **0.25 pooled object SD**.
+5. Concatenate surviving pairs across folds. The probe score of every image remains its original R6-A OOF prediction; no model is refit.
+
+For each matched pair:
+[
+Delta_{probe}=score_{probe}(bad)-score_{probe}(good)
+]
+and
+[
+Delta_{1NN}=score_{1NN}(bad)-score_{1NN}(good).
+]
+
+Primary statistics:
+- number of matched pairs;
+- median and mean absolute 1NN mismatch;
+- standardized mean difference (SMD) in 1NN score after matching;
+- paired one-sided Wilcoxon H1: Delta_probe > 0;
+- 20,000 fold-stratified label-swap permutations within matched pairs (swap bad/good probe scores inside each pair with p=0.5), seed 20260930;
+- median Delta_probe with 20,000 pair-cluster bootstrap CI.
+
+### Revised frozen hard-object gate: SCALAR_READOUT_INSUFFICIENT
+
+An object passes only if BOTH LogReg and LinearSVM satisfy:
+
+A. >= 15 surviving matched bad-good pairs;
+B. absolute post-match 1NN SMD <= 0.10;
+C. median Delta_probe > 0;
+D. one-sided paired Wilcoxon p < 0.01;
+E. fold-stratified pair-swap permutation p < 0.01;
+F. bootstrap 95% CI lower bound for median Delta_probe > 0.
+
+Root-cause-level SUFF1 support requires at least **2 of 3** hard objects (screw, macaroni2, pcb2) to pass.
+
+Controls (bottle, cable, chewinggum) remain descriptive; inability to match an easy object because 1NN already separates it is not a failure of the hard-object gate.
+
+### Interpretation
+
+This revised test asks a stricter conditional question:
+**among bad and good images that the scalar 1NN score considers nearly equally abnormal, does the independent OOF supervised readout still separate them?**
+
+Passing is direct evidence that the scalar 1NN score is not sufficient for label-relevant information present in the frozen representation.
+
+All other frozen root-cause decision rules remain unchanged.
