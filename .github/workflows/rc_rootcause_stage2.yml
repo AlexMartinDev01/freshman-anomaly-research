@@ -1,0 +1,38 @@
+name: RC Rootcause Stage2
+on:
+  push:
+    branches: [rc-rootcause-directional]
+    paths:
+      - 'rootcause_rc/run_rc_stage2.py'
+      - '.github/workflows/rc_rootcause_stage2.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  rc-stage2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rc-rootcause-directional
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy pandas
+      - name: Execute frozen Stage2
+        run: python rootcause_rc/run_rc_stage2.py | tee rootcause_rc/RC_STAGE2_RUN.txt
+      - name: Persist results
+        run: |
+          git config user.name "rc-rootcause-bot"
+          git config user.email "rc-rootcause-bot@users.noreply.github.com"
+          git add -f rootcause_rc/results_stage2 rootcause_rc/RC_STAGE2_RUN.txt
+          git commit -m "rc: record frozen stage2 root-cause results"
+          git push origin HEAD:rc-rootcause-directional
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rc-rootcause-stage2
+          path: |
+            rootcause_rc/results_stage2/
+            rootcause_rc/RC_STAGE2_RUN.txt
