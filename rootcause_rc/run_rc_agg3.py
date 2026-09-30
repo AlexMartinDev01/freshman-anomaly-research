@@ -39,13 +39,18 @@ for obj in sorted(M.object.unique()):
     s1=wide[.001].to_numpy(float); s10=wide[.01].to_numpy(float)
     obs=float(roc_auc_score(yy,s1)-roc_auc_score(yy,s10))
     bad=np.where(yy==1)[0]; good=np.where(yy==0)[0]
-    rng=np.random.default_rng(SEED+sum(map(ord,obj)))
-    vals=np.empty(B,float)
-    for b in range(B):
-        ii=np.r_[rng.choice(bad,len(bad),replace=True),rng.choice(good,len(good),replace=True)]
-        yb=yy[ii]
-        vals[b]=roc_auc_score(yb,s1[ii])-roc_auc_score(yb,s10[ii])
-    lo,hi=np.quantile(vals,[.025,.975])
+    if obj=="macaroni2":
+        rng=np.random.default_rng(SEED+sum(map(ord,obj)))
+        vals=np.empty(B,float)
+        for b in range(B):
+            ii=np.r_[rng.choice(bad,len(bad),replace=True),rng.choice(good,len(good),replace=True)]
+            yb=yy[ii]
+            vals[b]=roc_auc_score(yb,s1[ii])-roc_auc_score(yb,s10[ii])
+        lo,hi=np.quantile(vals,[.025,.975])
+    else:
+        # Controls are descriptive per the preregistration; no bootstrap is needed
+        # for any frozen control decision.
+        lo,hi=np.nan,np.nan
     m1=M[(M.object==obj)&np.isclose(M.alpha,.001)].iloc[0]
     m10=M[(M.object==obj)&np.isclose(M.alpha,.01)].iloc[0]
     large=M[(M.object==obj)&M.alpha.isin([.02,.05])]
