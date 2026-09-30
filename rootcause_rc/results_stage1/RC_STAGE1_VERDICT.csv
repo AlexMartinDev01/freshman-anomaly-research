@@ -1,0 +1,2 @@
+geo1_verdict,geo1_A,geo1_B,geo1_C,geo1_D,suff1_hard_pass_count,suff1_hard_pass_objects,suff1_root_supported,cov1_median_object_gain,cov1_positive_objects,cov1_dominant_undercoverage_pattern,stage1_verdict
+NOT_ESTABLISHED,False,False,False,True,1,screw,False,1.4011078527207512,12,False,ROOT_CAUSE_NOT_YET_PINNED

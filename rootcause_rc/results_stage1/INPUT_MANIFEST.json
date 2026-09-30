@@ -1,0 +1,35 @@
+{
+  "coverage": {
+    "path": "results/model_v0/metrics/r6a1c_corrected/support_coverage_corrected.csv",
+    "sha256": "d499faeaf4aa30816fc44e0e25bf536747f527e0ef965efe7d209eafb7e9d2b1"
+  },
+  "layers": {
+    "path": "results/model_v0/metrics/r6a1c_corrected/layer_consistency_corrected.csv",
+    "sha256": "fd8ae9156b7acb6318fd12fff97ca3384916f89b0e8945ee11d04347f2d1c380"
+  },
+  "diversity": {
+    "path": "results/model_v0/metrics/r6a1c_corrected/neighbour_diversity_corrected.csv",
+    "sha256": "890889a5bcee38ec946a8a966999b86ed03a058b95dbc8aaf94e18b8d15cdbf4"
+  },
+  "smoke": {
+    "path": "results/model_v0/metrics/r6a_smoke/summary.csv",
+    "sha256": "44abdd8853b6c53ac0b509715301967951602a79632661a0ab3b9e528130e043"
+  },
+  "scores": {
+    "path": "results/model_v0/metrics/r6a_smoke/image_scores.csv",
+    "sha256": "bb36528ad940479e165a20d52a1dfea9dacd0a93b682c29c976347a6cc845206"
+  },
+  "folds": {
+    "path": "results/model_v0/metrics/r6a_smoke/folds.csv",
+    "sha256": "f2757069443d3f92cd834b6ce514b492cdcae0c2395044880e6e330aa637fff5"
+  },
+  "gate17": {
+    "path": "results/model_v0/metrics/gate17a_fusion.csv",
+    "sha256": "cf7ed52081e1d8dc9b896f9d989e9deb5d72a3a56e9da19364aeb643376186f3"
+  },
+  "prereg": {
+    "path": "rootcause_rc/RC_PREREG_FROZEN.md",
+    "sha256": "a8ef7c9d9079d8cf61e186c27b7fcce1b6833fb46e3320cb5111c170fb57b31b"
+  },
+  "git_commit": "19fe9cb1d0f5743f5fef53a0aa9d77f38eedc843"
+}

@@ -1,0 +1,16 @@
+   geo1_verdict  geo1_A  geo1_B  geo1_C  geo1_D  suff1_hard_pass_count suff1_hard_pass_objects  suff1_root_supported  cov1_median_object_gain  cov1_positive_objects  cov1_dominant_undercoverage_pattern            stage1_verdict
+NOT_ESTABLISHED   False   False   False    True                      1                   screw                 False                 1.401108                     12                                False ROOT_CAUSE_NOT_YET_PINNED
+\nHard-object SUFF1:
+   object  probe  n_pairs  caliper  one_nn_smd  median_abs_1nn_mismatch  median_delta_probe  mean_delta_probe   p_wilcoxon  p_pairswap  ci95_lo  ci95_hi  pass_gate
+macaroni2 linsvm       49 0.006062    0.111573                 0.002124            0.713650          0.755581 4.886767e-08     0.00005 0.467096 0.965708      False
+macaroni2 logreg       49 0.006062    0.111573                 0.002124            0.186110          0.226133 3.132126e-10     0.00005 0.139184 0.255226      False
+     pcb2 linsvm       32 0.011508    0.179276                 0.004426            1.478117          1.521319 6.437767e-07     0.00010 1.148411 2.096839      False
+     pcb2 logreg       32 0.011508    0.179276                 0.004426            0.223809          0.287614 7.121125e-06     0.00035 0.166904 0.430325      False
+    screw linsvm       29 0.017050    0.032783                 0.004630            3.462680          3.721584 3.725290e-09     0.00015 2.208455 4.360772       True
+    screw logreg       29 0.017050    0.032783                 0.004630            0.679822          0.602946 3.725290e-09     0.00005 0.416884 0.725428       True
+\nGEO1 macaroni2:
+   object axis metric  n_images  median_delta  mean_delta  sign_fraction  p_greater   ci95_lo   ci95_hi
+macaroni2  knn     d1        90     -0.049058   -0.050611       0.355556   0.999999 -0.081748 -0.008701
+macaroni2  knn     d2        90     -0.062226   -0.057796       0.311111   1.000000 -0.089092 -0.020564
+macaroni2  knn     d5        90     -0.066518   -0.063754       0.300000   1.000000 -0.094934 -0.032249
+macaroni2  knn    d10        90     -0.066242   -0.070790       0.255556   1.000000 -0.106607 -0.030189
