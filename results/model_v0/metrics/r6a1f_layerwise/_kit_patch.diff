@@ -1,0 +1,736 @@
+### R6-A1F kit patch record
+# The R6A1F kit shipped 3 placeholder scripts that cannot run:
+#   r6a1f_layer_trace.py -> raise SystemExit('请连接你的现有R6-A1E feature pipeline后运行')
+#   r6a1f_precheck.py  -> print('Precheck placeholder')
+#   analyze_r6a1f.py   -> print('Generate R6-A1F reports')
+# RUN_R6A1F.ps1 also had no Set-Location (broken from any cwd).
+#
+# The 3 scripts were IMPLEMENTED against the audited R6-A1E pipeline.
+# Reconstructed originals verified byte-exact against SHA256_MANIFEST.txt.
+# Two files were ADDED: r6a1f_utils.py, R6A1F_VERDICT_RULES_FROZEN.md.
+# No frozen parameter (radii/alpha/GT threshold/layer grid/donor/pair) changed.
+
+--- /e/work/freshman/results/model_v0/metrics/r6a1f_layerwise/_kit_patch_ORIGINAL_r6a1f_precheck.py	2026-09-30 17:28:40.291349200 +0800
++++ /e/work/freshman/r6a1f_kit/r6a1f_precheck.py	2026-09-30 17:24:28.033604600 +0800
+@@ -1,3 +1,179 @@
+-
+-print('Precheck placeholder')
+-print('需要检查 feature cache parity, layer availability, patch grid')
++# -*- coding: utf-8 -*-
++"""R6-A1F precheck -- mandatory gates. STOP on any failure; never loosen.
++
++Beyond the A1E parity gate this adds one guard that matters specifically here:
++`phase_m1_rescue.load_cached` HARDCODES `grids = (32,32)` for the stacked MVTec
++test cache (line 86). It is correct for screw/cable/bottle only because those
++images really are 32x32. So the token-count check below is asserted from the
++FEATURE LENGTH, independently of `ec["grids"]`, and cross-checked against
++`model.prepare_image`.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import sys
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++import torch
++
++ROOT = Path.cwd()
++sys.path.insert(0, str(ROOT))
++sys.path.insert(0, str(ROOT / "experiments" / "model_v0"))
++sys.path.insert(0, str(ROOT / "experiments" / "baseline"))
++sys.path.insert(0, str(ROOT / "third_party" / "AnomalyDINO"))
++sys.path.insert(0, str(ROOT / "r6a1e_preencoding"))
++sys.path.insert(0, str(ROOT / "r6a1f_kit"))
++
++from phase_m1_rescue import load_obj                                  # noqa: E402
++from r6a1e_utils import (load_anomalydino_model, cosine_positionwise,  # noqa: E402
++                         cache_img_features)
++from r6a1f_utils import LAYER_INDEX, LAYER_NAME, A1E_CACHE_BLOCK, EXPECT_N  # noqa: E402
++
++CFG = json.loads((ROOT / "r6a1e_preencoding" / "R6A1E_CONFIG.json").read_text(encoding="utf-8"))
++KIT = json.loads((ROOT / "r6a1f_kit" / "R6A1F_CONFIG.json").read_text(encoding="utf-8"))
++A1E = ROOT / "results" / "model_v0" / "metrics" / "r6a1e_preencoding"
++OUT = ROOT / "results" / "model_v0" / "metrics" / "r6a1f_layerwise"
++OUT.mkdir(parents=True, exist_ok=True)
++
++print("=== R6-A1F PRECHECK ===")
++if not torch.cuda.is_available():
++    raise SystemExit("CUDA unavailable: STOP")
++print("GPU:", torch.cuda.get_device_name(0))
++
++# ---- 1. A1E artifacts present, and their hashes recorded -------------------
++REQUIRED = ["parity_report.csv", "resolved_test_paths.csv", "donor_manifest.csv",
++            "pair_manifest.csv", "survivor_manifest.csv", "per_pair.csv",
++            "raw_full_good_baseline.csv", "FROZEN_OBJECT_VERDICTS.csv"]
++missing = [f for f in REQUIRED if not (A1E / f).exists()]
++if missing:
++    raise SystemExit(f"Missing A1E artifacts: {missing}. STOP.")
++with open(OUT / "a1f_inputs_sha256.txt", "w", encoding="utf-8") as fh:
++    fh.write("# R6-A1F reuses these frozen R6-A1E artifacts verbatim.\n")
++    for f in REQUIRED:
++        h = hashlib.sha256((A1E / f).read_bytes()).hexdigest()
++        fh.write(f"{h}  {f}\n")
++        print("  sha256", f, h[:16])
++
++par = pd.read_csv(A1E / "parity_report.csv")
++if (par.median_cos < 0.9995).any() or (par.p01_cos < 0.995).any():
++    raise SystemExit("A1E parity report does not pass the frozen gate. STOP.")
++
++PATHS = pd.read_csv(A1E / "resolved_test_paths.csv")
++DONORS = pd.read_csv(A1E / "donor_manifest.csv")
++PAIRS = pd.read_csv(A1E / "pair_manifest.csv")
++SURV = pd.read_csv(A1E / "survivor_manifest.csv")
++
++OBJECTS = [str(o) for o in KIT["objects"]]
++for o in OBJECTS:
++    if o not in set(SURV.object):
++        raise SystemExit(f"{o} missing from survivor_manifest. STOP.")
++    n_surv = int(SURV[(SURV.object == o) & (SURV.primary_survivor)].shape[0])
++    if n_surv < 1:
++        raise SystemExit(f"{o}: zero survivors. STOP.")
++    print(f"  {o:11s} survivors={n_surv:4d}  donors={int((DONORS.object==o).sum())}")
++print("  objects:", OBJECTS, "| pcb2 excluded by R6A1F_CONFIG (spec)")
++
++# ---- 2. model + block count ------------------------------------------------
++model = load_anomalydino_model(ROOT, CFG)
++nb = len(model.model.blocks)
++if nb != 12:
++    raise SystemExit(f"expected 12 blocks, got {nb}. STOP.")
++patch_size = int(model.model.patch_size)
++print(f"  model blocks={nb} patch_size={patch_size} "
++      f"register_tokens={getattr(model.model,'num_register_tokens',0)}")
++
++# ---- 3. per-object: token-count guard + dense identity probe + parity -------
++parity_rows, layer_rows = [], []
++for obj in OBJECTS:
++    _, _, tr, te = load_obj("r0", obj)
++    tc, ec = tr["final"], te["final"]
++    types = np.asarray([str(x) for x in ec["types"]])
++    offs = np.asarray(ec["offsets"])
++
++    # token count from the FEATURE LENGTH, not from ec["grids"]
++    i0 = 0
++    N_feat = int(offs[i0 + 1] - offs[i0])
++    H, W = map(int, ec["grids"][i0])
++    if N_feat != H * W:
++        raise SystemExit(f"{obj}: feature length {N_feat} != grid {H}x{W}={H*W}. STOP.")
++    if obj in EXPECT_N and N_feat != EXPECT_N[obj]:
++        raise SystemExit(f"{obj}: N={N_feat} != expected {EXPECT_N[obj]}. STOP.")
++
++    good = np.where(types == "good")[0]
++    bad = np.where(types == "bad")[0]
++    if not len(good) or not len(bad):
++        raise SystemExit(f"{obj}: missing good/bad. STOP.")
++
++    for i in [int(good[0]), int(bad[0])]:
++        row = PATHS[(PATHS.object == obj) & (PATHS.image_index == i)]
++        if len(row) != 1:
++            raise SystemExit(f"{obj}/{i}: path manifest miss. STOP.")
++        p = str(row.iloc[0].path)
++        t, g = model.prepare_image(p)
++        if tuple(map(int, g)) != (H, W):
++            raise SystemExit(f"{obj}/{i}: prepare_image grid {g} != cached {(H,W)}. STOP.")
++        if tuple(t.shape[-2:]) != (H * patch_size, W * patch_size):
++            raise SystemExit(f"{obj}/{i}: prepared tensor {tuple(t.shape)} vs grid. STOP.")
++
++        x = t.unsqueeze(0).to(model.device)
++        with torch.inference_mode():
++            dense = model.model.get_intermediate_layers(x, n=LAYER_INDEX)
++            default = model.model.get_intermediate_layers(x)[0]
++
++        # dense[11] must be the audited A1E quantity, bitwise
++        d11 = dense[11]
++        same = bool(torch.equal(d11, default))
++        maxdiff = float((d11 - default).abs().max().item())
++
++        # parity of blocks 5/8/11 against the frozen cache
++        for name, blk in A1E_CACHE_BLOCK.items():
++            cached = cache_img_features(te[name], i)
++            got = dense[blk].squeeze(0).float().cpu().numpy()
++            if got.shape != cached.shape:
++                raise SystemExit(f"{obj}/{i}/{name}: shape {got.shape} vs {cached.shape}. STOP.")
++            cs = cosine_positionwise(cached, got)
++            med, p01 = float(np.median(cs)), float(np.quantile(cs, .01))
++            parity_rows.append(dict(object=obj, image_index=i, image_type=types[i],
++                                    layer_name=name, layer_index=blk,
++                                    median_cos=med, p01_cos=p01, min_cos=float(cs.min()),
++                                    n_patches=len(cs), feature_dim=int(cached.shape[1])))
++            if med < 0.9995 or p01 < 0.995:
++                pd.DataFrame(parity_rows).to_csv(OUT / "parity_report_FAILED.csv", index=False)
++                raise SystemExit(f"PARITY FAIL {obj}/{i}/{name}: med={med:.7f} p01={p01:.7f}. STOP.")
++        print(f"  {obj:11s} idx{i:<4d} {types[i]:4s} dense[11]==default:{same} "
++              f"maxdiff={maxdiff:.2e} N={N_feat}")
++
++        if not same and maxdiff > 0:
++            raise SystemExit(f"{obj}/{i}: dense[11] != default call. STOP.")
++
++    for blk in LAYER_INDEX:
++        layer_rows.append(dict(object=obj, layer_index=blk,
++                               layer_name=LAYER_NAME.get(blk, ""),
++                               depth_frac=round((blk + 1) / nb, 4),
++                               layer_name_status="fixed_by_25pct_depth_grid",
++                               a1e_cache_name=next((k for k, v in A1E_CACHE_BLOCK.items() if v == blk), ""),
++                               is_config_named=blk in LAYER_NAME,
++                               dense_matches_default=(blk == 11),
++                               n_tokens=N_feat, grid_h=H, grid_w=W))
++
++# ---- 4. donor paths + replace_tensor shape contract ------------------------
++for _, d in DONORS[DONORS.object.isin(OBJECTS)].iterrows():
++    if not Path(str(d.path)).exists():
++        raise SystemExit(f"donor path missing: {d.path}. STOP.")
++    if bool(d.is_support):
++        raise SystemExit(f"donor is a support image: {d.path}. STOP.")
++print("  donor paths exist, none is a support image")
++
++# ---- 5. layer index freeze ------------------------------------------------
++df = pd.DataFrame(layer_rows)
++df.to_csv(OUT / "r6a1f_LAYER_INDEX.csv", index=False)
++pd.DataFrame(parity_rows).to_csv(OUT / "parity_report.csv", index=False)
++
++print("\nPARITY GATE PASS")
++print("parity rows:", len(parity_rows),
++      "| min median_cos:", round(float(pd.DataFrame(parity_rows).median_cos.min()), 8),
++      "| min p01:", round(float(pd.DataFrame(parity_rows).p01_cos.min()), 8))
++print("wrote", OUT / "r6a1f_LAYER_INDEX.csv", "and", OUT / "parity_report.csv")
+--- /e/work/freshman/results/model_v0/metrics/r6a1f_layerwise/_kit_patch_ORIGINAL_r6a1f_layer_trace.py	2026-09-30 17:28:40.291349200 +0800
++++ /e/work/freshman/r6a1f_kit/r6a1f_layer_trace.py	2026-09-30 17:27:11.025664300 +0800
+@@ -1,9 +1,243 @@
++# -*- coding: utf-8 -*-
++"""R6-A1F -- Layer-wise Causal Propagation Trace (main driver).
+ 
+-# 实验主脚本入口
+-# 接入已有 DINO feature extractor
+-# 对每个 layer:
+-# 1. raw image
+-# 2. counterfactual image
+-# 3. matched good control
+-# 计算 layer-wise token drift
+-raise SystemExit('请连接你的现有R6-A1E feature pipeline后运行')
++R6-A1E measured one layer (block 11). This traces all 12 blocks in a single
++forward per image and asks: where does the pre-encoding counterfactual's
++far-field consequence START, does it GROW with depth, and does its magnitude
++survive an input-perturbation magnitude-matched control?
++
++Reuses A1E's frozen manifests verbatim (donors, matched goods, survivor set), so
++this is a strict extension of A1E rather than a re-randomization: block 11 of the
++dense trace must reproduce A1E's cell-level drift.
++
++Everything is diagnostic. No detector, no threshold tuning.
++"""
++from __future__ import annotations
++
++import json
++import sys
++import time
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++import torch
++
++ROOT = Path.cwd()
++sys.path.insert(0, str(ROOT))
++sys.path.insert(0, str(ROOT / "experiments" / "model_v0"))
++sys.path.insert(0, str(ROOT / "experiments" / "baseline"))
++sys.path.insert(0, str(ROOT / "third_party" / "AnomalyDINO"))
++sys.path.insert(0, str(ROOT / "r6a1e_preencoding"))
++sys.path.insert(0, str(ROOT / "r6a1f_kit"))
++
++from phase_m1_rescue import load_obj                                     # noqa: E402
++from gate_r2_layer_confirm import draw_images                            # noqa: E402
++from r6a1e_utils import (load_anomalydino_model, make_support_bank,      # noqa: E402
++                         cache_img_features, score_1nn, topmean,
++                         dilate_patch_mask, patchmask_to_pixel, replace_tensor,
++                         cheb_distance_from_gt, ring_label)
++from r6a1f_utils import (LAYER_INDEX, LAYER_NAME, extract_dense,         # noqa: E402
++                         dense_drift_full, dense_rel_l2, topmean_rows,
++                         input_delta_pixel, input_delta_token)
++
++CFG = json.loads((ROOT / "r6a1e_preencoding" / "R6A1E_CONFIG.json").read_text(encoding="utf-8"))
++KIT = json.loads((ROOT / "r6a1f_kit" / "R6A1F_CONFIG.json").read_text(encoding="utf-8"))
++A1E = ROOT / "results" / "model_v0" / "metrics" / "r6a1e_preencoding"
++
++import argparse
++_ap = argparse.ArgumentParser()
++_ap.add_argument("--objects", default="", help="smoke only: comma list; empty = full config")
++_ap.add_argument("--max-bad", type=int, default=0, help="smoke only: cap bad images; 0 = all")
++_ap.add_argument("--outdir", default="", help="smoke only: alternate output directory")
++_args = _ap.parse_args()
++
++# precheck artifacts always come from the canonical dir; OUT only receives trace
++# outputs (so a smoke run can never overwrite the gated manifests)
++PRE = ROOT / "results" / "model_v0" / "metrics" / "r6a1f_layerwise"
++OUT = ROOT / "results" / "model_v0" / "metrics" / (_args.outdir or "r6a1f_layerwise")
++OUT.mkdir(parents=True, exist_ok=True)
++
++OBJECTS = [o for o in _args.objects.split(",") if o] or [str(o) for o in KIT["objects"]]
++RADII = [int(r) for r in KIT["radii"]]
++ALPHA = float(KIT["alpha"][0])
++GT_THR = 0.10
++MIN_VALID_R16 = 10
++RINGS = ["1-2", "3-4", "5-8", "9-16", "17+"]
++NL = len(LAYER_INDEX)
++
++if not (PRE / "parity_report.csv").exists():
++    raise SystemExit(f"Missing {PRE/'parity_report.csv'}; run r6a1f_precheck.py first.")
++for req in ["donor_manifest.csv", "pair_manifest.csv",
++            "survivor_manifest.csv", "resolved_test_paths.csv"]:
++    if not (A1E / req).exists():
++        raise SystemExit(f"Missing frozen A1E artifact {A1E/req}. STOP.")
++p = pd.read_csv(PRE / "parity_report.csv")
++if (p.median_cos < 0.9995).any() or (p.p01_cos < 0.995).any():
++    raise SystemExit("Saved parity report does not pass the frozen gate. STOP.")
++
++PATHS = pd.read_csv(A1E / "resolved_test_paths.csv")
++DONORS = pd.read_csv(A1E / "donor_manifest.csv")
++PAIRS = pd.read_csv(A1E / "pair_manifest.csv")
++SURV = pd.read_csv(A1E / "survivor_manifest.csv")
++
++model = load_anomalydino_model(ROOT, CFG)
++patch_size = int(model.model.patch_size)
++
++series_rows, ring_rows, cell_rows = [], [], []
++
++
++def get_path(obj, idx):
++    q = PATHS[(PATHS.object == obj) & (PATHS.image_index == int(idx))]
++    if len(q) != 1:
++        raise RuntimeError(f"path manifest miss {obj}/{idx}")
++    return str(q.iloc[0].path)
++
++
++for obj in OBJECTS:
++    t0 = time.perf_counter()
++    print(f"\n=== OBJECT {obj} ===", flush=True)
++    _, _, tr, te = load_obj("r0", obj)
++    tc, ec = tr["final"], te["final"]
++
++    ids = [int(v) for v in draw_images(tc["offsets"], 4, 0, obj)]
++    bank = make_support_bank(tc, ids)
++
++    types = np.asarray([str(x) for x in ec["types"]])
++    offs = np.asarray(ec["offsets"])
++    H, W = map(int, ec["grids"][0])
++    N = int(offs[1] - offs[0])
++    if N != H * W:
++        raise RuntimeError(f"{obj}: N={N} != {H}x{W}")
++
++    # raw features straight from the frozen cache -- this is what A1E scored
++    raw_feats = {i: cache_img_features(ec, i) for i in range(len(types))}
++
++    survivors = [int(b) for b in
++                 SURV[(SURV.object == obj) & (SURV.primary_survivor)].bad_index]
++    if _args.max_bad:
++        survivors = survivors[:_args.max_bad]
++    print(f"  survivors {len(survivors)}", flush=True)
++
++    donor_tensors = []
++    for _, dr in DONORS[DONORS.object == obj].sort_values("donor_rank").iterrows():
++        t, g = model.prepare_image(str(dr.path))
++        if tuple(map(int, g)) != (H, W):
++            raise RuntimeError(f"{obj}: donor grid {g} != {(H,W)}")
++        donor_tensors.append((int(dr.donor_rank), t, str(dr.path)))
++
++    for bcount, bi in enumerate(survivors):
++        aa, bb = int(offs[bi]), int(offs[bi + 1])
++        gt = np.asarray(ec["gt_frac"][aa:bb], float).reshape(H, W)
++        G = gt > GT_THR
++        if not G.any():
++            continue
++        dist = cheb_distance_from_gt(G).reshape(-1)
++        exc_masks = {r: dilate_patch_mask(G, r) for r in RADII}
++
++        gp = PAIRS[(PAIRS.object == obj) & (PAIRS.bad_index == bi)].sort_values("good_rank")
++        good_ids = [int(x) for x in gp.good_index.tolist()]
++
++        raw_batch = [model.prepare_image(get_path(obj, bi))[0]] + \
++                    [model.prepare_image(get_path(obj, gi))[0] for gi in good_ids]
++        if any(tuple(t.shape) != tuple(raw_batch[0].shape) for t in raw_batch):
++            raise RuntimeError(f"{obj}/{bi}: target tensor shapes differ")
++
++        # raw dense pass: ONCE per bad image, hoisted out of radius/donor loops
++        raw12, x0_raw = extract_dense(model, raw_batch)
++
++        for r in RADII:
++            exc = exc_masks[r]
++            valid = (~exc).reshape(-1)               # FLAT, always
++            if valid.sum() < 1:
++                continue
++            pixmask = patchmask_to_pixel(exc, patch_size, raw_batch[0].shape[-2:])
++
++            for donor_rank, donor_tensor, donor_path in donor_tensors:
++                cfs = [replace_tensor(t, donor_tensor, pixmask) for t in raw_batch]
++                cf12, x0_cf = extract_dense(model, cfs)
++
++                drift_all, rel_all, dpix, dtok, topo = [], [], [], [], []
++                for s in range(len(raw_batch)):
++                    dr = dense_drift_full(raw12[s], cf12[s])          # (12, N)
++                    drift_all.append(dr)
++                    rel_all.append(dense_rel_l2(raw12[s], cf12[s], valid))
++                    dpix.append(input_delta_pixel(raw_batch[s], cfs[s], pixmask))
++                    dtok.append(input_delta_token(x0_raw[s], x0_cf[s], exc))
++                    topo.append(topmean_rows(dr, valid, ALPHA))
++
++                # ---- final-layer scores, exactly as A1E -------------------
++                sc_raw = [topmean(score_1nn(raw_feats[bi], bank), valid, ALPHA)] + \
++                         [topmean(score_1nn(raw_feats[gi], bank), valid, ALPHA) for gi in good_ids]
++                sc_cf = [topmean(score_1nn(cf12[s][11], bank), valid, ALPHA)
++                         for s in range(len(raw_batch))]
++
++                # ---- A1E cross-check: drift from the CACHE raw vs fresh cf --
++                # A1E's raw reference was the fp16 cache; ours is a fresh fp32
++                # forward. Parity is 0.99999988, not 1.0, so compare with
++                # tolerance and keep the difference visible.
++                a1e_drift = []
++                for s, idx in enumerate([bi] + good_ids):
++                    cache_raw = np.asarray(raw_feats[idx], np.float32)
++                    a1e_drift.append(float(np.mean(
++                        dense_drift_full(cache_raw[None], cf12[s][11][None])[0][valid])))
++
++                # ---- per-series layer rows --------------------------------
++                for s in range(len(raw_batch)):
++                    tag = "bad" if s == 0 else f"good{s}"
++                    gi = -1 if s == 0 else good_ids[s - 1]
++                    for l in LAYER_INDEX:
++                        series_rows.append(dict(
++                            object=obj, bad_index=bi, series=tag, good_index=gi,
++                            radius=r, donor_rank=donor_rank, layer_index=l,
++                            layer_name=LAYER_NAME.get(l, ""), n_valid=int(valid.sum()),
++                            delta_pixel=dpix[s], delta_token=dtok[s],
++                            drift_mean=float(drift_all[s][l][valid].mean()),
++                            drift_top01=float(topo[s][l]),
++                            rel_l2=float(rel_all[s][l]),
++                            score_raw=float(sc_raw[s]), score_cf=float(sc_cf[s])))
++
++                # ---- radius/ring profile ----------------------------------
++                for s in range(len(raw_batch)):
++                    tag = "bad" if s == 0 else f"good{s}"
++                    for ring in ["ALL"] + RINGS:
++                        m = valid.copy()
++                        if ring != "ALL":
++                            m = m & np.array([ring_label(int(d)) == ring for d in dist])
++                        if not m.any():
++                            continue
++                        for l in LAYER_INDEX:
++                            ring_rows.append(dict(
++                                object=obj, bad_index=bi, series=tag, radius=r,
++                                donor_rank=donor_rank, ring=ring, layer_index=l,
++                                layer_name=LAYER_NAME.get(l, ""), n_patch=int(m.sum()),
++                                drift_mean=float(drift_all[s][l][m].mean()),
++                                rel_l2=float(np.linalg.norm(
++                                    cf12[s][l][m] - raw12[s][l][m], axis=1).mean()
++                                    / max(1e-12, np.linalg.norm(raw12[s][l][m], axis=1).mean()))))
++
++                # ---- matched-pair rows ------------------------------------
++                for j, gi in enumerate(good_ids, start=1):
++                    cell_rows.append(dict(
++                        object=obj, bad_index=bi, good_index=gi, radius=r,
++                        donor_rank=donor_rank, n_valid=int(valid.sum()),
++                        raw_score_bad=sc_raw[0], raw_score_good=sc_raw[j],
++                        cf_score_bad=sc_cf[0], cf_score_good=sc_cf[j],
++                        score_DiD=(sc_cf[0] - sc_raw[0]) - (sc_cf[j] - sc_raw[j]),
++                        a1e_drift_bad=a1e_drift[0], a1e_drift_good=a1e_drift[j],
++                        drift_diff_a1e=a1e_drift[0] - a1e_drift[j]))
++                del cfs, cf12, x0_cf, drift_all, rel_all
++
++        del raw12, x0_raw, raw_batch
++        if (bcount + 1) % 10 == 0:
++            print(f"  {obj} {bcount+1}/{len(survivors)}", flush=True)
++            pd.DataFrame(series_rows).to_csv(OUT / "per_series_layer.csv", index=False)
++            pd.DataFrame(ring_rows).to_csv(OUT / "radius_profile_raw.csv", index=False)
++            pd.DataFrame(cell_rows).to_csv(OUT / "matched_cells.csv", index=False)
++
++    print(f"  {obj} done ({time.perf_counter()-t0:.1f}s)", flush=True)
++    pd.DataFrame(series_rows).to_csv(OUT / "per_series_layer.csv", index=False)
++    pd.DataFrame(ring_rows).to_csv(OUT / "radius_profile_raw.csv", index=False)
++    pd.DataFrame(cell_rows).to_csv(OUT / "matched_cells.csv", index=False)
++
++print("\nR6-A1F layer trace complete:", OUT)
+--- /e/work/freshman/results/model_v0/metrics/r6a1f_layerwise/_kit_patch_ORIGINAL_analyze_r6a1f.py	2026-09-30 17:28:40.291349200 +0800
++++ /e/work/freshman/r6a1f_kit/analyze_r6a1f.py	2026-09-30 17:27:56.953410000 +0800
+@@ -1,6 +1,276 @@
+-
+-# 输出：
+-# layer propagation curve
+-# radius decay curve
+-# object mechanism table
+-print('Generate R6-A1F reports')
++# -*- coding: utf-8 -*-
++"""R6-A1F reports.
++
++The verdict rules implemented here are frozen in
++`R6A1F_VERDICT_RULES_FROZEN.md`, written BEFORE the trace was run. No layer,
++radius or alpha is selected anywhere; `early` is a fixed label (block 2, 25%
++depth by continuation of the project's 5/8/11 pin drop), while `onset_layer` is
++a RESULT read off the dense curve.
++"""
++from __future__ import annotations
++
++import sys
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++
++ROOT = Path.cwd()
++sys.path.insert(0, str(ROOT / "r6a1f_kit"))
++sys.path.insert(0, str(ROOT / "r6a1e_preencoding"))
++
++from r6a1f_utils import (fit_linear, resid_from_fit, permutation_null,   # noqa: E402
++                         cluster_bootstrap, spearman, LAYER_NAME)
++from scipy.stats import wilcoxon                                         # noqa: E402
++
++OUT = ROOT / "results" / "model_v0" / "metrics" / "r6a1f_layerwise"
++A1E = ROOT / "results" / "model_v0" / "metrics" / "r6a1e_preencoding"
++N_PERM = 2000
++N_BOOT = 2000
++
++S = pd.read_csv(OUT / "per_series_layer.csv")
++CELL = pd.read_csv(OUT / "matched_cells.csv")
++RING = pd.read_csv(OUT / "radius_profile_raw.csv")
++OBJECTS = list(dict.fromkeys(S.object))
++LAYERS = sorted(S.layer_index.unique())
++
++# ------------------------------------------------------------------ per stratum
++rows = []
++for (obj, r, don, l), g in S.groupby(["object", "radius", "donor_rank", "layer_index"]):
++    is_bad = (g.series == "bad").to_numpy()
++    cluster = g.bad_index.to_numpy()
++    drift = g.drift_mean.to_numpy(float)
++    topo = g.drift_top01.to_numpy(float)
++    dpix = g.delta_pixel.to_numpy(float)
++    dtok = g.delta_token.to_numpy(float)
++
++    fit = fit_linear(dpix[~is_bad], drift[~is_bad])
++    flag = "OK"
++    if fit is None:
++        flag = "LOW_SPREAD"
++    d_good = dpix[~is_bad]
++    lo, hi = np.quantile(d_good, [.05, .95]) if len(d_good) else (np.nan, np.nan)
++    overlap = float(np.mean((dpix[is_bad] >= d_good.min()) & (dpix[is_bad] <= d_good.max()))) \
++        if len(d_good) else np.nan
++    extrap = float(np.mean(dpix[is_bad] > d_good.max())) if len(d_good) else np.nan
++    if np.isfinite(extrap) and extrap > 0.2 and flag == "OK":
++        flag = "EXTRAPOLATED"
++
++    rec = dict(object=obj, radius=r, donor_rank=don, layer_index=l,
++               layer_name=LAYER_NAME.get(l, ""), n_bad=int(is_bad.sum()),
++               n_good=int((~is_bad).sum()),
++               drift_bad_mean=float(drift[is_bad].mean()),
++               drift_good_mean=float(drift[~is_bad].mean()),
++               drift_diff=float(drift[is_bad].mean() - drift[~is_bad].mean()),
++               drift_top01_bad=float(topo[is_bad].mean()),
++               drift_top01_good=float(topo[~is_bad].mean()),
++               drift_top01_diff=float(topo[is_bad].mean() - topo[~is_bad].mean()),
++               frac_bad_gt_good=float(np.mean(
++                   [np.mean(drift[is_bad][cluster[is_bad] == c] >
++                            np.median(drift[~is_bad][cluster[~is_bad] == c]))
++                    for c in np.unique(cluster[is_bad])])),
++               delta_pixel_bad_mean=float(dpix[is_bad].mean()),
++               delta_pixel_good_mean=float(dpix[~is_bad].mean()),
++               delta_token_bad_mean=float(dtok[is_bad].mean()),
++               delta_token_good_mean=float(dtok[~is_bad].mean()),
++               overlap_frac=overlap, extrap_frac=extrap, flag=flag,
++               sd_delta_good=float(np.std(d_good, ddof=1)) if len(d_good) > 1 else np.nan)
++    if fit is None:
++        rec.update(dict(slope_good=np.nan, intercept_good=np.nan, r2_good=np.nan,
++                        resid_mean=np.nan, resid_lo=np.nan, resid_hi=np.nan,
++                        perm_p=np.nan, resid_mean_tokencov=np.nan, slope_diff_tokencov=np.nan,
++                        matched_estimate=np.nan, matched_n=0, matched_sign_agrees=False))
++    else:
++        res = resid_from_fit(fit, dpix[is_bad], drift[is_bad])
++        perm = permutation_null(dpix, drift, cluster, is_bad, N_PERM, seed=20260930 + l * 17 + r)
++        boot = cluster_bootstrap(dpix, drift, cluster, is_bad, N_BOOT, seed=20260930 + l * 31 + r)
++        fit_tok = fit_linear(dtok[~is_bad], drift[~is_bad])
++        # matched-subset: keep only bads whose delta lies inside the good central 90%
++        keep = (dpix[is_bad] >= lo) & (dpix[is_bad] <= hi)
++        if keep.sum() >= 3:
++            matched = float(drift[is_bad][keep].mean()
++                            - drift[~is_bad][(dpix[~is_bad] >= lo) & (dpix[~is_bad] <= hi)].mean())
++            mn = int(keep.sum())
++        else:
++            matched, mn = np.nan, 0
++        rec.update(dict(
++            slope_good=fit["b"], intercept_good=fit["a"], r2_good=fit["r2"],
++            resid_mean=float(res.mean()), resid_lo=boot["lo"], resid_hi=boot["hi"],
++            perm_p=perm["p"], perm_null_sd=perm["null_sd"],
++            resid_mean_tokencov=float(resid_from_fit(fit_tok, dtok[is_bad], drift[is_bad]).mean())
++            if fit_tok is not None else np.nan,
++            slope_diff_tokencov=(fit_tok["b"] - fit_linear(dtok[~is_bad], drift[~is_bad])["b"])
++            if fit_tok is not None else np.nan,
++            matched_estimate=matched, matched_n=mn,
++            matched_sign_agrees=bool(np.isfinite(matched) and np.sign(matched) == np.sign(res.mean())),
++            matched_lo=float(lo), matched_hi=float(hi)))
++    rows.append(rec)
++
++T = pd.DataFrame(rows)
++T.to_csv(OUT / "confound_control.csv", index=False)
++
++# donor-collapsed
++dm = T.groupby(["object", "radius", "layer_index"]).agg(
++    drift_bad=("drift_bad_mean", "mean"), drift_good=("drift_good_mean", "mean"),
++    drift_diff=("drift_diff", "mean"), drift_top01_diff=("drift_top01_diff", "mean"),
++    resid=("resid_mean", "mean"), perm_p=("perm_p", "max"),
++    resid_tokencov=("resid_mean_tokencov", "mean"),
++    matched=("matched_estimate", "mean"), matched_n=("matched_n", "min"),
++    sign_agree=("matched_sign_agrees", lambda x: bool(np.all(x))),
++    overlap=("overlap_frac", "mean"), extrap=("extrap_frac", "mean"),
++    slope_good=("slope_good", "mean"), r2_good=("r2_good", "mean"),
++    flag=("flag", lambda x: "LOW_SPREAD" if (x == "LOW_SPREAD").any() else x.iloc[0])
++).reset_index().rename(columns={"resid": "resid_mean"})
++
++dm["layer_name"] = dm.layer_index.map(lambda l: LAYER_NAME.get(l, ""))
++dm["depth_frac"] = (dm.layer_index + 1) / 12.0
++# donor sign agreement must be read off the DONOR-LEVEL table, before collapsing
++dsa = (T.groupby(["object", "radius", "layer_index"]).resid_mean
++       .apply(lambda s: bool(len(s) == 2 and ((s < 0).all() or (s > 0).all())))
++       .rename("donor_sign_agree").reset_index())
++dm = dm.merge(dsa, on=["object", "radius", "layer_index"], how="left")
++
++# per-bad wilcoxon on drift_diff at the required layers
++bad_rows = []
++for (obj, r, don, l), g in S.groupby(["object", "radius", "donor_rank", "layer_index"]):
++    piv = g.pivot_table(index="bad_index", columns="series", values="drift_mean")
++    if "bad" not in piv:
++        continue
++    goods = [c for c in piv.columns if c.startswith("good")]
++    d = piv["bad"] - piv[goods].mean(axis=1)
++    try:
++        wp = float(wilcoxon(d.to_numpy(), alternative="two-sided",
++                            zero_method="wilcox").pvalue) if np.any(d.to_numpy() != 0) else 1.0
++    except Exception:
++        wp = np.nan
++    bad_rows.append(dict(object=obj, radius=r, donor_rank=don, layer_index=l,
++                         n_bad=len(d), drift_diff_mean=float(d.mean()),
++                         frac_pos=float((d > 0).mean()),
++                         q05=float(d.quantile(.05)), q50=float(d.median()),
++                         q95=float(d.quantile(.95)), wilcoxon_p=wp))
++B = pd.DataFrame(bad_rows)
++B.to_csv(OUT / "bad_good_difference.csv", index=False)
++
++dm = dm.drop(columns=["wilcoxon_p"]).merge(
++    B.groupby(["object", "radius", "layer_index"]).wilcoxon_p.max().reset_index(),
++    on=["object", "radius", "layer_index"], how="left")
++
++# ------------------------------------------------- required summary files
++CFG_LAYERS = {2: "early", 5: "mid", 8: "midlate", 11: "final"}
++dm[dm.layer_index.isin(CFG_LAYERS)].to_csv(OUT / "layer_drift_summary.csv", index=False)
++dm.to_csv(OUT / "dense_layer_curve.csv", index=False)
++
++rp = RING[RING.ring != "ALL"].groupby(
++    ["object", "radius", "layer_index", "ring", "series"]).drift_mean.mean().reset_index()
++rpv = rp.pivot_table(index=["object", "radius", "layer_index", "ring"],
++                     columns="series", values="drift_mean").reset_index()
++goods = [c for c in rpv.columns if str(c).startswith("good")]
++rpv["drift_good_mean"] = rpv[goods].mean(axis=1)
++rpv["drift_diff"] = rpv["bad"] - rpv["drift_good_mean"]
++rpv.rename(columns={"bad": "drift_bad_mean"}, inplace=True)
++for c in ["object", "radius", "layer_index", "ring", "drift_bad_mean",
++          "drift_good_mean", "drift_diff"]:
++    pass
++rpv["layer_name"] = rpv.layer_index.map(lambda l: LAYER_NAME.get(l, ""))
++rpv[["object", "radius", "layer_index", "layer_name", "ring",
++     "drift_bad_mean", "drift_good_mean", "drift_diff"]].to_csv(
++    OUT / "radius_profile.csv", index=False)
++
++# ------------------------------------------------- score link (Q3)
++pp = pd.read_csv(A1E / "per_pair.csv")
++pp = pp[(pp.alpha == 0.01) & (pp.object.isin(OBJECTS))]
++pb = pp.groupby(["object", "bad_index", "radius", "donor_rank"]).apply(
++    lambda g: pd.Series({"pwr_change": g.groupby("good_index").apply(
++        lambda h: h.cf_win.mean() - h.raw_win.mean()).mean()}),
++    include_groups=False).reset_index()
++link = S[S.layer_index == 11].pivot_table(
++    index=["object", "bad_index", "radius", "donor_rank"], columns="series",
++    values="drift_mean").reset_index()
++gcols = [c for c in link.columns if str(c).startswith("good")]
++link["drift_diff"] = link["bad"] - link[gcols].mean(axis=1)
++link = link.merge(pb, on=["object", "bad_index", "radius", "donor_rank"], how="inner")
++sl = []
++for (obj, r), g in link.groupby(["object", "radius"]):
++    rho, pv = spearman(g.drift_diff, g.pwr_change)
++    sl.append(dict(object=obj, radius=r, n=int(len(g)), spearman_rho=rho, p= pv))
++    # NOTE: PWR is a win-rate and the replacement is non-neutral for it (A1E);
++    # this link is reported for completeness, the drift residual is the primary.
++sl.append(dict(object="ALL_POOLED", radius=-1, n=int(len(link)),
++               spearman_rho=spearman(link.drift_diff, link.pwr_change)[0],
++               p=spearman(link.drift_diff, link.pwr_change)[1]))
++pd.DataFrame(sl).to_csv(OUT / "score_link.csv", index=False)
++
++# ------------------------------------------------- verdicts (frozen rules)
++verd = []
++coll = pd.read_csv(A1E / "raw_full_good_baseline.csv")
++coll = coll[coll.alpha == 0.01]
++for obj in OBJECTS:
++    z = dm[dm.object == obj]
++    if not len(z):
++        continue
++    # onset: first layer with resid>0 at r=16, perm p<.05, sustained to block 11
++    c16 = z[z.radius == 16].sort_values("layer_index")
++    onset, rule = "NONE_DETECTED", "resid>0 & perm_p<.05 & sustained to block 11"
++    for i, row in c16.iterrows():
++        pos = (c16.loc[i:, "resid_mean"] > 0).all()
++        if row.resid_mean > 0 and np.isfinite(row.perm_p) and row.perm_p < 0.05 and pos:
++            onset = int(row.layer_index)
++            break
++    rho, pv = spearman(c16.layer_index.to_numpy(), c16.resid_mean.to_numpy())
++    f = c16[c16.layer_index == 11].resid_mean.mean()
++    e = c16[c16.layer_index == 2].resid_mean.mean()
++    if np.isfinite(rho) and rho >= 0.6 and pv < 0.05 and f > e:
++        trend = "HIERARCHICAL"
++    elif np.isfinite(e) and np.isfinite(f) and f != 0 and e >= 0.8 * f:
++        trend = "INPUT_STAGE"
++    else:
++        trend = "MIXED"
++
++    r8 = z[(z.radius == 8) & (z.layer_index == 11)]
++    r16 = z[(z.radius == 16) & (z.layer_index == 11)]
++    v8, v16 = float(r8.resid_mean.iloc[0]) if len(r8) else np.nan, \
++        float(r16.resid_mean.iloc[0]) if len(r16) else np.nan
++    p8, p16 = float(r8.perm_p.iloc[0]) if len(r8) else np.nan, \
++        float(r16.perm_p.iloc[0]) if len(r16) else np.nan
++    sa8 = bool(r8.donor_sign_agree.iloc[0]) if len(r8) else False
++    sa16 = bool(r16.donor_sign_agree.iloc[0]) if len(r16) else False
++    naive_max = float(z[z.radius.isin([8, 16])].drift_diff.abs().max())
++    if v8 > 0 and v16 > 0 and p8 < 0.05 and p16 < 0.05 and sa8 and sa16:
++        verdict = "PROPAGATION_SUPPORTED"
++    elif v8 < 0 and v16 < 0 and p8 < 0.05 and p16 < 0.05:
++        verdict = "UNDER_PROPAGATION"
++    elif naive_max > 0.01:
++        verdict = "MAGNITUDE_EXPLAINED"
++    else:
++        verdict = "MIXED_INDETERMINATE"
++
++    cb = coll[coll.object == obj].set_index("radius")
++    score_r16 = float(cb.loc[16, "raw_full_good_pairwise_auc"]) if 16 in cb.index else np.nan
++    score_r0 = float(cb.loc[0, "raw_full_good_pairwise_auc"]) if 0 in cb.index else np.nan
++    verd.append(dict(object=obj, n_bad=int(c16.n_bad.max() if len(c16) else 0),
++                     onset_layer=onset, onset_rule=rule,
++                     depth_trend_spearman_rho=rho, depth_trend_p=pv, depth_trend=trend,
++                     resid_r8=v8, resid_r16=v16, perm_p_r8=p8, perm_p_r16=p16,
++                     donor_sign_agree_r8=sa8, donor_sign_agree_r16=sa16,
++                     naive_drift_diff_abs_max=naive_max,
++                     propagation_score=float(np.nanmean([v8, v16])),
++                     score_baseline_r0=score_r0, score_at_r16=score_r16,
++                     score_collapse=score_r0 - score_r16 if np.isfinite(score_r0) else np.nan,
++                     verdict=verdict))
++V = pd.DataFrame(verd)
++V.to_csv(OUT / "object_verdict.csv", index=False)
++
++print("=== R6-A1F OBJECT VERDICTS ===")
++print(V[["object", "onset_layer", "depth_trend", "depth_trend_spearman_rho",
++         "resid_r8", "resid_r16", "perm_p_r16", "verdict"]].round(4).to_string(index=False))
++print()
++print("=== final-layer (block 11) drift_diff vs magnitude-controlled residual ===")
++z = dm[(dm.layer_index == 11) & (dm.radius.isin([8, 16]))]
++print(z[["object", "radius", "drift_diff", "resid_mean", "perm_p",
++         "delta_pixel_bad_mean", "delta_pixel_good_mean", "overlap", "extrap",
++         "matched", "matched_n"]].round(4).to_string(index=False))
++print()
++costat = pd.read_csv(OUT / "confound_control.csv")
++print("NaN audit: resid_mean", int(costat.resid_mean.isna().sum()), "/", len(costat),
++      "| perm_p", int(costat.perm_p.isna().sum()))
++print("\nDONE", OUT)

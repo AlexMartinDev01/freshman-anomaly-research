@@ -1,0 +1,10 @@
+heldout,shot,rep,baseline,oracle,raw|target_only,gen|target_only,variant
+carpet,1,0,100.0,100.0,100.0,100.0,target_only
+carpet,1,1,100.0,100.0,100.0,100.0,target_only
+carpet,1,2,100.0,100.0,100.0,100.0,target_only
+carpet,2,0,100.0,100.0,100.0,100.0,target_only
+carpet,2,1,100.0,100.0,100.0,100.0,target_only
+carpet,2,2,100.0,100.0,100.0,100.0,target_only
+carpet,4,0,100.0,100.0,100.0,100.0,target_only
+carpet,4,1,100.0,100.0,100.0,100.0,target_only
+carpet,4,2,100.0,100.0,100.0,100.0,target_only

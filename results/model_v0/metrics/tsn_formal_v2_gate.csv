@@ -1,0 +1,3 @@
+dataset,n_cells,mean_baseline_agg,mean_tsn,mean_delta,median_delta,nonnegative_fraction,hard_quartile_threshold,hard_quartile_n,hard_quartile_mean_delta,G1_mean_delta_gt0,G2_nonnegative_ge70pct,G3_hard_quartile_gain_ge2,G4_no_mean_degradation,ALL_PASS
+mvtec,135,96.09807532915818,62.329289809028005,-33.76878552013019,-33.46428571428571,0.022222222222222223,96.81803777157344,34,-29.709006829944332,False,False,False,False,False
+visa,108,89.05827679990223,54.80975308641974,-34.248523713482456,-36.779999999999994,0.046296296296296294,84.165,27,-15.318518518518514,False,False,False,False,False

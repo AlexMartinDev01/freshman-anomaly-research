@@ -1,22 +1,113 @@
-# Python
-__pycache__/
-*.pyc
-.venv/
+# =============================================================================
+#  freshman -- anomaly-detection research repository
+#
+#  Tracked   : source code, frozen preregistrations/configs, lightweight result
+#              tables (csv / json / md / txt / yaml) and environment pins.
+#  Local only: raw datasets, model weights, GB-scale feature caches, map
+#              renderings, temporary scratch output and run logs.
+#
+#  NOTE: results/ is deliberately NOT ignored wholesale. The frozen CSV/JSON
+#  tables are the audit record of every closed gate and must stay in git; only
+#  the bulky outputs are dropped. Ignores are by FILE TYPE, so a directory is
+#  kept exactly when its contents are lightweight.
+# =============================================================================
 
-# data & results (large, re-downloadable / re-computable)
+# ---------------------------------------------------------------------------
+# datasets -- public and re-downloadable, never versioned. Path/config
+# documentation lives in docs/ and configs/.
+# ---------------------------------------------------------------------------
 data/
-results/
-third_party/AnomalyDINO/results_MVTec/
-third_party/AnomalyDINO/results_VisA/
+datasets/
+mvtec/
+visa/
+MVTec*/
+VisA*/
+*.tar
+*.tar.gz
+*.tgz
 
-# OS
+# ---------------------------------------------------------------------------
+# python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# editors / OS
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
 Thumbs.db
 .DS_Store
 
-# Vendored third-party checkouts. AnomalyDINO alone is ~13 GB, so the trees are
-# NOT versioned; third_party_patches/ records each upstream URL, the pinned
-# commit and the exact local modifications instead. These directories must
-# still exist on disk -- AnomalyDINO is a RUNTIME dependency of the V3 pipeline.
-third_party/AnomalyDINO/
+# ---------------------------------------------------------------------------
+# model weights -- never commit
+# ---------------------------------------------------------------------------
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+*.bin
+
+# ---------------------------------------------------------------------------
+# large numeric caches (feature banks, memmaps, dense layer traces)
+# ---------------------------------------------------------------------------
+*.npz
+*.npy
+*.pkl
+*.joblib
+*.cache
+*.f16
+
+# ---------------------------------------------------------------------------
+# run logs and temporary scratch
+# ---------------------------------------------------------------------------
+*.log
+_tmp_*/
+tmp/
+temp/
+
+# ---------------------------------------------------------------------------
+# packaging bundles (the loose files they contain are tracked individually)
+# ---------------------------------------------------------------------------
+*_package.zip
+
+# ---------------------------------------------------------------------------
+# heavy result artefacts -- renderings, arrays and archives only.
+# Small tables under results/**/*.{csv,json,md,txt,yaml,yml} are KEPT.
+# ---------------------------------------------------------------------------
+results/**/*.png
+results/**/*.jpg
+results/**/*.jpeg
+results/**/*.zip
+results/**/*.npz
+results/**/*.npy
+results/**/*.pt
+results/**/*.pth
+
+# Oversized raw per-cell table (53 MB, over the 50 MB guidance). Its derived
+# successor results/model_v0/metrics/r6a1f_layerwise/dense_layer_curve.csv is
+# tracked, so the frozen layer-curve numbers remain auditable.
+results/model_v0/metrics/r6a1f_layerwise/radius_profile_raw.csv
+
+# ---------------------------------------------------------------------------
+# vendored upstream checkouts.
+# AnomalyDINO is vendored as PLAIN FILES (its nested .git was removed) because
+# it is a runtime dependency of the V3 pipeline and must be readable in-repo.
+# Only upstream's own generated output is excluded. Provenance -- upstream URL,
+# pinned commit, local modifications -- is recorded in third_party_patches/.
+# ---------------------------------------------------------------------------
+third_party/AnomalyDINO/results_MVTec/
 third_party/MVTecAD2_code_utils/
+
+# SubspaceAD is NOT vendored: it has local modifications, which are frozen as
+# a patch instead (third_party_patches/subspacead.patch, upstream ef56d5c).
 third_party/SubspaceAD/

@@ -1,0 +1,3 @@
+run,A1,A2,A3,A4,A_ALL,A_nq,A_p,A_mvtec_q,A_visa_q,B1,B2,B3,B_ALL,B_img_qneg,B3_spread,C_status
+"MAIN(4shot,s0/1/2)",True,False,True,False,False,11/27,0.876,-0.367,0.294,True,True,True,True,1.0,0.0,27/27 over q95
+"REPLICATION(k2+k8,s2)",True,False,True,False,False,12/27,0.779,-0.373,0.283,True,True,True,True,1.0,0.0,NOT TESTABLE (R5-C gated to split==0)

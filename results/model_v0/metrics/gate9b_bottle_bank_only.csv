@@ -1,0 +1,10 @@
+heldout,shot,rep,baseline,oracle,raw|bank_only,gen|bank_only,variant
+bottle,1,0,98.4375,100.0,98.28125,99.84375,bank_only
+bottle,1,1,97.03125,98.90625,95.3125,98.90625,bank_only
+bottle,1,2,99.6875,100.0,100.0,100.0,bank_only
+bottle,2,0,99.37499999999999,99.6875,97.5,99.0625,bank_only
+bottle,2,1,99.84375,100.0,99.0625,99.6875,bank_only
+bottle,2,2,99.37499999999999,99.84375,98.28125,99.84375,bank_only
+bottle,4,0,100.0,99.6875,100.0,100.0,bank_only
+bottle,4,1,100.0,100.0,99.6875,100.0,bank_only
+bottle,4,2,100.0,100.0,99.21875,100.0,bank_only

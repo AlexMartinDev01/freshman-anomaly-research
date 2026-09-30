@@ -1,0 +1,10 @@
+heldout,shot,rep,baseline,oracle,raw|target_only,gen|target_only,variant
+leather,1,0,100.0,100.0,100.0,100.0,target_only
+leather,1,1,100.0,100.0,100.0,100.0,target_only
+leather,1,2,100.0,100.0,100.0,100.0,target_only
+leather,2,0,100.0,100.0,100.0,100.0,target_only
+leather,2,1,100.0,100.0,100.0,100.0,target_only
+leather,2,2,100.0,100.0,100.0,100.0,target_only
+leather,4,0,100.0,100.0,100.0,100.0,target_only
+leather,4,1,100.0,100.0,100.0,100.0,target_only
+leather,4,2,100.0,100.0,100.0,100.0,target_only

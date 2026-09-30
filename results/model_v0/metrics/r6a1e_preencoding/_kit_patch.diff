@@ -1,0 +1,19 @@
+### R6-A1E kit patch — CIRCUMSTANTIAL (crash fix only, no criterion change)
+# original sha256: ee0a2407755b37d13f6135df9f47d506d89436a8a1baae5de447c435600d6b14
+# file: r6a1e_preencoding_counterfactual.py lines 154 / 178-179
+# FIX: topmean() receives 2-D (H,W) maps but 'valid' is intentionally flat (H*W,).
+#      Flatten the MAPS (matching lines 204-205), not the mask.
+#      No value, mask, radius, alpha or donor is changed.
+--- results/model_v0/metrics/r6a1e_preencoding/_kit_patch_ORIGINAL_counterfactual.py	2026-09-30 16:48:14.408687300 +0800
++++ r6a1e_preencoding/r6a1e_preencoding_counterfactual.py	2026-09-30 16:48:16.781101400 +0800
+@@ -175,8 +175,8 @@
+                     drift_means.append(dm); drift_arrays.append(da)
+ 
+                 for alpha in ALPHAS:
+-                    raw_scores=[topmean(m,valid,alpha) for m in raw_target_maps]
+-                    cf_scores=[topmean(m,valid,alpha) for m in cf_maps]
++                    raw_scores=[topmean(m.reshape(-1),valid,alpha) for m in raw_target_maps]
++                    cf_scores=[topmean(m.reshape(-1),valid,alpha) for m in cf_maps]
+ 
+                     for j,gi in enumerate(good_ids, start=1):
+                         rb,rg=raw_scores[0],raw_scores[j]

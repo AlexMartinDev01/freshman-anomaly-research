@@ -1,0 +1,2 @@
+n,mean_tsn,median_tsn,tsn_below_50,tsn_50_to_70,tsn_ge_70,mean_delta,nonnegative_cells,hard_quartile_threshold
+243,58.98727348786879,58.040000000000006,74,116,53,-33.98200249495341,8,90.7660396039604

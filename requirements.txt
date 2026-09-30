@@ -1,0 +1,61 @@
+# Anomaly-detection research environment (V3 / R5 / R6 experiment line)
+#
+# IMPORTANT -- which environment these pins describe
+# -------------------------------------------------
+# The RUN_*.ps1 drivers invoke a bare `python`, which resolves to the SYSTEM
+# interpreter, not ./.venv. The recorded results were produced under:
+#
+#     C:\Python314\python.exe   --  Python 3.14.4
+#
+# ./.venv (Python 3.10.11) is a stale secondary environment: it carries
+# numpy 1.26.4 / pandas 2.3.3 and is NOT what produced the R6 results.
+# The pins below are the versions verified against the system interpreter.
+#
+# CUDA build note
+# ---------------
+# torch/torchvision are the +cu128 CUDA wheels and do NOT exist on PyPI.
+# A plain `pip install -r requirements.txt` will fail to resolve them; install
+# torch first from the CUDA index:
+#
+#     pip install torch==2.11.0+cu128 torchvision==0.26.0+cu128 \
+#         --index-url https://download.pytorch.org/whl/cu128
+#     pip install -r requirements.txt
+#
+# The +cu128 suffix is a local version tag; on CPU-only or ROCm hosts, install
+# the matching torch build for that platform and relax the two pins below.
+# xformers is deliberately NOT pinned: it is absent in the recording
+# environment, and DINOv2 falls back to plain attention (harmless warnings).
+
+# --- core scientific stack ---
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+numpy==2.4.4
+pandas==3.0.2
+scipy==1.17.1
+scikit-learn==1.8.0
+
+# --- imaging / IO ---
+pillow==12.2.0
+opencv-python==4.13.0.92
+tifffile==2026.5.15
+
+# --- retrieval and plotting ---
+faiss-cpu==1.13.2
+matplotlib==3.10.9
+
+# --- progress reporting ---
+tqdm==4.67.3
+
+# ---------------------------------------------------------------------------
+# NOT installable from PyPI -- vendored upstream checkouts, kept out of git.
+# See third_party_patches/README.md for upstream URLs and pinned commits.
+#
+#   third_party/AnomalyDINO               runtime dependency of the V3 pipeline
+#                                         (src.backbones.get_model), pinned
+#                                         upstream commit b9d1c26
+#   third_party/SubspaceAD                needed only for the pre-V3 control
+#                                         experiment gate_r2_subspacead_eval.py
+#
+# DINOv2 itself is pulled at runtime by torch.hub and cached in
+# ~/.cache/torch/hub/ (facebookresearch/dinov2), so it is not pinned here.
+# ---------------------------------------------------------------------------

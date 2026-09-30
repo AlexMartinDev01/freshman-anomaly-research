@@ -1,0 +1,5 @@
+bbeb05d20c8f34a5c277743eedb3ed4d69e224c5413d11a50d601807fc368b99  E:\work\freshman\results\model_v0\metrics\r6a1e_preencoding\resolved_test_paths.csv
+b6d1109b51a2aa3c41043e8c20f2e0a6019e882046278dd4a31c2e6e17529845  E:\work\freshman\results\model_v0\metrics\r6a1f_layerwise\dense_layer_curve.csv
+bc039960284315dc457fc56d8cc20e4f6ba43c4ae0165b1e19ac6e2703a66cf7  E:\work\freshman\results\model_v0\metrics\r6a1f_layerwise\object_verdict.csv
+a18d1b607ac3c737ec66e6931d389dfefd2c7cbfaf5b0b5f6bb670fddaa461ee  E:\work\freshman\results\model_v0\metrics\r6a_smoke\folds.csv
+5fcda0901a8e9a3b73be386927e02f20a630d0e6d655f0af6ef847b6d7ee11ef  E:\work\freshman\results\model_v0\metrics\r6a_smoke\summary.csv

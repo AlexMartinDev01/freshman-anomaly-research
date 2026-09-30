@@ -1,0 +1,42 @@
+{
+  "objects": [
+    "bottle",
+    "chewinggum",
+    "cable",
+    "macaroni2",
+    "screw"
+  ],
+  "shot": 4,
+  "split": 0,
+  "layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "gt_threshold": 0.1,
+  "max_per_class_per_image": 512,
+  "seed": 20260930,
+  "probes": [
+    "logreg",
+    "linsvm"
+  ],
+  "primary_probe": "logreg",
+  "image_top_fraction": 0.01,
+  "batch_size_extract": 4,
+  "temp_dtype": "float16",
+  "keep_temp_features": false,
+  "a1e_dir": "results/model_v0/metrics/r6a1e_preencoding",
+  "a1f_dir": "results/model_v0/metrics/r6a1f_layerwise",
+  "r6a_smoke_dir": "results/model_v0/metrics/r6a_smoke",
+  "a1e_code_dir": "r6a1e_preencoding",
+  "a1f_code_dir": "r6a1f_kit"
+}

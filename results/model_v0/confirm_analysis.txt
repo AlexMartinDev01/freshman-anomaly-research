@@ -1,0 +1,102 @@
+﻿====================================================================================================
+PHASE M1-confirm -- merging shards
+====================================================================================================
+  m1confirm_s1_mv_a      168 rows,  7 objects
+  m1confirm_s2_mv_b      192 rows,  8 objects
+  m1confirm_s3_vi_a      144 rows,  6 objects
+  m1confirm_s4_vi_b      144 rows,  6 objects
+
+  27 objects, 324 cells, 648 rows
+  -> E:\work\freshman\results\model_v0\metrics\m1confirm_all.csv
+  -> E:\work\freshman\results\model_v0\metrics\m1confirm_deltas.csv
+
+====================================================================================================
+PRE-REGISTERED CRITERIA C1 / C2   (unit = object/cell)
+====================================================================================================
+
+  C1  mean dAUPRO = +3.330   (need > 0)
+      positive cells 288/324 = 88.9%   (need >= 60%)
+      -> OK
+      [alt reading] positive OBJECTS 25/27 = 92.6%
+
+  C2  mean d_img_AUROC = +0.306   (need >= -0.3)
+      mean d_px_AUROC  = +0.276   (need >= -0.3)
+      -> OK
+
+====================================================================================================
+DESCRIPTIVE (not part of the frozen criteria)
+====================================================================================================
+  AUPRO      mean   +3.330  naive SE  0.177  clustered SE  0.561  t_clust +5.93   (G=27 objects)
+  px_AUROC   mean   +0.276  naive SE  0.033  clustered SE  0.110  t_clust +2.52   (G=27 objects)
+  img_AUROC  mean   +0.306  naive SE  0.110  clustered SE  0.301  t_clust +1.02   (G=27 objects)
+  sep_auc    mean   +0.007  naive SE  0.001  clustered SE  0.004  t_clust +1.88   (G=27 objects)
+
+  per-object dAUPRO (mean over its 12 cells)
+    carpet           -0.975   0/12 cells positive   <-- negative
+    macaroni2        -0.294   7/12 cells positive   <-- negative
+    screw            +0.115   6/12 cells positive
+    metal_nut        +0.489   7/12 cells positive
+    cable            +0.500   9/12 cells positive
+    bottle           +0.677   12/12 cells positive
+    leather          +0.732   12/12 cells positive
+    candle           +1.265   11/12 cells positive
+    capsules         +1.862   12/12 cells positive
+    transistor       +1.944   11/12 cells positive
+    wood             +2.102   12/12 cells positive
+    pill             +2.304   12/12 cells positive
+    toothbrush       +2.407   11/12 cells positive
+    fryum            +2.794   10/12 cells positive
+    grid             +2.807   12/12 cells positive
+    capsule          +2.845   12/12 cells positive
+    hazelnut         +2.944   12/12 cells positive
+    pipe_fryum       +3.443   12/12 cells positive
+    tile             +4.409   12/12 cells positive
+    chewinggum       +4.610   12/12 cells positive
+    pcb1             +5.862   12/12 cells positive
+    pcb4             +6.375   12/12 cells positive
+    zipper           +7.349   12/12 cells positive
+    pcb2             +7.690   12/12 cells positive
+    cashew           +7.751   12/12 cells positive
+    macaroni1        +8.781   12/12 cells positive
+    pcb3             +9.126   12/12 cells positive
+
+  per-object d_img_AUROC
+    macaroni2        -3.657
+    screw            -2.909
+    toothbrush       -1.505
+    fryum            -1.237
+    zipper           -0.431
+    metal_nut        -0.183
+    chewinggum       -0.130
+    wood             -0.015
+    carpet           -0.003
+    leather          +0.000
+    pipe_fryum       +0.040
+    cable            +0.072
+    bottle           +0.106
+    grid             +0.111
+    capsule          +0.239
+    tile             +0.346
+    pill             +0.575
+    hazelnut         +0.598
+    cashew           +0.787
+    pcb3             +0.812
+    transistor       +0.972
+    capsules         +1.175
+    pcb1             +1.328
+    macaroni1        +1.543
+    candle           +2.797
+    pcb4             +2.998
+    pcb2             +3.845
+
+  r1-vs-r0 absolute levels (mean over cells)
+    AUPRO      r0   74.156   r1   77.487
+    px_AUROC   r0   97.509   r1   97.785
+    img_AUROC  r0   92.319   r1   92.626
+    sep_auc    r0    0.888   r1    0.895
+
+====================================================================================================
+VERDICT SO FAR
+====================================================================================================
+  C1 PASS   C2 PASS   C3 pending (phase_m1_mechanism.py)   C4 pending (phase_m1_dose.py)
+  The pre-registration requires ALL of C1-C4; C1/C2 alone do not authorise Model V3.

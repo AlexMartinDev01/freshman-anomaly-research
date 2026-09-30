@@ -1,0 +1,2 @@
+n_objects,mean_object_delta,median_object_delta,positive_mean_objects,object_bootstrap_ci95_lo,object_bootstrap_ci95_hi,wilcoxon_less_p
+27,-33.98200249495341,-38.53703703703704,0,-38.53091317519227,-28.92340831319602,7.450580596923828e-09

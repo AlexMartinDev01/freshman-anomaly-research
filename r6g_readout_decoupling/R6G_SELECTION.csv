@@ -1,0 +1,6 @@
+object,shot,split,role
+bottle,4,0,propagation_positive_broad
+chewinggum,4,0,propagation_positive_decay
+cable,4,0,short_range_control
+macaroni2,4,0,localized_negative_control
+screw,4,0,intervention_artifact_control

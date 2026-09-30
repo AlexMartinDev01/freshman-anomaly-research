@@ -1,0 +1,6 @@
+R6-A smoke audit package
+
+Contains:
+- R6A_SMOKE_MECHANISM_AUDIT.csv
+- R6A_FOLDWISE_IMAGE_AUC_CHECK.csv
+- R6A_NEXT_PLAN_FROZEN.md

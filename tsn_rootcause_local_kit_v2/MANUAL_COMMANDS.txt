@@ -1,0 +1,15 @@
+# Manual commands if PowerShell script execution is blocked
+
+cd E:\work\freshman
+
+python tsn_rootcause_local_kit_v2\precheck_rootcause.py
+
+python tsn_rootcause_local_kit_v2\tsn_failure_causal_audit.py ^
+  --formal results\model_v0\metrics\tsn_formal_v2.csv ^
+  --selection tsn_rootcause_local_kit_v2\11_causal_selection_v2.csv ^
+  --outdir results\model_v0\metrics\tsn_failure_audit_v2 ^
+  --shuffle-reps 200 ^
+  --resume
+
+python tsn_rootcause_local_kit_v2\analyze_causal_audit.py ^
+  --input results\model_v0\metrics\tsn_failure_audit_v2\causal_audit_cells.csv

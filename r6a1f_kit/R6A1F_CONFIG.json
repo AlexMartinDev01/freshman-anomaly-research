@@ -1,0 +1,30 @@
+{
+  "objects": [
+    "bottle",
+    "chewinggum",
+    "cable",
+    "macaroni2",
+    "screw"
+  ],
+  "layers": [
+    "early",
+    "mid",
+    "midlate",
+    "final"
+  ],
+  "radii": [
+    0,
+    2,
+    4,
+    8,
+    16
+  ],
+  "alpha": [
+    0.01
+  ],
+  "metric": [
+    "cosine_drift",
+    "score_shift",
+    "bad_good_diff"
+  ]
+}

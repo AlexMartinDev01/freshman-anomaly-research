@@ -1,0 +1,26 @@
+{
+  "model_name": "dinov2_vits14",
+  "resolution": 448,
+  "device": "cuda",
+  "anomalydino_dir": "third_party/AnomalyDINO",
+  "mvtec_root": "",
+  "visa_root": "",
+  "mvtec_root_candidates": [
+    "data/mvtec_anomaly_detection",
+    "data/MVTec",
+    "data/mvtec",
+    "datasets/mvtec_anomaly_detection",
+    "datasets/MVTec"
+  ],
+  "visa_root_candidates": [
+    "data/VisA_pytorch/1cls",
+    "data/VisA/1cls",
+    "data/visa/1cls",
+    "datasets/VisA_pytorch/1cls",
+    "datasets/VisA/1cls"
+  ],
+  "n_normal_donors": 2,
+  "n_good_pairs_per_bad": 3,
+  "batch_size": 8,
+  "save_examples": true
+}

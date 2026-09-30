@@ -1,0 +1,13 @@
+dataset,object,donor_rank,train_index,cached_name,path,is_support,grid
+mvtec,screw,0,115,115.png,E:\work\freshman\data\mvtec_anomaly_detection\screw\train\good\115.png,False,"(32, 32)"
+mvtec,screw,1,163,163.png,E:\work\freshman\data\mvtec_anomaly_detection\screw\train\good\163.png,False,"(32, 32)"
+mvtec,cable,0,203,203.png,E:\work\freshman\data\mvtec_anomaly_detection\cable\train\good\203.png,False,"(32, 32)"
+mvtec,cable,1,85,085.png,E:\work\freshman\data\mvtec_anomaly_detection\cable\train\good\085.png,False,"(32, 32)"
+mvtec,bottle,0,204,204.png,E:\work\freshman\data\mvtec_anomaly_detection\bottle\train\good\204.png,False,"(32, 32)"
+mvtec,bottle,1,184,184.png,E:\work\freshman\data\mvtec_anomaly_detection\bottle\train\good\184.png,False,"(32, 32)"
+visa,macaroni2,0,560,0611.JPG,E:\work\freshman\data\VisA_pytorch\1cls\macaroni2\train\good\0611.JPG,False,"(32, 48)"
+visa,macaroni2,1,746,0830.JPG,E:\work\freshman\data\VisA_pytorch\1cls\macaroni2\train\good\0830.JPG,False,"(32, 48)"
+visa,pcb2,0,587,0644.JPG,E:\work\freshman\data\VisA_pytorch\1cls\pcb2\train\good\0644.JPG,False,"(32, 41)"
+visa,pcb2,1,94,0102.JPG,E:\work\freshman\data\VisA_pytorch\1cls\pcb2\train\good\0102.JPG,False,"(32, 41)"
+visa,chewinggum,0,259,282.JPG,E:\work\freshman\data\VisA_pytorch\1cls\chewinggum\train\good\282.JPG,False,"(32, 38)"
+visa,chewinggum,1,336,368.JPG,E:\work\freshman\data\VisA_pytorch\1cls\chewinggum\train\good\368.JPG,False,"(32, 38)"

@@ -1,0 +1,13 @@
+run,alpha,adj_over,adj_effect
+"MAIN(4-shot,s0)",0.005,27/27,25.11
+"MAIN(4-shot,s0)",0.01,27/27,32.74
+"MAIN(4-shot,s0)",0.02,27/27,36.39
+"MAIN(4-shot,s0)",0.05,27/27,34.43
+"REPLICATION(shot=2,s0)",0.005,27/27,22.7
+"REPLICATION(shot=2,s0)",0.01,26/27,31.03
+"REPLICATION(shot=2,s0)",0.02,25/27,33.1
+"REPLICATION(shot=2,s0)",0.05,25/27,32.59
+"REPLICATION(shot=8,s0)",0.005,27/27,25.5
+"REPLICATION(shot=8,s0)",0.01,26/27,33.16
+"REPLICATION(shot=8,s0)",0.02,26/27,36.15
+"REPLICATION(shot=8,s0)",0.05,26/27,35.92

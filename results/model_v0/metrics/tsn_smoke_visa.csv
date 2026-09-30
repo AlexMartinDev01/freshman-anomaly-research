@@ -1,0 +1,2 @@
+dataset,object,shot,split,n_support,support_ids,q_ref,q_support,baseline_final_img_AUROC,baseline_agg_img_AUROC,tsn_img_AUROC,delta_tsn_vs_agg,delta_tsn_vs_final,elapsed_sec
+visa,candle,2,0,2,547;820,0.3034034699601723,0.273967656114;0.332839283806,88.1,89.23,49.96,-39.27,-38.13999999999999,13.648526799865067

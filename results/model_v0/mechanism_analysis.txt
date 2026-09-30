@@ -1,0 +1,202 @@
+﻿  mech_a       4836 rows,  9 objects
+  mech_b       4512 rows,  9 objects
+  mech_c       5400 rows,  9 objects
+  14748 measurement rows -> 2458 defect instances over 27 objects
+  cells per instance: {6: np.int64(2458)}
+
+====================================================================================================
+C3  within-object Spearman( C_feat_448 , dAUPRO ) < 0 ?
+====================================================================================================
+
+  PRIMARY (preregistered): C_feat_448 vs dAUPRO
+    per-object rho: n=27 objects (>= 5 instances), mean -0.153, median -0.149, negative 21/27 (78%)
+    Fisher-z mean rho -0.162  (SE 0.059)
+      zipper         -0.658
+      cashew         -0.580
+      candle         -0.474
+      hazelnut       -0.422
+      macaroni1      -0.396
+      pcb3           -0.391
+      wood           -0.375
+      screw          -0.348
+      pcb4           -0.242
+      leather        -0.211
+      macaroni2      -0.178
+      cable          -0.154
+      pcb1           -0.152
+      metal_nut      -0.149
+      pcb2           -0.145
+      chewinggum     -0.142
+      capsule        -0.133
+      fryum          -0.128
+      pill           -0.105
+      pipe_fryum     -0.088
+      capsules       -0.048
+      transistor     +0.000
+      grid           +0.026
+      toothbrush     +0.123
+      tile           +0.325
+      bottle         +0.341
+      carpet         +0.563
+    pooled within-object FE regression, object-clustered SE (G=27):
+      beta -0.1702  SE 0.0488  t -3.49  p 1.73e-03
+    -> Fisher-z mean -0.162 (<0) and FE beta -0.1702 (<0):  OK
+
+  SECONDARY (not preregistered -- sep_auc is this project's scale-free statistic)
+
+  sep_auc_448 vs dAUPRO
+    per-object rho: n=27 objects (>= 5 instances), mean -0.209, median -0.202, negative 23/27 (85%)
+    Fisher-z mean rho -0.220  (SE 0.048)
+      zipper         -0.640
+      candle         -0.516
+      pipe_fryum     -0.506
+      pcb3           -0.489
+      cashew         -0.472
+      chewinggum     -0.450
+      screw          -0.349
+      capsule        -0.326
+      hazelnut       -0.313
+      macaroni1      -0.289
+      pcb4           -0.251
+      grid           -0.228
+      leather        -0.220
+      metal_nut      -0.202
+      cable          -0.179
+      wood           -0.175
+      pill           -0.173
+      fryum          -0.134
+      capsules       -0.122
+      pcb1           -0.120
+      pcb2           -0.118
+      toothbrush     -0.052
+      macaroni2      -0.012
+      transistor     +0.005
+      tile           +0.180
+      bottle         +0.229
+      carpet         +0.282
+    FE beta -0.2508  t -5.57  p 7.51e-06
+
+  dTPR@5% instead of dAUPRO (the other metric section 4 allows) -- robustness only
+
+  C_feat_448 vs dTPR@5%
+    per-object rho: n=27 objects (>= 5 instances), mean -0.170, median -0.224, negative 22/27 (81%)
+    Fisher-z mean rho -0.184  (SE 0.063)
+      zipper         -0.807
+      hazelnut       -0.555
+      macaroni1      -0.438
+      pcb3           -0.419
+      wood           -0.395
+      cashew         -0.329
+      macaroni2      -0.318
+      cable          -0.296
+      metal_nut      -0.283
+      pipe_fryum     -0.282
+      candle         -0.276
+      pcb2           -0.262
+      screw          -0.245
+      pcb4           -0.224
+      pill           -0.168
+      transistor     -0.121
+      fryum          -0.101
+      capsules       -0.094
+      capsule        -0.073
+      chewinggum     -0.068
+      leather        -0.053
+      toothbrush     -0.040
+      pcb1           +0.025
+      grid           +0.043
+      bottle         +0.251
+      tile           +0.309
+      carpet         +0.619
+    FE beta -0.183303  t -3.74  p 9.14e-04
+
+====================================================================================================
+M1-mechanism section 4: defect SCALE on the 448 grid vs the gain
+====================================================================================================
+  expectation: anomalies small on the 448 grid gain more from 672
+
+  gt_patch_n vs dAUPRO
+    per-object rho: n=27 objects (>= 5 instances), mean -0.056, median -0.064, negative 18/27 (67%)
+    Fisher-z mean rho -0.059  (SE 0.044)
+      tile           -0.448
+      carpet         -0.435
+      capsules       -0.390
+      leather        -0.321
+      hazelnut       -0.291
+      wood           -0.211
+      pcb1           -0.211
+      pcb2           -0.177
+      bottle         -0.135
+      macaroni1      -0.127
+      pill           -0.108
+      pcb3           -0.072
+      cashew         -0.069
+      chewinggum     -0.064
+      fryum          -0.051
+      capsule        -0.031
+      screw          -0.006
+      pcb4           -0.006
+      candle         +0.079
+      toothbrush     +0.083
+      pipe_fryum     +0.111
+      macaroni2      +0.121
+      cable          +0.132
+      transistor     +0.152
+      grid           +0.234
+      metal_nut      +0.287
+      zipper         +0.433
+    FE beta -0.0000  t -0.04  p 9.68e-01
+
+  log_area vs dAUPRO
+    per-object rho: n=27 objects (>= 5 instances), mean -0.031, median -0.042, negative 16/27 (59%)
+    Fisher-z mean rho -0.032  (SE 0.045)
+      tile           -0.419
+      capsules       -0.395
+      carpet         -0.380
+      leather        -0.280
+      hazelnut       -0.253
+      pcb2           -0.207
+      wood           -0.171
+      macaroni2      -0.156
+      pcb1           -0.141
+      cashew         -0.138
+      bottle         -0.125
+      pill           -0.079
+      macaroni1      -0.046
+      chewinggum     -0.042
+      fryum          -0.020
+      pcb3           -0.001
+      capsule        +0.006
+      screw          +0.013
+      pcb4           +0.033
+      candle         +0.135
+      cable          +0.146
+      transistor     +0.151
+      toothbrush     +0.206
+      pipe_fryum     +0.232
+      metal_nut      +0.283
+      grid           +0.376
+      zipper         +0.440
+    FE beta -0.0069  t -1.42  p 1.68e-01
+
+====================================================================================================
+JOINT: does separability survive controlling for defect size?
+====================================================================================================
+    C_feat448      beta -0.1816  SE 0.0481  t -3.77  p 8.40e-04
+    log_area       beta -0.0135  SE 0.0069  t -1.94  p 6.32e-02
+    gt_patch_n     beta +0.0000  SE 0.0001  t +0.19  p 8.55e-01
+    (C_feat_448 and log_area are collinear by construction -- a defect confined to a few patches is both small and poorly separated -- so read the two coefficients jointly, not separately)
+
+====================================================================================================
+DESCRIPTIVE: cross-object pooled correlation
+====================================================================================================
+  pooled Spearman(C_feat_448, dAUPRO) = -0.253  p=4.51e-37
+  This one mixes between-object level differences with the within-object mechanism; it is NOT criterion C3.
+
+====================================================================================================
+C3 VERDICT
+====================================================================================================
+  within-object Fisher-z rho -0.162  (21/27 objects negative)
+  FE beta -0.1702 (t -3.49)
+  -> C3 PASS
+  C1/C2 come from phase_m1_confirm_analysis.py; C4 from phase_m1_dose.py. The pre-registration requires ALL of C1-C4.

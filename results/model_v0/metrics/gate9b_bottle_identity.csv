@@ -1,0 +1,10 @@
+heldout,shot,rep,baseline,oracle,raw|identity,gen|identity,variant
+bottle,1,0,98.4375,100.0,98.28125,98.28125,identity
+bottle,1,1,97.03125,98.90625,95.3125,95.3125,identity
+bottle,1,2,99.6875,100.0,100.0,100.0,identity
+bottle,2,0,99.37499999999999,99.6875,97.5,97.5,identity
+bottle,2,1,99.84375,100.0,99.0625,99.0625,identity
+bottle,2,2,99.37499999999999,99.84375,98.28125,98.28125,identity
+bottle,4,0,100.0,99.6875,100.0,100.0,identity
+bottle,4,1,100.0,100.0,99.6875,99.6875,identity
+bottle,4,2,100.0,100.0,99.21875,99.21875,identity
