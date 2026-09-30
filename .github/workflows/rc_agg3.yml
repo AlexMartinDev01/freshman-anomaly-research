@@ -1,0 +1,35 @@
+name: RC AGG3 Tail Width
+on:
+  push:
+    branches: [rc-rootcause-directional]
+    paths:
+      - 'rootcause_rc/run_rc_agg3.py'
+      - '.github/workflows/rc_agg3.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  agg3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rc-rootcause-directional
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy pandas scikit-learn
+      - run: python rootcause_rc/run_rc_agg3.py | tee rootcause_rc/RC_AGG3_RUN.txt
+      - run: |
+          git config user.name "rc-rootcause-bot"
+          git config user.email "rc-rootcause-bot@users.noreply.github.com"
+          git add -f rootcause_rc/results_agg3 rootcause_rc/RC_AGG3_RUN.txt
+          git commit -m "rc: record frozen AGG3 tail-width results"
+          git push origin HEAD:rc-rootcause-directional
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rc-agg3
+          path: |
+            rootcause_rc/results_agg3/
+            rootcause_rc/RC_AGG3_RUN.txt
