@@ -1,0 +1,26 @@
+name: RC Direct Static Validation
+on:
+  push:
+    branches: [rc-rootcause-directional]
+    paths:
+      - 'rootcause_rc/run_rc_final_direct.py'
+      - '.github/workflows/rc_direct_validate.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rc-rootcause-directional
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m py_compile rootcause_rc/run_rc_final_direct.py
+      - run: |
+          python - <<'PY'
+          import ast, pathlib
+          p=pathlib.Path('rootcause_rc/run_rc_final_direct.py')
+          t=ast.parse(p.read_text(encoding='utf-8'))
+          print('AST OK:', len(list(ast.walk(t))), 'nodes')
+          PY
