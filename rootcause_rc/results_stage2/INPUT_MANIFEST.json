@@ -1,0 +1,23 @@
+{
+  "patch": {
+    "path": "results/model_v0/metrics/r6a_smoke/per_image_patch_metrics.csv",
+    "sha256": "9624ff80c4392db0b0e9e6df4eb022f2770dbfa3bf34a0e8a818252c8c9b20f8"
+  },
+  "summary": {
+    "path": "results/model_v0/metrics/r6a_smoke/summary.csv",
+    "sha256": "44abdd8853b6c53ac0b509715301967951602a79632661a0ab3b9e528130e043"
+  },
+  "oracle": {
+    "path": "results/model_v0/metrics/r6a1b_selection_halo/r6a1b_oracle_ladder.csv",
+    "sha256": "6c66fbb55698cba436d979709c2910b0fb498e9a8061fed2aae0c36f46fc804f"
+  },
+  "a1d": {
+    "path": "results/model_v0/metrics/r6a1d_defect_excision/object_radius_alpha_summary.csv",
+    "sha256": "1150f3a4d7f2808394128c0c9e679f6856348c4aa024977a14751b9a21bc2048"
+  },
+  "prereg": {
+    "path": "rootcause_rc/RC_STAGE2_PREREG_FROZEN.md",
+    "sha256": "5eb8975a0f3a34ea78cbf0cfb663bc71c47c3fd465d780a011b243c09ac5dacc"
+  },
+  "git_commit": "d246cf00187f7479174a5a91f88bff5a7a9da37a"
+}
