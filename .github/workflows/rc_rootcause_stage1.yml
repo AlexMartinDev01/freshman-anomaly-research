@@ -52,7 +52,7 @@ jobs:
         run: |
           git config user.name "rc-rootcause-bot"
           git config user.email "rc-rootcause-bot@users.noreply.github.com"
-          git add rootcause_rc/results_stage1 rootcause_rc/RC_STAGE1_RUN.log
+          git add rootcause_rc/results_stage1\n          git add -f rootcause_rc/RC_STAGE1_RUN.log
           if git diff --cached --quiet; then
             echo "No result changes"
           else
