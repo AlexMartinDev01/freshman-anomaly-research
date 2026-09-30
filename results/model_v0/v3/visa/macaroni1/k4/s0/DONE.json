@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/macaroni1/k4/s0",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "macaroni1",
+ "shot": 4,
+ "split": 0,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  9004259852721301039,
+  3620648265005121281,
+  1023442887070629556,
+  348341807130136086,
+  15645064772549519665,
+  14315555555103381415,
+  8666168162941441236,
+  111098453788536806,
+  6703995310475095457,
+  6656170574699493212
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-29T01:01:50",
+ "files": {
+  "a0.npy": {
+   "size": 1228928,
+   "sha256": "05276e7a40de39d6742503124d5c26b71da3b34434c849a5c8e9ce9ff3656e81"
+  },
+  "a2.npy": {
+   "size": 2764928,
+   "sha256": "9197e4a546e5d515267c81734e67de304a0192b7a3299fbfae143f2f22b843b5"
+  },
+  "arms.npz": {
+   "size": 17845317,
+   "sha256": "272fa104448ce7ceb2ffe7a2a276b57becd5980378d5cbaa24eee5e1ed522af8"
+  },
+  "diagnostics.json": {
+   "size": 704095,
+   "sha256": "046ade7b3f8b71e14983b07ed5ef9e107c2e07d4f0c7dbeec09101712043e84d"
+  },
+  "metadata.json": {
+   "size": 662,
+   "sha256": "72751f15f0772a6ffdeced6741cc1f00e48de5f067057bbb357e06dea6ced74d"
+  }
+ }
+}

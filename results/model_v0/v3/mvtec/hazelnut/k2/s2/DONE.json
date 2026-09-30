@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/hazelnut/k2/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "hazelnut",
+ "shot": 2,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  2121223166346452484,
+  12500305120033003018,
+  2960024417570114852,
+  5428409436598247825,
+  18159146201275914008,
+  7516192724536137295,
+  11284430493712120843,
+  5101098158500889449,
+  12269392902949461560,
+  2236714671482284955
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T17:20:36",
+ "files": {
+  "a0.npy": {
+   "size": 450688,
+   "sha256": "61a539f867e09445edf65999f838b618c1984084f47b861fae6a1357ce4595c1"
+  },
+  "a2.npy": {
+   "size": 1013888,
+   "sha256": "09fbbbd83303d6a511edd54f4e3fd0c9b033e763361851200752cd095071ff1f"
+  },
+  "arms.npz": {
+   "size": 5669509,
+   "sha256": "b36166fc1b8725a452877362c5ad17b635d762deefbd2e98cd2c20af24af0dfd"
+  },
+  "diagnostics.json": {
+   "size": 345011,
+   "sha256": "253bbe4f1759d74d5a285f9ded81ef6bef593a0520958d3ea2706e467a5bc66c"
+  },
+  "metadata.json": {
+   "size": 663,
+   "sha256": "ce51d3847ca656a32903d3aa72f2d7075382a4db41d7e216f19287ee3cd707d4"
+  }
+ }
+}

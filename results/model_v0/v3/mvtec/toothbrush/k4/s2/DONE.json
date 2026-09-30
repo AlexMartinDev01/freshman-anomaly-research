@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/toothbrush/k4/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "toothbrush",
+ "shot": 4,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  4097672512549077455,
+  16873051582287187124,
+  18161335011089522465,
+  5719149078595174718,
+  15945381269323057890,
+  1322066262021024871,
+  6228331936716501528,
+  1933769712153354120,
+  5161457062971363868,
+  813678219082352635
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T18:36:45",
+ "files": {
+  "a0.npy": {
+   "size": 172160,
+   "sha256": "67db90e07c2c9cc7c93e4bf1b77a24977791927ff46bd7f852feaacc2a4f750d"
+  },
+  "a2.npy": {
+   "size": 387200,
+   "sha256": "8d06512623f39334f871f8143f1f7cdd76c22e8dc421c19e6ab68482a28ca903"
+  },
+  "arms.npz": {
+   "size": 2489088,
+   "sha256": "45e8762cebad90f9f819f2467d42cb8dffe2e3110f5862fac17aaeb616804637"
+  },
+  "diagnostics.json": {
+   "size": 171518,
+   "sha256": "28bf87f2582c534df2f1d6aaf252c3672a667fa736f1d0215214caab34175a02"
+  },
+  "metadata.json": {
+   "size": 663,
+   "sha256": "f7546c20d714e763563a0a4446047be4929db69858a3f8255486b657e156e438"
+  }
+ }
+}

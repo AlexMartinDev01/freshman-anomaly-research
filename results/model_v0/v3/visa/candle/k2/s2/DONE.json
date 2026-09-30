@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/candle/k2/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "candle",
+ "shot": 2,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  166292978740051115,
+  9886353634526261157,
+  6086265636856401500,
+  8435073149445416780,
+  16190519678100499282,
+  4127497569526289641,
+  4448651640399840699,
+  10790961011970421732,
+  17308079470378512824,
+  14298390508285583423
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T21:15:28",
+ "files": {
+  "a0.npy": {
+   "size": 896128,
+   "sha256": "5fd18207f867720748342ef8a001d2edd8ea4b9942bf3978bdb4774fc779e2a2"
+  },
+  "a2.npy": {
+   "size": 1996928,
+   "sha256": "045ca4099ca314b9fc0027855560fdd0bf5d263658fc8bc70748c16f329e7b48"
+  },
+  "arms.npz": {
+   "size": 13848063,
+   "sha256": "c1d57efa7d67fba194af91b3a766dfe9965c951091408461d3f3f904c58bdfe2"
+  },
+  "diagnostics.json": {
+   "size": 705140,
+   "sha256": "25c70782020d896451febeda5d4e7e42a88b8c39c9d6c2c2f315cb6a92cc5ce9"
+  },
+  "metadata.json": {
+   "size": 657,
+   "sha256": "5627bba03db40ebc2de7afd953732884eaef6d4ddee3473adc668957a3d2d6bb"
+  }
+ }
+}

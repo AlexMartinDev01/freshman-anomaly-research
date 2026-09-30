@@ -1,0 +1,2 @@
+Category,Seed,Image AUROC,Image AUPR,Pixel AUROC,AU-PRO,Image F1,Pixel F1
+sheet_metal,0,0.7931,0.9428,0.9181,0.3476,0.8343,0.0967

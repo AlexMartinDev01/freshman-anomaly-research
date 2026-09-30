@@ -16,12 +16,16 @@
 # datasets -- public and re-downloadable, never versioned. Path/config
 # documentation lives in docs/ and configs/.
 # ---------------------------------------------------------------------------
-data/
-datasets/
-mvtec/
-visa/
-MVTec*/
-VisA*/
+# NOTE: these are anchored to the repository root on purpose. An unanchored
+# `MVTec*/` also matches results/mvtec_ad2/ (gitignore is case-insensitive on
+# Windows, core.ignorecase=true) and would silently drop that experiment's
+# csv/json result tables.
+/data/
+/datasets/
+/mvtec/
+/visa/
+/MVTec*/
+/VisA*/
 *.tar
 *.tar.gz
 *.tgz
@@ -97,6 +101,11 @@ results/**/*.pth
 # successor results/model_v0/metrics/r6a1f_layerwise/dense_layer_curve.csv is
 # tracked, so the frozen layer-curve numbers remain auditable.
 results/model_v0/metrics/r6a1f_layerwise/radius_profile_raw.csv
+
+# Regenerable intermediate probe cache (~48.9 MB of probes.csv). Not a result:
+# it is rebuilt by the p0b feature audit and lives under a directory literally
+# named cache/.
+results/model_v0/p0b_feature_level_audit/cache/
 
 # ---------------------------------------------------------------------------
 # vendored upstream checkouts.

@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/cable/k4/s1",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "cable",
+ "shot": 4,
+ "split": 1,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  5962241232834212186,
+  5137852328582107367,
+  6878496710513568666,
+  10835875242243762109,
+  650434405656056639,
+  742513492372796874,
+  3740327930728554920,
+  12727889232667578380,
+  5375379311945307427,
+  3529778535736714933
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T16:29:48",
+ "files": {
+  "a0.npy": {
+   "size": 614528,
+   "sha256": "34637bbac28478cbd333c4503d865601907e7ca5229362b569c7fad04c7b549d"
+  },
+  "a2.npy": {
+   "size": 1382528,
+   "sha256": "193284468d60d6deb1e6764201d2ca703b803f9316713e236f2ff3f329b18a42"
+  },
+  "arms.npz": {
+   "size": 8506553,
+   "sha256": "bd90f1a2aa090bd0fbfa3dea0b69eac7e783f8d8fe1a7de6fd91d86114a50227"
+  },
+  "diagnostics.json": {
+   "size": 571643,
+   "sha256": "00bb30b4dcc500fd7e536ad142ff9bce811c4f48eb91ed6bc7a725d52356d681"
+  },
+  "metadata.json": {
+   "size": 658,
+   "sha256": "9d29c80621cf628b5c308b00420f50deb3568ff4a3ee6c6a5de1dd02d578b899"
+  }
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/zipper/k2/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "zipper",
+ "shot": 2,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  13145308841557194930,
+  17929429400940800514,
+  155645233440992616,
+  15469410390953063355,
+  10504774752368796662,
+  715597890232652324,
+  5552204673894397103,
+  399314588058066264,
+  13766718051601780517,
+  375658276637650097
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T20:13:50",
+ "files": {
+  "a0.npy": {
+   "size": 618624,
+   "sha256": "a73d549c2af3faf7bc551dc3da0f7329222ded03e27d1a2ac39eb06f356fc1cd"
+  },
+  "a2.npy": {
+   "size": 1391744,
+   "sha256": "f84ee93cea15b99b9ac9180ccfdb57ad54abae1ad44f13ba78ad60b7463616dd"
+  },
+  "arms.npz": {
+   "size": 8996025,
+   "sha256": "724d52838b6e0e4d40bdb22d0082e9e1ed5cb3dcd7582bc78d42550310532c99"
+  },
+  "diagnostics.json": {
+   "size": 494685,
+   "sha256": "6eac6d3dc5fe1970ec203eaab723a99be4d7cd68c6814baceebb37b455840769"
+  },
+  "metadata.json": {
+   "size": 658,
+   "sha256": "00b657da64e26ba8161b4cc36e7c97a7fdd52cf52d884e04c51e338e1db5f875"
+  }
+ }
+}

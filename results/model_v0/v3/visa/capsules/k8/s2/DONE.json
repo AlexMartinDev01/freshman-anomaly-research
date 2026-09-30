@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/capsules/k8/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "capsules",
+ "shot": 8,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  10683806462030239867,
+  8217448635611548501,
+  14513146104421833248,
+  9681409500520768882,
+  16902888685999394537,
+  10505232837224251374,
+  2529460575822411570,
+  11697585736013288973,
+  8848318669168181830,
+  5345278772141198780
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T20:37:03",
+ "files": {
+  "a0.npy": {
+   "size": 983168,
+   "sha256": "e2379f1d6bbe019cc048e854959af950b18cea2993bbc60c88e07a6777e12634"
+  },
+  "a2.npy": {
+   "size": 2211968,
+   "sha256": "b6a7494c7721b0a5b98886103607a5a29af899567f0d3a9116efc2a44d1be469"
+  },
+  "arms.npz": {
+   "size": 14251653,
+   "sha256": "735248f7b293613ac7fa42e3d357a6532cdda2a3e7c0db286d52cc4531e94eba"
+  },
+  "diagnostics.json": {
+   "size": 689051,
+   "sha256": "fd2ecc324406c14ba40a4abf07f1a8321bd42c076a6e50e0ca16dbf478116eb2"
+  },
+  "metadata.json": {
+   "size": 662,
+   "sha256": "511c2ec71d46cea9cf03e7724882f10b70ffb3d0d7baa1abe909ad0fb2673ad7"
+  }
+ }
+}

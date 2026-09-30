@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/cashew/k1/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "cashew",
+ "shot": 1,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  3908439426159228459,
+  14217652378759568725,
+  17091556442923105662,
+  16285322448567084190,
+  6916054207708240390,
+  5895051109038932954,
+  16594410093177756509,
+  1183756409434388144,
+  2910514566953198880,
+  7661949093971364159
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-29T00:14:11",
+ "files": {
+  "a0.npy": {
+   "size": 652928,
+   "sha256": "d29911294c84e889e22ff186a966ee508773e3274e76e31cc7c29e92eb3f2cfe"
+  },
+  "a2.npy": {
+   "size": 1497728,
+   "sha256": "0fa5e2830b0787377c67e820ad274fc7b2d7b4835019d2055bab4637f9fcb286"
+  },
+  "arms.npz": {
+   "size": 9124863,
+   "sha256": "d95897bee2ee77d93c4d2dd17ada02ed511eb678b69910f58331b728b06335e6"
+  },
+  "diagnostics.json": {
+   "size": 501295,
+   "sha256": "aeb69fbe5f0eee76a567f809a7c323278c36f079d22d37f73e051e2975f0d021"
+  },
+  "metadata.json": {
+   "size": 656,
+   "sha256": "a94998609eaa15d213828288e776ad5d090a68cd361ad78fc47ad7384ca0f4a7"
+  }
+ }
+}

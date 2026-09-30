@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/grid/k2/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "grid",
+ "shot": 2,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  13961832417157924513,
+  2512941193734628089,
+  6547628748422154357,
+  7494712941939647031,
+  16183534835447855081,
+  2033585814217930981,
+  14010572208044885569,
+  10113641702363176839,
+  18158317262661703204,
+  10901732845784735867
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T17:08:57",
+ "files": {
+  "a0.npy": {
+   "size": 319616,
+   "sha256": "302996547ef2f29c3bd344a3c9e861452a4873aa5035cb4229ae8ee2ac0a2c26"
+  },
+  "a2.npy": {
+   "size": 718976,
+   "sha256": "5cf42d54912bc55ba71f2b86d2ef7dd462d514fd3716976763c37bedabf4bd09"
+  },
+  "arms.npz": {
+   "size": 4730979,
+   "sha256": "426ef74f8522b989157ac45f80812c31aa62907ce9816867403fb24cce11d60e"
+  },
+  "diagnostics.json": {
+   "size": 290215,
+   "sha256": "daf1a6754b7e965a9bd7002195e71d8a4573f61f4baf7dba2172da2903e5c2d9"
+  },
+  "metadata.json": {
+   "size": 655,
+   "sha256": "af4e095eb3f277ac6a5c2d8f805eb383161b1f8d9b92f08a777e3743c19071f8"
+  }
+ }
+}

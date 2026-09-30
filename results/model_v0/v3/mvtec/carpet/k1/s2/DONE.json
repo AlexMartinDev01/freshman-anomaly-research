@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/carpet/k1/s2",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "carpet",
+ "shot": 1,
+ "split": 2,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  6653502888507218050,
+  1023520902856945470,
+  454747837221955308,
+  9760276447263293869,
+  14524643038922501287,
+  9120218739938646725,
+  367431012762023299,
+  8556512363479304982,
+  17940447153894281404,
+  11746607919590711248
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T16:49:27",
+ "files": {
+  "a0.npy": {
+   "size": 479360,
+   "sha256": "835f0702ccfccd751ca0346cfcd6406f93866ec40684d452ae30c0665a149667"
+  },
+  "a2.npy": {
+   "size": 1078400,
+   "sha256": "0ad3533eb7c00a9099f6a7649c2ba61865cd114f01f6ca765a4f3fbf37371a57"
+  },
+  "arms.npz": {
+   "size": 6993678,
+   "sha256": "ed4644cde6ba47befdfe24341d928c551a74b35240ffb4994d61443e97c01807"
+  },
+  "diagnostics.json": {
+   "size": 400610,
+   "sha256": "c206f5f97f6a5f83dec3057ca495845814c0b049accdd84890820e44d5be344a"
+  },
+  "metadata.json": {
+   "size": 659,
+   "sha256": "c4e3c01233cc9573941702a81726927e284f9c64a9ab3da94d8dfb5169ad9bca"
+  }
+ }
+}

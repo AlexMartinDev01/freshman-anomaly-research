@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/pill/k2/s0",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "pill",
+ "shot": 2,
+ "split": 0,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  3755046327274420548,
+  16141561033298367131,
+  8667218326848515108,
+  13352726166831866196,
+  14418592358443111831,
+  2948554193945854854,
+  17916680747554679252,
+  13675864834797441201,
+  5075811478785879021,
+  11883298850302833648
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T18:06:18",
+ "files": {
+  "a0.npy": {
+   "size": 684160,
+   "sha256": "fe7d439f44ab081c15ac813c5877ded13d3e143e13a3b8f5a2fab33144f23441"
+  },
+  "a2.npy": {
+   "size": 1539200,
+   "sha256": "e6cb23dbfa2e5cfc57917abbac8974d6ebfde9e8771ad75f0478f99220ddea71"
+  },
+  "arms.npz": {
+   "size": 9525609,
+   "sha256": "475107c8ffa0e8d80b72a3321100cd87a5c540a281a722714db4d565226c8451"
+  },
+  "diagnostics.json": {
+   "size": 569423,
+   "sha256": "5542911fbb8f1048c30f1022e36f01c86c620db1d0c0de1254f4aa9d9e620e89"
+  },
+  "metadata.json": {
+   "size": 650,
+   "sha256": "d9537ca56d3852d26800b59abfc401da1d406b34cc37017b22314b25eab26445"
+  }
+ }
+}

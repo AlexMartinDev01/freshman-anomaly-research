@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/wood/k8/s1",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "wood",
+ "shot": 8,
+ "split": 1,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  17234563120998622708,
+  8704097467918096885,
+  18215122920662498343,
+  17797890854793739362,
+  4054211674061050425,
+  8269120548585397194,
+  8751759394944047554,
+  6038207564949524464,
+  760095399521570682,
+  7048446228211112063
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T19:07:05",
+ "files": {
+  "a0.npy": {
+   "size": 323712,
+   "sha256": "e5364b23c10d7cb8f3a17080bb4881be8fef0c945c9e8c7d4f79222ea5bd5501"
+  },
+  "a2.npy": {
+   "size": 728192,
+   "sha256": "85e00c28eb6009f60074dab4e746bb1c4bc0ecf5f63eca5755c6e7703a4d8a03"
+  },
+  "arms.npz": {
+   "size": 4614261,
+   "sha256": "1a4b75d7c57eabdba471d38d09d454a3a27702027ed124c8a2477640e3d39a3a"
+  },
+  "diagnostics.json": {
+   "size": 382370,
+   "sha256": "4a2e5763a3a5f5eba115f30e889e31268fd7d0c61d32ec395ac9d9ac2abcdcff"
+  },
+  "metadata.json": {
+   "size": 653,
+   "sha256": "133e09310714afe889b143fb301fc00ecda9999d38589ec7e298f0246edcc560"
+  }
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/chewinggum/k8/s0",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "chewinggum",
+ "shot": 8,
+ "split": 0,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  5644939095792949189,
+  15185491832549693305,
+  232982679680458413,
+  6882898141921507309,
+  8784548775823476419,
+  5880243583056403326,
+  10643357198635974037,
+  13972792438340720208,
+  3482196627097925986,
+  11524579333873521440
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T23:45:09",
+ "files": {
+  "a0.npy": {
+   "size": 729728,
+   "sha256": "2b96e6a7282db25ded6ebeec1b28a3ce2ded62ed56d4b68aa1f7d275620f9e06"
+  },
+  "a2.npy": {
+   "size": 1641728,
+   "sha256": "04816533b41351500d66c71c8a8d8929e47cda9c73bd1a50b5db1681df07a878"
+  },
+  "arms.npz": {
+   "size": 10630401,
+   "sha256": "67a4277633e7dd73524ed54fba2f7701accb52c6545c0f26ad45f1957a36679a"
+  },
+  "diagnostics.json": {
+   "size": 582538,
+   "sha256": "ffa2ea331c2c970d6ca8c6960cdf5966d4bfcb78321de0646e2b4067124d54b4"
+  },
+  "metadata.json": {
+   "size": 665,
+   "sha256": "44f734b357a99fd8b5dd7cd12e482cdc4877d8f90a76085f583f3d33fc3acc59"
+  }
+ }
+}

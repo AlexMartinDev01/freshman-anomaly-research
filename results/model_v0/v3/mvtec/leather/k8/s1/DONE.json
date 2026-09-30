@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/leather/k8/s1",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "leather",
+ "shot": 8,
+ "split": 1,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  532943102393510702,
+  14378091544056519397,
+  14862215944127979851,
+  18442429898907843618,
+  7263692108927862413,
+  1710807927028123682,
+  7071785328560447539,
+  14275891960817090426,
+  11102271923433879961,
+  9317070275863470342
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T17:41:33",
+ "files": {
+  "a0.npy": {
+   "size": 508032,
+   "sha256": "f1c81e1789f8f7c1cb8b6e2ee7de0186f850799581cd0004782ee9bcc89f6a8c"
+  },
+  "a2.npy": {
+   "size": 1142912,
+   "sha256": "0d667e3deabc3f94aa7209ff968ee40037b31772d23a5963c978f966b9783882"
+  },
+  "arms.npz": {
+   "size": 7422835,
+   "sha256": "7138fadffe8270314f0df38bcb3054da4ddab6868c30d46aaa1e6defa31f7298"
+  },
+  "diagnostics.json": {
+   "size": 407118,
+   "sha256": "0cb8dd96d158f4cd91a3d7fb1ca62de4377b4ecf79b137d8638fba9611448cba"
+  },
+  "metadata.json": {
+   "size": 664,
+   "sha256": "083175862a63008ab964a484282b7592289cdd9df4d8c354c7b9be56112f252e"
+  }
+ }
+}

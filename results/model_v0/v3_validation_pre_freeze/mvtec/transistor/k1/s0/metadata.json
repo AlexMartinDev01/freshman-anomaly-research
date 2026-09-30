@@ -1,0 +1,24 @@
+{
+ "cell_id": "mvtec/transistor/k1/s0",
+ "dataset": "mvtec",
+ "object": "transistor",
+ "shot": 1,
+ "split": 0,
+ "git_commit": "e3c4edf3b869c77baef59ad79ee2cf59ba84b7ab",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "tau_hot": 3.210832357406616,
+ "tau_gap": 1.194886565208435,
+ "affine": {
+  "a": 0.9994360856299751,
+  "b": 0.015817718257342336,
+  "r2": 0.4098824645028024,
+  "rmse": 0.6330567629661872,
+  "n": 1024,
+  "x_min": -1.7149738073349,
+  "x_max": 3.3992414474487305,
+  "y_min": -1.8911817882726165,
+  "y_max": 2.900050641992172
+ },
+ "n_images": 100,
+ "completed_at": "2026-09-28T14:38:33"
+}

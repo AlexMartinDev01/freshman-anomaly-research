@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "visa/fryum/k8/s0",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "visa",
+ "object": "fryum",
+ "shot": 8,
+ "split": 0,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  14820201612507993525,
+  3467680352219022395,
+  1281510614977563744,
+  10683461358582882357,
+  3209219490999293493,
+  15971424886807257873,
+  18164592333719375241,
+  2665485767453255814,
+  7147625551563059438,
+  9326480839931855656
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-29T01:58:15",
+ "files": {
+  "a0.npy": {
+   "size": 921728,
+   "sha256": "41480ebd7dc02fb59bf49b854185fef8830793e2f8c2fbd69cf8584657dfd31d"
+  },
+  "a2.npy": {
+   "size": 2073728,
+   "sha256": "cc51a5ddfa82e387c633b948f4633cca4e00bcd0bc8664c5b81e7718a707a199"
+  },
+  "arms.npz": {
+   "size": 13241596,
+   "sha256": "cbd638f0fcdab40d318db107b2e5be0d4237c42ee895c06219cfa6ed6d474f52"
+  },
+  "diagnostics.json": {
+   "size": 560037,
+   "sha256": "d04ee80ed6cb22a2a25188bb56c2f3bd53005e13a4eaa5149076ac36eebe4ac1"
+  },
+  "metadata.json": {
+   "size": 653,
+   "sha256": "b39e50da90b347f2c45c9d0bbfb43424caca035f038f2320b1c36a3b0ceb829c"
+  }
+ }
+}

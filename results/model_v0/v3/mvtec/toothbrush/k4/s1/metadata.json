@@ -1,0 +1,24 @@
+{
+ "cell_id": "mvtec/toothbrush/k4/s1",
+ "dataset": "mvtec",
+ "object": "toothbrush",
+ "shot": 4,
+ "split": 1,
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "tau_hot": 4.49197244644165,
+ "tau_gap": 1.1196624040603638,
+ "affine": {
+  "a": 0.9800405035750278,
+  "b": 0.06594742998402969,
+  "r2": 0.640714488447226,
+  "rmse": 0.5475147611884256,
+  "n": 4096,
+  "x_min": -1.258697748184204,
+  "x_max": 6.334655284881592,
+  "y_min": -1.2786387936028791,
+  "y_max": 7.343575065672753
+ },
+ "n_images": 42,
+ "completed_at": "2026-09-28T18:35:15"
+}

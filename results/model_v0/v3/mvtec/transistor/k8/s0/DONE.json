@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/transistor/k8/s0",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "transistor",
+ "shot": 8,
+ "split": 0,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  18081051207030607266,
+  6964911813311842705,
+  8835290445161135677,
+  2055244145369284545,
+  4907357669934014964,
+  16368315680039691909,
+  12579425231746963309,
+  7608415103783383367,
+  14326926113423756100,
+  12349746535663351201
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T19:54:46",
+ "files": {
+  "a0.npy": {
+   "size": 409728,
+   "sha256": "70ce2624f4b37874e5dc9aedfb4aee104e2db826a13e09c830f71413468101fb"
+  },
+  "a2.npy": {
+   "size": 921728,
+   "sha256": "d5af00e9c582b86b82c491081e3c84aa94f70e18a401b61d20f2d94a3f34a973"
+  },
+  "arms.npz": {
+   "size": 5583556,
+   "sha256": "eef31bc94cd4f2d7f7d4287faebb34d541da8eec4108b3c17d89d6edb7fb8e76"
+  },
+  "diagnostics.json": {
+   "size": 371163,
+   "sha256": "e89c7ce3408a4b4d1aac5974490bb4a20c3a199a158104c65cf1579ef8d4993f"
+  },
+  "metadata.json": {
+   "size": 667,
+   "sha256": "75df261a4801e0a1f3ced158766b71560d90823e1c3cc623f23abea9014021d3"
+  }
+ }
+}

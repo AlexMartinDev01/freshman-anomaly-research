@@ -1,0 +1,50 @@
+{
+ "status": "complete",
+ "cell_id": "mvtec/metal_nut/k8/s1",
+ "git_commit": "3049e1c3ec0708fa405ed2f0fca53d87e5a214db",
+ "manifest_hash": "b0d93294a634b703c76a279adfd06a2d07c1cfdf08ea606f596016d746165e66",
+ "dataset": "mvtec",
+ "object": "metal_nut",
+ "shot": 8,
+ "split": 1,
+ "arms_present": 12,
+ "a4_seed_ids": [
+  15854887072295329643,
+  8421372187652576800,
+  5641618261336925618,
+  6097465331551857180,
+  17251919738065026947,
+  16420036745853605489,
+  13679900522210834847,
+  8259353861324751399,
+  12862747088153913218,
+  14679612183566493033
+ ],
+ "all_finite": true,
+ "budget_equal": true,
+ "support_only_ok": true,
+ "resolution_bank_ok": true,
+ "completed_at": "2026-09-28T17:59:35",
+ "files": {
+  "a0.npy": {
+   "size": 471168,
+   "sha256": "c1e5af44cc6c61d13450d31bf7e5b87a812d383fbb7f148f923772ca74332190"
+  },
+  "a2.npy": {
+   "size": 1059968,
+   "sha256": "153873e070518db2eab8387c450e82dddc81719998df4cdb6b07d39c8557cad1"
+  },
+  "arms.npz": {
+   "size": 6496365,
+   "sha256": "29a1bc855680122a7c732226aa25dd80c32af74fa8aa37deef3a5bd783dec1b2"
+  },
+  "diagnostics.json": {
+   "size": 430760,
+   "sha256": "c1b554c92484056cabd9a4147133c5b134ec27e8f3b55ba365fa7a46b69246cb"
+  },
+  "metadata.json": {
+   "size": 662,
+   "sha256": "0ff2b0bc61687a84a5804445db2f06cbc42e34ef3d96c6ecd5f4e25dba3628b3"
+  }
+ }
+}
