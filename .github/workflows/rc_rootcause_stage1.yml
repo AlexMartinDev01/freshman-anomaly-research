@@ -1,0 +1,70 @@
+name: RC Rootcause Stage1
+
+on:
+  push:
+    branches:
+      - rc-rootcause-directional
+    paths:
+      - 'rootcause_rc/run_rc_stage1.py'
+      - '.github/workflows/rc_rootcause_stage1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rc-stage1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@v4
+        with:
+          ref: rc-rootcause-directional
+          fetch-depth: 0
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install analysis dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas scipy scikit-learn
+
+      - name: Verify frozen prereg exists before execution
+        run: |
+          test -f rootcause_rc/RC_PREREG_FROZEN.md
+          git log --format='%H %s' -- rootcause_rc/RC_PREREG_FROZEN.md
+          echo "analysis HEAD=$(git rev-parse HEAD)"
+
+      - name: Execute frozen RC Stage1
+        run: |
+          python rootcause_rc/run_rc_stage1.py | tee rootcause_rc/RC_STAGE1_RUN.log
+
+      - name: Show result
+        run: |
+          cat rootcause_rc/results_stage1/RC_STAGE1_VERDICT.csv
+          cat rootcause_rc/results_stage1/RC_STAGE1_REPORT.md
+
+      - name: Commit immutable result bundle
+        run: |
+          git config user.name "rc-rootcause-bot"
+          git config user.email "rc-rootcause-bot@users.noreply.github.com"
+          git add rootcause_rc/results_stage1 rootcause_rc/RC_STAGE1_RUN.log
+          if git diff --cached --quiet; then
+            echo "No result changes"
+          else
+            git commit -m "rc: record frozen stage1 root-cause results"
+            git push origin HEAD:rc-rootcause-directional
+          fi
+
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rc-rootcause-stage1
+          path: |
+            rootcause_rc/results_stage1/
+            rootcause_rc/RC_STAGE1_RUN.log
+          if-no-files-found: error
