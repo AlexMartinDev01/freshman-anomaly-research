@@ -2,7 +2,7 @@
     bottle            -0.005556      NaN      NaN           -0.001749                   1.000000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
      cable            -0.037669      NaN      NaN           -0.020963                   1.000000                    False    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
 chewinggum            -0.003400      NaN      NaN           -0.003555                   1.714286                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
- macaroni2             0.053600   0.0135   0.0957            0.073798                   5.000000                     True   True   True   True   True   True TAIL_WIDTH_DILUTION_CAUSALLY_SUPPORTED
+ macaroni2             0.053600   0.0137   0.0961            0.073798                   5.000000                     True   True   True   True   True   True TAIL_WIDTH_DILUTION_CAUSALLY_SUPPORTED
       pcb2             0.014200      NaN      NaN            0.041982                   3.250000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
      screw             0.006764      NaN      NaN           -0.004575                   0.000000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY\n\nAlpha metrics:\n    object  alpha  n_images  n_bad  n_good  image_auc  image_ap  bad_median  good_median  good_p95  bad_gt_precision_median  bad_gt_recall_median
     bottle 0.0010        83     63      20   0.994444  0.998251    0.401088     0.194488  0.270740                 1.000000              0.010309
