@@ -1,0 +1,7 @@
+    object  delta_auc_001_vs_01  ci95_lo  ci95_hi  delta_ap_001_vs_01  precision_ratio_001_vs_01  larger_width_not_better gate_A gate_B gate_C gate_D gate_E                                verdict
+    bottle            -0.005556      NaN      NaN           -0.001749                   1.000000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
+     cable            -0.037669      NaN      NaN           -0.020963                   1.000000                    False    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
+chewinggum            -0.003400      NaN      NaN           -0.003555                   1.714286                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
+ macaroni2             0.053600   0.0135   0.0957            0.073798                   5.000000                     True   True   True   True   True   True TAIL_WIDTH_DILUTION_CAUSALLY_SUPPORTED
+      pcb2             0.014200      NaN      NaN            0.041982                   3.250000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
+     screw             0.006764      NaN      NaN           -0.004575                   0.000000                     True    NaN    NaN    NaN    NaN    NaN                           CONTROL_ONLY
