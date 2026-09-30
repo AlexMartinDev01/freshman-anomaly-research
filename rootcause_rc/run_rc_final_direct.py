@@ -276,7 +276,12 @@ def run_dir():
             continue
         rid,y,groups,types,Xrad,Xq,Xa,Xu=matched_arrays(df,Q,A,U,pairs)
         s=smds(Xrad,y); valid=bool((obj!="screw") or (len(pairs)>=50 and np.all(np.abs(s)<=.10)))
-        folds=list(GroupKFold(n_splits=5).split(Xrad,y,groups))
+        n_groups=len(np.unique(groups))
+        if n_groups<2:
+            allsum.append(dict(object=obj,n_pairs=len(pairs),matching_valid=False,n_groups=n_groups))
+            pairs.to_csv(OUT/f"RC_DIR_pairs_{obj}.csv",index=False)
+            continue
+        folds=list(GroupKFold(n_splits=min(5,n_groups)).split(Xrad,y,groups))
         arms={"d1":Xrad[:,[0]],"radial4":Xrad,"anchor":Xa,"direction":Xu,"raw":Xq}
         rec={"object":obj,"n_pairs":len(pairs),"matching_valid":valid,
              "smd_d1":s[0],"smd_d2":s[1],"smd_d5":s[2],"smd_d10":s[3]}
