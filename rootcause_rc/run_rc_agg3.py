@@ -40,12 +40,22 @@ for obj in sorted(M.object.unique()):
     obs=float(roc_auc_score(yy,s1)-roc_auc_score(yy,s10))
     bad=np.where(yy==1)[0]; good=np.where(yy==0)[0]
     if obj=="macaroni2":
+        # Exact stratified image bootstrap, vectorized through the Mann-Whitney
+        # identity for AUROC. This is mathematically identical to resampling
+        # bad/good image IDs and recomputing roc_auc_score, but much faster.
         rng=np.random.default_rng(SEED+sum(map(ord,obj)))
+        b1=s1[bad]; g1=s1[good]; b10=s10[bad]; g10=s10[good]
+        def auc_pair_matrix(bv,gv):
+            return (bv[:,None]>gv[None,:]).astype(np.float32) + 0.5*(bv[:,None]==gv[None,:])
+        D=auc_pair_matrix(b1,g1)-auc_pair_matrix(b10,g10)
         vals=np.empty(B,float)
-        for b in range(B):
-            ii=np.r_[rng.choice(bad,len(bad),replace=True),rng.choice(good,len(good),replace=True)]
-            yb=yy[ii]
-            vals[b]=roc_auc_score(yb,s1[ii])-roc_auc_score(yb,s10[ii])
+        step=200
+        for st in range(0,B,step):
+            n=min(step,B-st)
+            bi=rng.integers(0,len(bad),size=(n,len(bad)))
+            gi=rng.integers(0,len(good),size=(n,len(good)))
+            # Average all sampled bad-good pair contributions per bootstrap draw.
+            vals[st:st+n]=D[bi[:,:,None],gi[:,None,:]].mean(axis=(1,2))
         lo,hi=np.quantile(vals,[.025,.975])
     else:
         # Controls are descriptive per the preregistration; no bootstrap is needed
