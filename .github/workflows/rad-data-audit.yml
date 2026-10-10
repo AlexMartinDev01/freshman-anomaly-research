@@ -1,0 +1,48 @@
+name: RAD masked archive audit (metadata only)
+
+on:
+  push:
+    branches:
+      - rad-data-audit-20261010
+    paths:
+      - '.github/workflows/rad-data-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout this branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install audit dependencies
+        run: python -m pip install -r tools/rad_data_audit/requirements.txt
+      - name: Download official masked archive in temporary directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/rad_data"
+          python tools/rad_data_audit/rad_audit.py download --root "$RUNNER_TEMP/rad_data"
+      - name: Audit real image and mask files; no model inference
+        run: |
+          mkdir -p rad_audit_output
+          python tools/rad_data_audit/rad_audit.py audit \
+            --archive "$RUNNER_TEMP/rad_data/Anomaly_refine_msk.zip" \
+            --out rad_audit_output \
+            --draws 5 | tee rad_audit_output/AUDIT_RUN_LOG.txt
+          python -c 'import json; d=json.load(open("rad_audit_output/RAD_FILE_AUDIT.json")); print("REAL_ARCHIVE_COUNTS",d["images"],d["categories"],d["instances"],d["normal"],d["anomaly"],d["mask_status"])'
+      - name: Upload derived audit metadata only, never images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rad-file-audit-metadata
+          path: rad_audit_output/
+          if-no-files-found: warn
+          retention-days: 7
