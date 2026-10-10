@@ -1,0 +1,15 @@
+category,train_good,test_good,test_anomalous,total_images,eligible_4shot
+binderclip,118,18,204,340,true
+bowl,59,9,264,332,true
+box,59,9,181,249,true
+can,59,9,181,249,true
+charger,59,9,137,205,true
+cup1,59,9,263,331,true
+cup2,177,27,205,409,true
+gluebottle,118,18,166,302,true
+phonecase,118,18,272,408,true
+rubberduck,59,9,254,322,true
+spoon,59,9,253,321,true
+spraybottle,59,9,240,308,true
+tennisball,59,9,203,271,true
+TOTAL,1062,162,2823,4047,true
