@@ -60,6 +60,11 @@ def main():
   bad=z.testzip()
   if bad:raise RuntimeError("ZIP CRC failed: "+bad)
   entries={i.filename:i for i in z.infolist() if not i.is_dir()}
+  # Two-pass index: masks often occur AFTER anomaly images inside ZIP.
+  for candidate in entries:
+   inst,parts=zip_parts(candidate)
+   if inst is not None and len(parts)>=3 and parts[0]=="ground_truth" and Path(parts[-1]).suffix.lower() in IMG:
+    maskfiles[(inst,parts[1],parts[-1])]=candidate
   for path,info in entries.items():
    inst,parts=zip_parts(path)
    if inst is None:unknown.append(path);continue
