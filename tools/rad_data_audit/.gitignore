@@ -1,0 +1,6 @@
+*.zip
+Anomaly_refine_msk/
+Anomaly_refine_nonmsk/
+RAD_data/
+*.pt
+*.pth
