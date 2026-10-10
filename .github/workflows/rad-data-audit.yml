@@ -6,6 +6,7 @@ on:
       - rad-data-audit-20261010
     paths:
       - '.github/workflows/rad-data-audit.yml'
+      - 'tools/rad_data_audit/rad_audit.py'
   workflow_dispatch:
 
 permissions:
