@@ -1,0 +1,57 @@
+name: RAD masked versus unmasked archive identity check
+
+on:
+  push:
+    branches:
+      - rad-data-audit-20261010
+    paths:
+      - '.github/workflows/rad-archive-compare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare-archives:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout audit code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check temporary disk capacity
+        run: df -h "$RUNNER_TEMP"
+      - name: Install metadata-only dependencies
+        run: python -m pip install huggingface_hub Pillow
+      - name: Download both original ZIPs to temporary runner storage only
+        run: |
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          import os
+          root=Path(os.environ["RUNNER_TEMP"])/"rad_comparison"
+          root.mkdir(parents=True,exist_ok=True)
+          for filename in ("Anomaly_refine_msk.zip","Anomaly_refine_nonmsk.zip"):
+              path=hf_hub_download(repo_id="zhouk777/RAD",filename=filename,repo_type="dataset",local_dir=str(root))
+              print("ARCHIVE_DOWNLOADED",filename,Path(path).stat().st_size)
+          PY
+      - name: Compare ZIP entry identities and sample resolution (no model inference)
+        run: |
+          mkdir -p rad_compare_output
+          python tools/rad_data_audit/compare_archives.py \
+            "$RUNNER_TEMP/rad_comparison/Anomaly_refine_msk.zip" \
+            "$RUNNER_TEMP/rad_comparison/Anomaly_refine_nonmsk.zip" \
+            rad_compare_output | tee rad_compare_output/RUN_LOG.txt
+      - name: Upload only archive metadata - never raw dataset
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rad-two-archive-identity-report
+          path: rad_compare_output/
+          if-no-files-found: warn
+          retention-days: 7
