@@ -27,7 +27,7 @@ jobs:
       - name: Check temporary disk capacity
         run: df -h "$RUNNER_TEMP"
       - name: Install metadata-only dependencies
-        run: python -m pip install huggingface_hub Pillow
+        run: python -m pip install huggingface_hub Pillow numpy
       - name: Download both original ZIPs to temporary runner storage only
         run: |
           python - <<'PY'
@@ -47,6 +47,12 @@ jobs:
             "$RUNNER_TEMP/rad_comparison/Anomaly_refine_msk.zip" \
             "$RUNNER_TEMP/rad_comparison/Anomaly_refine_nonmsk.zip" \
             rad_compare_output | tee rad_compare_output/RUN_LOG.txt
+      - name: Compare sampled RGB pixels and all pixel-mask file hashes
+        run: |
+          python tools/rad_data_audit/compare_pixels.py \
+            "$RUNNER_TEMP/rad_comparison/Anomaly_refine_msk.zip" \
+            "$RUNNER_TEMP/rad_comparison/Anomaly_refine_nonmsk.zip" \
+            rad_compare_output | tee rad_compare_output/PIXEL_COMPARE_LOG.txt
       - name: Upload only archive metadata - never raw dataset
         if: always()
         uses: actions/upload-artifact@v4
