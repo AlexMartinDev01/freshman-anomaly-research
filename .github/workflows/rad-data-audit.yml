@@ -30,6 +30,19 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/rad_data"
           python tools/rad_data_audit/rad_audit.py download --root "$RUNNER_TEMP/rad_data"
+      - name: Inspect true archive ground-truth structure
+        run: |
+          python - <<'PY'
+          import os,zipfile,collections
+          p=os.path.join(os.environ["RUNNER_TEMP"],"rad_data","Anomaly_refine_msk.zip")
+          with zipfile.ZipFile(p) as z:
+              files=[x.filename for x in z.infolist() if not x.is_dir()]
+              gt=[x for x in files if "ground_truth" in x.lower() or "mask" in x.lower()]
+              print("ZIP_TOTAL_FILES",len(files),"GT_OR_MASK_PATH_COUNT",len(gt))
+              print("GT_OR_MASK_PATH_SAMPLES",gt[:25])
+              print("LAST_ENTRIES",files[-25:])
+              print("PATH_PREFIX_COUNTER",collections.Counter("/".join(x.split("/")[:3]) for x in files).most_common(25))
+          PY
       - name: Audit real image and mask files; no model inference
         run: |
           mkdir -p rad_audit_output
